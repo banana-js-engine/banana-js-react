@@ -16,6 +16,7 @@ export default class Renderer {
         this.#gl = gl;
 
         const data = new Float32Array([-1, -1, 0, 1, 1, -1]);
+        // const data = 'asdasda';
 
         const buffer = new VertexBuffer(this.#gl, data);
         const shader = new Shader(this.#gl, 'shader/basic_shader.glsl');

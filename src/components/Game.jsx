@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import Renderer from './renderer/Renderer';
+import Renderer from '../renderer/Renderer';
 
 // gl context
 const GLContext = createContext(null);

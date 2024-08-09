@@ -6,6 +6,7 @@ export class VertexBuffer {
     
     #bufferId;
     #data;
+    #usage;
     #offset;
     #stride;
     #attributes;
@@ -19,6 +20,15 @@ export class VertexBuffer {
         this.#gl = gl;
 
         this.#bufferId = this.#gl.createBuffer();
+
+        if (data instanceof Float32Array) {
+            this.#data = data;
+        } else if (typeof data == 'number') {
+            this.#data = new Float32Array(data);
+        } else {
+            console.error(`${typeof data} is not supported for vertex buffers`);
+            return;
+        }
 
         this.#data = data;
 
