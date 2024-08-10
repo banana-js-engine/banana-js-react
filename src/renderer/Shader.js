@@ -16,9 +16,9 @@ export class Shader {
         this.#gl = gl;
 
         this.#shaderId = this.#compile(source);
-
-        this.bind();
         this.#uniformLookupTable = {};
+        
+        this.bind();
     }
 
     /**

@@ -14,17 +14,23 @@ export class VertexBuffer {
     /**
      * Create a vertex buffer
      * @param {WebGL2RenderingContext} gl the WebGL context
-     * @param {Float32Array} data the vertex data to be rendered
+     * @param {Float32Array | number} data the vertex data to be rendered
      */
     constructor(gl, data) {
         this.#gl = gl;
 
         this.#bufferId = this.#gl.createBuffer();
 
+        /*
+         * if the data supplied is a list that means the rendering will be static
+         * if it's a number which only determines the size, the rendering will be dynamic  
+         */
         if (data instanceof Float32Array) {
             this.#data = data;
+            this.#usage = this.#gl.STATIC_DRAW;
         } else if (typeof data == 'number') {
             this.#data = new Float32Array(data);
+            this.#usage = this.#gl.DYNAMIC_DRAW
         } else {
             console.error(`${typeof data} is not supported for vertex buffers`);
             return;
@@ -35,6 +41,8 @@ export class VertexBuffer {
         this.#offset = 0;
         this.#stride = 0;
         this.#attributes = [];
+
+        this.bind();
     }
 
     /**
@@ -76,5 +84,41 @@ export class VertexBuffer {
         });
 
         this.#offset = 0;
+    }
+}
+
+/**
+ * Class that encapsulates WebGL index buffers (gl.ELEMENT_ARRAY_BUFFER)
+ */
+export class IndexBuffer {
+    #gl;
+
+    #bufferId;
+    #data;
+
+    /**
+     * Create a index buffer
+     * @param {WebGL2RenderingContext} gl the WebGL context
+     * @param {Uint16Array} data the index data to be mapped to the bound vertex buffer
+     */
+    constructor(gl, data) {
+        this.#gl = gl;
+
+        this.#bufferId = this.#gl.createBuffer();
+        this.#data = data;
+        this.bind();
+    }
+
+    bind() {
+        this.#gl.bindBuffer(this.#gl.ELEMENT_ARRAY_BUFFER, this.#bufferId);
+        this.#gl.bufferData(this.#gl.ELEMENT_ARRAY_BUFFER, this.#data, this.#gl.STATIC_DRAW);
+    }
+
+    unbind() {
+        this.#gl.bindBuffer(this.#gl.ELEMENT_ARRAY_BUFFER, null);
+    }
+
+    getCount() {
+        return this.#data.length;
     }
 }

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import Renderer from '../renderer/Renderer';
+import { Renderer } from '../renderer/Renderer';
+import { Engine } from '../core/Engine';
 
 // gl context
 const GLContext = createContext(null);
@@ -20,6 +21,7 @@ export default function Game(props) {
     // Refs
     const canvasRef = useRef();
     const rendererRef = useRef();
+    const engineRef = useRef();
 
     // States
     const [gl, setGL] = useState(null);
@@ -40,7 +42,10 @@ export default function Game(props) {
         // initialize renderer
         rendererRef.current = new Renderer(context);
 
-    }, [props.height, props.name, props.width, gl]);
+        // initialize engine
+        engineRef.current = new Engine();
+
+    }, [props.name, props.height, props.width, gl]);
 
     return (
         <RendererContext.Provider value={rendererRef.current}>

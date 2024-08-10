@@ -6,7 +6,7 @@ export default function Triangle() {
     const renderer = useRenderer();
 
     useEffect(() => {
-        renderer.drawTriangle();
+        // renderer.drawTriangle();
     }, [renderer]);
 
     return null;
