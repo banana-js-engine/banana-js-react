@@ -34,6 +34,15 @@ export class Vector2 {
         return this.x * this.x + this.y * this.y;
     }
 
+    // ready Vector2s
+    static get zero() {
+        return new Vector2(0, 0);
+    }
+
+    static get one() {
+        return new Vector2(1, 1);
+    }
+
     /*
      * new Vector2(2, 3) (toString) -> [2, 3]
      */
@@ -62,6 +71,15 @@ export class Vector3 extends Vector2 {
         return super.lengthSquared + this.z * this.z;
     }
 
+    // ready Vector3s
+    static get zero() {
+        return new Vector3(0, 0, 0);
+    }
+
+    static get one() {
+        return new Vector2(1, 1, 1);
+    }
+
     /*
      * new Vector3(2, 3, 1) (toString) -> [2, 3, 1]
      */
@@ -88,6 +106,15 @@ export class Vector4 extends Vector3 {
 
     get lengthSquared() {
         return super.lengthSquared + this.w * this.w;
+    }
+
+    // ready Vector4s
+    static get zero() {
+        return new Vector4(0, 0, 0, 0);
+    }
+
+    static get one() {
+        return new Vector2(1, 1, 1, 1);
     }
 
     /*
