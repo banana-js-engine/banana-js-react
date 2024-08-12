@@ -1,12 +1,17 @@
 import Game from "./components/Game"
-import Camera from "./components/Camera"
-import Triangle from "./components/Triangle"
+// import Camera from "./components/Camera"
+import GameObject from "./components/GameObject"
+import Scene from "./components/Scene"
+import Transform from "./components/Transform"
 
 export default function App() {
     return (
         <Game name={"Game"} width={300} height={300}>
-            <Camera bgColor={[1, 0, 1, 1]} />
-            <Triangle />
+            <Scene>
+                <GameObject>
+                    <Transform></Transform>
+                </GameObject>
+            </Scene>
         </Game>
     )
 }

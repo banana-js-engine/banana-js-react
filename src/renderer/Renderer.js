@@ -2,6 +2,24 @@ import { Vector3 } from "../math/Vector";
 import { IndexBuffer, VertexBuffer } from "./Buffer";
 import { Shader } from "./Shader";
 
+class QuadVertex {
+    position;
+
+    flat() {
+        if (!this.position) {
+            console.error('assign all properties before calling flat()!');
+        }
+
+        return [
+            this.position.x,
+            this.position.y,
+            this.position.z
+        ];
+    }
+
+    static vertexSize = 3;
+}
+
 /**
  * Class that does the rendering by using the encapsulated WebGL objects
  */
@@ -43,11 +61,19 @@ export class Renderer {
     };
 
     /**
+     * @type {QuadVertex} vertex of type quad (used for caching reasons)
+     */
+    #quadVertex;
+
+    /**
      * 
      * @param {WebGL2RenderingContext} gl the WebGL context 
      */
     constructor(gl) {
         this.#gl = gl;
+
+        // initialize vertices of each type
+        this.#quadVertex = new QuadVertex();
 
         // prepare indices for index buffer creation
         const indices = new Uint16Array(this.#renderData.maxIndices);
@@ -67,11 +93,36 @@ export class Renderer {
 
         // quads
         this.#renderData.quadShader = new Shader(this.#gl, 'shader/quad_shader.glsl');
-        this.#renderData.quadVB = new VertexBuffer(this.#gl, this.#renderData.maxVertices);
+        this.#renderData.quadVB = new VertexBuffer(this.#gl, this.#renderData.maxVertices * 3);
         this.#renderData.quadIB = new IndexBuffer(this.#gl, indices);
 
         const quadPosition = this.#renderData.quadShader.getAttributeLocation('a_Position');
         this.#renderData.quadVB.pushAttribute(quadPosition, 3);
         this.#renderData.quadVB.linkAttributes();        
+    }
+
+    drawQuad(x, y) {
+        for (let i = 0; i < 4; i++) {
+            this.#quadVertex.position = this.#renderData.initialVertexPositions[i];
+
+            this.#renderData.quadVB.addVertex(this.#renderData.quadVertexCount, this.#quadVertex.flat());
+
+            this.#renderData.quadVertexCount++;
+        }
+
+        this.#renderData.quadIndexCount += 6;
+    }
+
+    flush() {
+        this.#renderData.quadVB.bind();
+        this.#gl.drawElements(this.#gl.TRIANGLES, this.#renderData.quadIndexCount, this.#gl.UNSIGNED_SHORT, 0);
+    }
+
+    clear() {
+        this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
+    }
+
+    setClearColor(r, g, b, a) {
+        this.#gl.clearColor(r, g, b, a);
     }
 }

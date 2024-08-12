@@ -36,8 +36,6 @@ export class VertexBuffer {
             return;
         }
 
-        this.#data = data;
-
         this.#offset = 0;
         this.#stride = 0;
         this.#attributes = [];
@@ -50,7 +48,7 @@ export class VertexBuffer {
      */
     bind() {
         this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, this.#bufferId);
-        this.#gl.bufferData(this.#gl.ARRAY_BUFFER, this.#data, this.#gl.DYNAMIC_DRAW);
+        this.#gl.bufferData(this.#gl.ARRAY_BUFFER, this.#data, this.#usage);
         this.linkAttributes();
     }
 
@@ -78,12 +76,23 @@ export class VertexBuffer {
     linkAttributes() {
         this.#attributes.forEach(attribute => {   
             this.#gl.enableVertexAttribArray(attribute.location);
-            this.#gl.vertexAttribPointer(attribute.location, attribute.count, this.#gl.FLOAT, attribute.normalized, this.stride, this.offset);
+            this.#gl.vertexAttribPointer(attribute.location, attribute.count, this.#gl.FLOAT, attribute.normalized, this.#stride, this.#offset);
 
             this.#offset += 4 * attribute.count;
         });
 
         this.#offset = 0;
+    }
+
+    /**
+     * add vertices to the vertex buffer with this function in case its dynamic draw
+     * @param {number} index at which index to place the vertex
+     * @param {Array} vertex to be added
+     */
+    addVertex(index, vertex) {
+        for (let i = 0; i < vertex.length; i++) {
+            this.#data[index * vertex.length + i] = vertex[i];  
+        }
     }
 }
 

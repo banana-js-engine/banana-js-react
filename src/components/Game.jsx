@@ -26,6 +26,10 @@ export default function Game(props) {
     // States
     const [gl, setGL] = useState(null);
 
+    const isInitialized = function() {
+        return gl && rendererRef.current && engineRef.current;
+    }
+
     useEffect(() => {
         document.title = props.name;
 
@@ -43,9 +47,11 @@ export default function Game(props) {
         rendererRef.current = new Renderer(context);
 
         // initialize engine
-        engineRef.current = new Engine();
+        engineRef.current = new Engine(rendererRef.current);
 
     }, [props.name, props.height, props.width, gl]);
+
+    
 
     return (
         <RendererContext.Provider value={rendererRef.current}>
@@ -58,8 +64,9 @@ export default function Game(props) {
                         overflow: 'hidden',
                     }}>
                     <div style={{ width: '100%', height: '100%' }}>
-                        <canvas ref={canvasRef} style={{ display: 'block' }}/>
-                        { gl && rendererRef.current && props.children }
+                        <canvas ref={canvasRef} style={{ display: 'block' }}>
+                            { isInitialized() && props.children }
+                        </canvas>
                     </div>
                 </div>
             </GLContext.Provider>

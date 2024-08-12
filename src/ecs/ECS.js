@@ -9,8 +9,16 @@ export class ECS {
         this.#component = {};
     }
 
+    #generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = (Math.random() * 16) | 0,
+                v = c === 'x' ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        });
+    }
+
     create() {
-        const id = GUID.generateGUID();
+        const id = this.#generateUUID();
     
         this.#list[this.#count++] = id;
 
@@ -26,7 +34,7 @@ export class ECS {
     release(entity) {
         const index = this.#list.indexOf(entity);
 
-        if (index == -1) {
+        if (index === -1) {
             return;
         }
 
@@ -42,7 +50,7 @@ export class ECS {
     }
 
     valid(entity) {
-        return this.#list.indexOf(entity) != -1;
+        return this.#list.indexOf(entity) !== -1;
     }
 
     get_all_entities() {
