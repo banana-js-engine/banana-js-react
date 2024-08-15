@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef } from "react";
+import { createContext, useContext, useRef } from "react";
 import { useScene } from "./Scene";
 import { ECS } from "../ecs/ECS";
 
@@ -17,13 +17,13 @@ export default function GameObject(props) {
      */
     const ecs = useScene();
 
-    useEffect(() => {
-        gameObjectRef.current = ecs.create();
-    }, [ecs]);
+    gameObjectRef.current = ecs.create();
+
 
     return (
         <GameObjectContext.Provider value={gameObjectRef.current}>
-            { gameObjectRef.current && props.children }
+            { props.children }
         </GameObjectContext.Provider>
     );
+    
 }

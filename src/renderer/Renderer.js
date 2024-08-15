@@ -3,17 +3,23 @@ import { IndexBuffer, VertexBuffer } from "./Buffer";
 import { Shader } from "./Shader";
 
 class QuadVertex {
-    position;
+    position = null;
+    color = null;
 
     flat() {
-        if (!this.position) {
+        if (!this.position || !this.color) {
             console.error('assign all properties before calling flat()!');
+            return;
         }
 
         return [
             this.position.x,
             this.position.y,
-            this.position.z
+            this.position.z,
+            this.color.x,
+            this.color.y,
+            this.color.z,
+            this.color.w
         ];
     }
 
@@ -97,13 +103,19 @@ export class Renderer {
         this.#renderData.quadIB = new IndexBuffer(this.#gl, indices);
 
         const quadPosition = this.#renderData.quadShader.getAttributeLocation('a_Position');
+        const quadColor = this.#renderData.quadShader.getAttributeLocation('a_Color');
         this.#renderData.quadVB.pushAttribute(quadPosition, 3);
+        this.#renderData.quadVB.pushAttribute(quadColor, 4);
         this.#renderData.quadVB.linkAttributes();        
     }
 
-    drawQuad(x, y) {
+    drawQuad(transform, sprite) {
+
+        const t = transform.transformMatrix;
+
         for (let i = 0; i < 4; i++) {
-            this.#quadVertex.position = this.#renderData.initialVertexPositions[i];
+            this.#quadVertex.position = t.multiplyVector3(this.#renderData.initialVertexPositions[i]);
+            this.#quadVertex.color = sprite.color;
 
             this.#renderData.quadVB.addVertex(this.#renderData.quadVertexCount, this.#quadVertex.flat());
 

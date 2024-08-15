@@ -1,30 +1,82 @@
-import { Vector3 } from "../math/Vector";
+import { Matrix4 } from "../math/Matrix";
+import { Vector3, Vector4 } from "../math/Vector";
+
+export const ComponentType = {
+    None: -1,
+    Transform: 0,
+    Sprite: 1
+} 
+
+class Component {
+    get type() {
+        return ComponentType.None;
+    }
+}
 
 /**
  * Represent a GameObject's orientation in the scene
  */
-export class TransformComponent {
+export class TransformComponent extends Component {
+    #positionMat;
+    #rotationXMat;
+    #rotationYMat;
+    #rotationZMat;
+    #scaleMat;
+
     #position;
     #rotation;
     #scale;
 
+    #transform;
+
     constructor(position, rotation, scale) {
+        super();
+        this.#positionMat = new Matrix4();
+        this.#rotationXMat = new Matrix4();
+        this.#rotationYMat = new Matrix4();
+        this.#rotationZMat = new Matrix4();
+        this.#scaleMat = new Matrix4();
+
         this.#position = Vector3.zero;
         this.#rotation = Vector3.zero;
         this.#scale = Vector3.one;
 
+        this.#transform = new Matrix4();
+
+        
         if (position) {
-            position = this.#processParameterType(position);
-            this.moveTo(position.x, position.y, position.z);
+            const pos = this.#processParameterType(position);
+            this.moveTo(pos.x, pos.y, pos.z);
         }
         if (rotation) {
-            rotation = this.#processParameterType(rotation);
-            this.rotateTo(rotation.x, rotation.y, rotation.z);
+            const rot = this.#processParameterType(rotation);
+            this.rotateTo(rot.x, rot.y, rot.z);
         }
         if (scale) {
-            scale = this.#processParameterType(scale);
-            this.scaleTo(scale.x, scale.y, scale.z);
+            const sc = this.#processParameterType(scale);
+            this.scaleTo(sc.x, sc.y, sc.z);
         }
+    }
+
+    get type() {
+        return ComponentType.Transform;
+    }
+
+    get transformMatrix() {
+        this.#positionMat.setTranslation(this.#position);
+        this.#rotationXMat.setRotationX(this.#rotation.x);
+        this.#rotationYMat.setRotationY(this.#rotation.y);
+        this.#rotationZMat.setRotationZ(this.#rotation.z);
+        this.#scaleMat.setScale(this.#scale);
+
+        this.#transform.identity();
+        this.#transform.multiply(this.#scaleMat);
+        this.#transform.multiply(this.#rotationXMat);
+        this.#transform.multiply(this.#rotationYMat);
+        this.#transform.multiply(this.#rotationZMat);
+        this.#transform.multiply(this.#positionMat);
+
+        return this.#transform;
     }
 
     #processParameterType(param) {
@@ -108,5 +160,45 @@ export class TransformComponent {
         this.#scale.x *= x;
         this.#scale.y *= y;
         this.#scale.z *= z;
+    }
+}
+
+export class SpriteComponent extends Component {
+    #color;
+
+    constructor(color) {
+        super();
+        this.#color = Vector4.one;
+
+        if (color) {
+            const c = this.#processParameterType(color);
+            this.setColor(c.r, c.g, c.b, c.a);
+        }
+    }
+
+    get type() {
+        return ComponentType.Sprite;
+    }
+
+    #processParameterType(param) {
+        if (typeof param[0] === 'number') {
+            return { r: param[0], g: param[1], b: param[2], a: param[3] };
+        } else if (param instanceof Vector4) {
+            return { r: param.x, g: param.y, b: param.z, a: param.w };
+        }
+
+        console.error('Invalid type for transform')
+        return null;
+    }
+    
+    get color() {
+        return this.#color;
+    }
+
+    setColor(r, g, b, a) {
+        this.#color.x = r;
+        this.#color.y = g;
+        this.#color.z = b;
+        this.#color.w = a;
     }
 }

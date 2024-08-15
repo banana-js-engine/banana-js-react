@@ -16,6 +16,13 @@ export function useRenderer() {
     return useContext(RendererContext);
 }
 
+// engine context
+const EngineContext = createContext(null);
+
+export function useEngine() {
+    return useContext(EngineContext);
+}
+
 export default function Game(props) {
 
     // Refs
@@ -49,27 +56,29 @@ export default function Game(props) {
         // initialize engine
         engineRef.current = new Engine(rendererRef.current);
 
-    }, [props.name, props.height, props.width, gl]);
+    }, []);
 
     
 
     return (
-        <RendererContext.Provider value={rendererRef.current}>
-            <GLContext.Provider value={gl}>
-                <div
-                    style={{
-                        position: 'relative',
-                        width: '100%',
-                        height: '100%',
-                        overflow: 'hidden',
-                    }}>
-                    <div style={{ width: '100%', height: '100%' }}>
-                        <canvas ref={canvasRef} style={{ display: 'block' }}>
-                            { isInitialized() && props.children }
-                        </canvas>
+        <EngineContext.Provider value={engineRef.current}>
+            <RendererContext.Provider value={rendererRef.current}>
+                <GLContext.Provider value={gl}>
+                    <div
+                        style={{
+                            position: 'relative',
+                            width: '100%',
+                            height: '100%',
+                            overflow: 'hidden',
+                        }}>
+                        <div style={{ width: '100%', height: '100%' }}>
+                            <canvas ref={canvasRef} style={{ display: 'block' }}>
+                                { isInitialized() && props.children }
+                            </canvas>
+                        </div>
                     </div>
-                </div>
-            </GLContext.Provider>
-        </RendererContext.Provider>
+                </GLContext.Provider>
+            </RendererContext.Provider>
+        </EngineContext.Provider>
     );
 }

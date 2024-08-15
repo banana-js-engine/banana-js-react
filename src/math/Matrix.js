@@ -1,3 +1,6 @@
+import { BananaMath } from "./BananaMath";
+import { Vector3, Vector4 } from "./Vector";
+
 export class Matrix4 {
 
     #data;
@@ -57,6 +60,37 @@ export class Matrix4 {
         return this;
     }
 
+    /**
+     * 
+     * @param {Vector3} vec3
+     * @returns 
+     */
+    multiplyVector3(vec3) {
+        const result = Vector3.zero;
+
+        result.x = this.#data[0] * vec3.x + this.#data[1] * vec3.y + this.#data[2] * vec3.z + this.#data[3];
+        result.y = this.#data[4] * vec3.x + this.#data[5] * vec3.y + this.#data[6] * vec3.z + this.#data[7];
+        result.z = this.#data[8] * vec3.x + this.#data[9] * vec3.y + this.#data[10] * vec3.z + this.#data[11];
+
+        return result;
+    }
+
+    /**
+     * 
+     * @param {Vector4} vec4 
+     * @returns 
+     */
+    multiplyVector4(vec4) {
+        const result = Vector4.zero;
+
+        result.x = this.#data[0] * vec4.x + this.#data[1] * vec4.y + this.#data[2] * vec4.z + this.#data[3] * vec4.w;
+        result.y = this.#data[4] * vec4.x + this.#data[5] * vec4.y + this.#data[6] * vec4.z + this.#data[7] * vec4.w;
+        result.z = this.#data[8] * vec4.x + this.#data[9] * vec4.y + this.#data[10] * vec4.z + this.#data[11] * vec4.w;
+        result.w = 1.0
+
+        return result;
+    }
+
     transpose() {
         const nm00 = this.#data[ 0];
         const nm01 = this.#data[ 4];
@@ -90,6 +124,73 @@ export class Matrix4 {
         this.#data[13] = nm31;
         this.#data[14] = nm32;
         this.#data[15] = nm33;
+
+        return this;
+    }
+
+    setTranslation(vec3) {
+        this.identity();
+        this.#data[3] = vec3.x;
+        this.#data[7] = vec3.y;
+        this.#data[11] = vec3.z;
+        return this;
+    }
+
+    setRotationX(ang) {
+        this.identity();
+    
+        ang = BananaMath.toRadians(ang);
+    
+        const cos = Math.cos(ang);
+        const sin = Math.sin(ang);
+
+        this.#data[5] = cos;
+        this.#data[6] = -sin;
+        this.#data[9] = sin;
+        this.#data[10] = cos;
+    
+        return this;
+    }
+
+    setRotationY(ang) {
+        this.identity();
+    
+        ang = BananaMath.toRadians(ang);
+    
+        const cos = Math.cos(ang);
+        const sin = Math.sin(ang);
+
+        this.#data[0] = cos;
+        this.#data[2] = sin;
+        this.#data[8] = -sin;
+        this.#data[10] = cos;
+    
+        return this;
+    }
+    
+
+    setRotationZ(ang) {
+        this.identity();
+
+        ang = BananaMath.toRadians(ang);
+
+        const cos = Math.cos(ang);
+        const sin = Math.sin(ang);
+
+        this.#data[0] = cos;
+        this.#data[1] = -sin;
+        this.#data[4] = sin;
+        this.#data[5] = cos;
+
+        return this;
+    }
+
+    setScale(vec3) {
+        this.identity();
+
+        this.#data[0] = vec3.x;
+        this.#data[5] = vec3.y;
+        this.#data[10] = vec3.z;
 
         return this;
     }

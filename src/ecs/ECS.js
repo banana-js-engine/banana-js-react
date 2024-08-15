@@ -63,7 +63,7 @@ export class ECS {
             return;
         }
 
-        if (this.#component[component.type]) {
+        if (!this.#component[component.type]) {
             this.#component[component.type] = {};
         }
 

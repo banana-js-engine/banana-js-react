@@ -77,7 +77,7 @@ export class Vector3 extends Vector2 {
     }
 
     static get one() {
-        return new Vector2(1, 1, 1);
+        return new Vector3(1, 1, 1);
     }
 
     /*
@@ -114,7 +114,7 @@ export class Vector4 extends Vector3 {
     }
 
     static get one() {
-        return new Vector2(1, 1, 1, 1);
+        return new Vector4(1, 1, 1, 1);
     }
 
     /*
