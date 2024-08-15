@@ -1,16 +1,19 @@
 import { Matrix4 } from "../math/Matrix";
-import { Vector3 } from "../math/Vector";
+import { Vector2, Vector3 } from "../math/Vector";
 import { IndexBuffer, VertexBuffer } from "./Buffer";
 import { Shader } from "./Shader";
+import { Texture } from "./Texture";
 
 class QuadVertex {
     position = null;
     color = null;
+    texCoords = null;
+    texIndex = -1;
 
-    flat() {
-        if (!this.position || !this.color) {
+    get flat() {
+        if (!this.position || !this.color || !this.texCoords || this.texIndex === -1) {
             console.error('assign all properties before calling flat()!');
-            return;
+            return [];
         }
 
         return [
@@ -20,11 +23,14 @@ class QuadVertex {
             this.color.x,
             this.color.y,
             this.color.z,
-            this.color.w
+            this.color.w,
+            this.texCoords.x,
+            this.texCoords.y,
+            this.texIndex
         ];
     }
 
-    static vertexSize = 3;
+    static vertexSize = 11;
 }
 
 /**
@@ -47,6 +53,13 @@ export class Renderer {
             new Vector3(0.5, 0.5, 0),
         ],
 
+        textureCoords: [
+            Vector2.zero,
+            Vector2.right,
+            Vector2.up,
+            Vector2.one,
+        ],
+
         // mutable data (these will be changed by the renderer)
         quadVertexCount: 0,
         quadIndexCount: 0,
@@ -64,7 +77,21 @@ export class Renderer {
         /**
          * @type {IndexBuffer}
          */
-        quadIB: null
+        quadIB: null,
+
+        // texture data
+        maxTextureSlotCount: -1,
+        textureSlotIndex: 1,
+
+        /**
+         * @type {Texture[]}
+         */
+        textureSlots: [],
+
+        /**
+         * @type {Texture}
+         */
+        whiteTexture: null
     };
 
     #sceneData = {
@@ -91,6 +118,9 @@ export class Renderer {
     constructor(gl) {
         this.#gl = gl;
 
+        this.#renderData.maxTextureSlotCount = this.#gl.getParameter(this.#gl.MAX_TEXTURE_IMAGE_UNITS);
+        this.#renderData.whiteTexture = new Texture(this.#gl); // without src, we'll get the default 1x1 white texture
+
         // initialize vertices of each type
         this.#quadVertex = new QuadVertex();
 
@@ -112,14 +142,28 @@ export class Renderer {
 
         // quads
         this.#renderData.quadShader = new Shader(this.#gl, 'shader/quad_shader.glsl');
-        this.#renderData.quadVB = new VertexBuffer(this.#gl, this.#renderData.maxVertices * 3);
+        this.#renderData.quadVB = new VertexBuffer(this.#gl, this.#renderData.maxVertices * QuadVertex.vertexSize);
         this.#renderData.quadIB = new IndexBuffer(this.#gl, indices);
 
         const quadPosition = this.#renderData.quadShader.getAttributeLocation('a_Position');
         const quadColor = this.#renderData.quadShader.getAttributeLocation('a_Color');
+        const quadCoords = this.#renderData.quadShader.getAttributeLocation('a_TexCoord');
+        const quadIndex = this.#renderData.quadShader.getAttributeLocation('a_TexIndex');
         this.#renderData.quadVB.pushAttribute(quadPosition, 3);
         this.#renderData.quadVB.pushAttribute(quadColor, 4);
+        this.#renderData.quadVB.pushAttribute(quadCoords, 2);
+        this.#renderData.quadVB.pushAttribute(quadIndex, 1);
         this.#renderData.quadVB.linkAttributes();        
+
+        // textures
+        const samplers = [];
+        for (let i = 0; i < this.#renderData.maxTextureSlotCount; i++) {
+            samplers[i] = i;
+        }
+
+        this.#renderData.quadShader.setUniform1iv('u_Textures', samplers);
+
+        this.#renderData.textureSlots[0] = this.#renderData.whiteTexture;
     }
 
     beginScene(transform, camera) {
@@ -143,13 +187,41 @@ export class Renderer {
 
     drawQuad(transform, sprite) {
 
+        if (this.#renderData.quadIndexCount >= this.#renderData.maxIndices) {
+            this.#flush();
+        }
+
+        let useTextureSlot = -1;
+        
+        if (sprite.texture) {
+            for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
+                if (this.#renderData.textureSlots[i] === sprite.texture) {
+                    useTextureSlot = i;
+                    break;
+                }
+            }
+    
+            if (this.#renderData.textureSlotIndex >= this.#renderData.maxTextureSlotCount) {
+                this.#flush();
+            }
+    
+            if (useTextureSlot === -1) {
+                useTextureSlot = this.#renderData.textureSlotIndex;
+                this.#renderData.textureSlots[this.#renderData.textureSlotIndex++] = sprite.texture;
+            }
+        } else {
+            useTextureSlot = 0;
+        }
+
         const t = transform.transformMatrix;
 
         for (let i = 0; i < 4; i++) {
             this.#quadVertex.position = t.multiplyVector3(this.#renderData.initialVertexPositions[i]);
             this.#quadVertex.color = sprite.color;
+            this.#quadVertex.texCoords = this.#renderData.textureCoords[i];
+            this.#quadVertex.texIndex = useTextureSlot;
 
-            this.#renderData.quadVB.addVertex(this.#renderData.quadVertexCount, this.#quadVertex.flat());
+            this.#renderData.quadVB.addVertex(this.#renderData.quadVertexCount, this.#quadVertex.flat);
 
             this.#renderData.quadVertexCount++;
         }
@@ -158,12 +230,18 @@ export class Renderer {
     }
 
     #flush() {
+        for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
+            this.#renderData.textureSlots[i].bind(i);
+        }
+
         this.#renderData.quadVB.bind();
         this.#gl.drawElements(this.#gl.TRIANGLES, this.#renderData.quadIndexCount, this.#gl.UNSIGNED_SHORT, 0);
 
         // reset batch
         this.#renderData.quadVertexCount = 0;
         this.#renderData.quadIndexCount = 0;
+
+        this.#renderData.textureSlotIndex = 1;
     }
 
     clear() {

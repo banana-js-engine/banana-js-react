@@ -15,7 +15,7 @@ export default function App() {
                 </GameObject>
                 <GameObject>
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Sprite color={[0, 1, 0, 1]}/>
+                    <Sprite color={[0, 1, 0, 1]} src="logo192.png"/>
                 </GameObject>
             </Scene>
         </Game>

@@ -96,4 +96,9 @@ export class Shader {
         const uniformLocation = this.#getUniformLocation(name);
         this.#gl.uniformMatrix4fv(uniformLocation, transpose, value);
     }
+
+    setUniform1iv(name, value) {
+        const uniformLocation = this.#getUniformLocation(name);
+        this.#gl.uniform1iv(uniformLocation, value);
+    }
 }

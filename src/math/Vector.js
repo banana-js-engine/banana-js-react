@@ -51,6 +51,23 @@ export class Vector2 {
         return new Vector2(1, 1);
     }
 
+    // basic directions
+    static get right() {
+        return new Vector2(1, 0);
+    }
+
+    static get left() {
+        return new Vector2(-1, 0);
+    }
+
+    static get up() {
+        return new Vector2(0, 1);
+    }
+
+    static get down() {
+        return new Vector2(0, -1);
+    }
+
     /*
      * new Vector2(2, 3) (toString) -> [2, 3]
      */

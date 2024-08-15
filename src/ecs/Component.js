@@ -1,5 +1,6 @@
 import { Matrix4 } from "../math/Matrix";
 import { Vector3, Vector4 } from "../math/Vector";
+import { Texture } from "../renderer/Texture";
 
 export const ComponentType = {
     None: -1,
@@ -169,14 +170,19 @@ export class TransformComponent extends Component {
  */
 export class SpriteComponent extends Component {
     #color;
+    #texture;
 
-    constructor(color) {
+    constructor(gl, color, textureSrc) {
         super();
         this.#color = Vector4.one;
 
         if (color) {
             const c = this.#processParameterType(color);
             this.setColor(c.r, c.g, c.b, c.a);
+        }
+
+        if (textureSrc) {
+            this.#texture = new Texture(gl, textureSrc);
         }
     }
 
@@ -204,6 +210,10 @@ export class SpriteComponent extends Component {
         this.#color.y = g;
         this.#color.z = b;
         this.#color.w = a;
+    }
+
+    get texture() {
+        return this.#texture;
     }
 }
 

@@ -338,4 +338,17 @@ export class Matrix4 {
         this.applyOrtho(left, right, bottom, top, near, far);
         return this;
     }
+
+    toString() {
+        let result = '';
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                result += `${this.#data[i * 4 + j].toFixed(2).padStart(8)}`;
+            }
+
+            result += '\n';
+        }
+
+        return result;
+    }
 }
