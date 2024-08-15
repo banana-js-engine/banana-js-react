@@ -14,6 +14,12 @@ export class Engine {
     #scenes;
     #activeScene;
 
+    /*
+        Flags for warnings to be logged once in the loop
+    */
+    #zeroCameraFlag;
+    #multipleCameraFlag;
+
     constructor(renderer) {
         this.#running = true;
         this.#previousFrameTime = 0;
@@ -23,7 +29,8 @@ export class Engine {
         this.#scenes = [];
         this.#activeScene = null;
 
-        this.#rendererRef.setClearColor(0.345, 0.588, 0.809, 1);
+        this.#zeroCameraFlag = false;
+        this.#multipleCameraFlag = false;
 
         this.#tick();
     }
@@ -45,11 +52,41 @@ export class Engine {
     }
 
     #update(dt) {
-        this.#rendererRef.clear();
-
-        this.#rendererRef.flush();
-
         if (this.#activeScene) {
+            const goCameras = this.#activeScene.get_all_with_entity(ComponentType.Camera);
+            const size = Object.keys(goCameras).length;
+            let cameraTransform; 
+            let cameraComponent;
+
+            if (size === 0 && !this.#zeroCameraFlag) {
+                console.warn('there are no cameras in the scene!');
+                this.#zeroCameraFlag = true;
+            }
+            
+            if (size > 1 && !this.#multipleCameraFlag) {
+                console.warn('there are more than one camera in the scene!');
+                this.#multipleCameraFlag = true;
+            }
+            
+            if (size === 1) {
+                const id = Object.keys(goCameras)[0];
+                cameraTransform = this.#activeScene.get(id, ComponentType.Transform);
+                cameraComponent = goCameras[id];
+
+                const cc = cameraComponent.clearColor;
+                this.#rendererRef.setClearColor(cc.x, cc.y, cc.z, cc.w);
+
+            }
+
+            // no camera, no rendering
+            if (!cameraComponent) {
+                return;
+            }
+            
+            this.#rendererRef.beginScene(cameraTransform, cameraComponent);
+
+            this.#rendererRef.clear();
+
             const goSprites = this.#activeScene.get_all_with_entity(ComponentType.Sprite);
 
             for (const id in goSprites) {
@@ -57,7 +94,10 @@ export class Engine {
 
                 this.#rendererRef.drawQuad(transform, goSprites[id]);
             }
+            
+            this.#rendererRef.endScene();
         }
+
     }
 
     addScene(scene) {

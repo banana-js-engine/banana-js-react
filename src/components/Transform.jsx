@@ -4,6 +4,13 @@ import { useScene } from "./Scene";
 import { useGameObject } from "./GameObject";
 import { TransformComponent } from "../ecs/Component";
 
+/**
+ * 
+ * @param {{ position: [number, number, number], 
+ *           rotation: [number, number, number], 
+ *           scale: [number, number, number] }} props 
+ * @returns 
+ */
 export default function Transform(props) {
 
     /**

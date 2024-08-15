@@ -1,12 +1,24 @@
 import { BananaMath } from "./BananaMath";
 import { Vector3, Vector4 } from "./Vector";
 
+/**
+ * 4x4 Matrix row-wise representation 
+ * (Internally does column-wise calculations)
+ */
 export class Matrix4 {
 
     #data;
 
     constructor() {
         this.#data = new Float32Array(16);
+    }
+
+    static get zero() {
+        return new Matrix4();
+    }
+
+    get flat() {
+        return this.#data;
     }
 
     zero() {
@@ -128,6 +140,58 @@ export class Matrix4 {
         return this;
     }
 
+    invert() {
+        const a = this.#data[ 0] * this.#data[ 5] - this.#data[ 1] * this.#data[ 4];
+        const b = this.#data[ 0] * this.#data[ 6] - this.#data[ 2] * this.#data[ 4];
+        const c = this.#data[ 0] * this.#data[ 7] - this.#data[ 3] * this.#data[ 4];
+        const d = this.#data[ 1] * this.#data[ 6] - this.#data[ 2] * this.#data[ 5];
+        const e = this.#data[ 1] * this.#data[ 7] - this.#data[ 3] * this.#data[ 5];
+        const f = this.#data[ 2] * this.#data[ 7] - this.#data[ 3] * this.#data[ 6];
+        const g = this.#data[ 8] * this.#data[13] - this.#data[ 9] * this.#data[12];
+        const h = this.#data[ 8] * this.#data[14] - this.#data[10] * this.#data[12];
+        const i = this.#data[ 8] * this.#data[15] - this.#data[11] * this.#data[12];
+        const j = this.#data[ 9] * this.#data[14] - this.#data[10] * this.#data[13];
+        const k = this.#data[ 9] * this.#data[15] - this.#data[11] * this.#data[13];
+        const l = this.#data[10] * this.#data[15] - this.#data[11] * this.#data[14];
+        let det = a * l - b * k + c * j + d * i - e * h + f * g;
+        det = 1.0 / det;
+        
+        const nm00 = ( this.#data[ 5] * l - this.#data[ 6] * k + this.#data[ 7] * j) * det;
+        const nm01 = (-this.#data[ 1] * l + this.#data[ 2] * k - this.#data[ 3] * j) * det;
+        const nm02 = ( this.#data[13] * f - this.#data[14] * e + this.#data[15] * d) * det;
+        const nm03 = (-this.#data[ 9] * f + this.#data[10] * e - this.#data[11] * d) * det;
+        const nm10 = (-this.#data[ 4] * l + this.#data[ 6] * i - this.#data[ 7] * h) * det;
+        const nm11 = ( this.#data[ 0] * l - this.#data[ 2] * i + this.#data[ 3] * h) * det;
+        const nm12 = (-this.#data[12] * f + this.#data[14] * c - this.#data[15] * b) * det;
+        const nm13 = ( this.#data[ 8] * f - this.#data[10] * c + this.#data[11] * b) * det;
+        const nm20 = ( this.#data[ 4] * k - this.#data[ 5] * i + this.#data[ 7] * g) * det;
+        const nm21 = (-this.#data[ 0] * k + this.#data[ 1] * i - this.#data[ 3] * g) * det;
+        const nm22 = ( this.#data[12] * e - this.#data[13] * c + this.#data[15] * a) * det;
+        const nm23 = (-this.#data[ 8] * e + this.#data[ 9] * c - this.#data[11] * a) * det;
+        const nm30 = (-this.#data[ 4] * j + this.#data[ 5] * h - this.#data[ 6] * g) * det;
+        const nm31 = ( this.#data[ 0] * j - this.#data[ 1] * h + this.#data[ 2] * g) * det;
+        const nm32 = (-this.#data[12] * d + this.#data[13] * b - this.#data[14] * a) * det;
+        const nm33 = ( this.#data[ 8] * d - this.#data[ 9] * b + this.#data[10] * a) * det;
+
+        this.#data[ 0] = nm00;
+        this.#data[ 1] = nm01;
+        this.#data[ 2] = nm02;
+        this.#data[ 3] = nm03;
+        this.#data[ 4] = nm10;
+        this.#data[ 5] = nm11;
+        this.#data[ 6] = nm12;
+        this.#data[ 7] = nm13;
+        this.#data[ 8] = nm20;
+        this.#data[ 9] = nm21;
+        this.#data[10] = nm22;
+        this.#data[11] = nm23;
+        this.#data[12] = nm30;
+        this.#data[13] = nm31;
+        this.#data[14] = nm32;
+        this.#data[15] = nm33;
+        return this;
+    }
+
     setTranslation(vec3) {
         this.identity();
         this.#data[3] = vec3.x;
@@ -192,6 +256,86 @@ export class Matrix4 {
         this.#data[5] = vec3.y;
         this.#data[10] = vec3.z;
 
+        return this;
+    }
+
+    applyPerspective(fovy, aspect, near, far) {
+        const h = Math.tan(fovy * 0.5);
+		
+        // calculate right matrix elements
+        const rm00 = 1.0 / (h * aspect);
+        const rm11 = 1.0 / h;
+        let rm22;
+        let rm32;
+        
+        const zZeroToOne = false;
+        rm22 = (zZeroToOne ? far : far + near) / (near - far);
+        rm32 = (zZeroToOne ? far : far + far) * near / (near - far);
+      
+        // perform optimized matrix multiplication
+        const nm20 = this.#data[ 8] * rm22 - this.#data[12];
+        const nm21 = this.#data[ 9] * rm22 - this.#data[13];
+        const nm22 = this.#data[10] * rm22 - this.#data[14];
+        const nm23 = this.#data[11] * rm22 - this.#data[15];
+        this.#data[ 0] = this.#data[ 0] * rm00;
+        this.#data[ 1] = this.#data[ 1] * rm00;
+        this.#data[ 2] = this.#data[ 2] * rm00;
+        this.#data[ 3] = this.#data[ 3] * rm00;
+        this.#data[ 4] = this.#data[ 4] * rm11;
+        this.#data[ 5] = this.#data[ 5] * rm11;
+        this.#data[ 6] = this.#data[ 6] * rm11;
+        this.#data[ 7] = this.#data[ 7] * rm11;
+        this.#data[12] = this.#data[ 8] * rm32;
+        this.#data[13] = this.#data[ 9] * rm32;
+        this.#data[14] = this.#data[10] * rm32;
+        this.#data[15] = this.#data[11] * rm32;
+        this.#data[ 8] = nm20;
+        this.#data[ 9] = nm21;
+        this.#data[10] = nm22;
+        this.#data[11] = nm23;
+        return this;
+    }
+
+    setPerspective(fovy, aspect, near, far) {
+        this.identity();
+        this.applyPerspective(fovy, aspect, near, far);
+        return this;
+    }
+
+    applyOrtho(left, right, bottom, top, near, far) {
+        // calculate right matrix elements
+        const rm00 = 2.0 / (right - left);
+        const rm11 = 2.0 / (top - bottom);
+        const rm22 = 2.0 / (near - far);
+        const rm30 = (left + right) / (left - right);
+        const rm31 = (top + bottom) / (bottom - top);
+        const rm32 = (far + near) / (near - far);
+        
+        // perform optimized multiplication
+        // compute the last column first, because other columns do not depend on it
+        this.#data[12] = this.#data[ 0] * rm30 + this.#data[ 4] * rm31 + this.#data[ 8] * rm32 + this.#data[12];
+        this.#data[13] = this.#data[ 1] * rm30 + this.#data[ 5] * rm31 + this.#data[ 9] * rm32 + this.#data[13];
+        this.#data[14] = this.#data[ 2] * rm30 + this.#data[ 6] * rm31 + this.#data[10] * rm32 + this.#data[14];
+        this.#data[15] = this.#data[ 3] * rm30 + this.#data[ 7] * rm31 + this.#data[11] * rm32 + this.#data[15];
+        this.#data[ 0] = this.#data[ 0] * rm00;
+        this.#data[ 1] = this.#data[ 1] * rm00;
+        this.#data[ 2] = this.#data[ 2] * rm00;
+        this.#data[ 3] = this.#data[ 3] * rm00;
+        this.#data[ 4] = this.#data[ 4] * rm11;
+        this.#data[ 5] = this.#data[ 5] * rm11;
+        this.#data[ 6] = this.#data[ 6] * rm11;
+        this.#data[ 7] = this.#data[ 7] * rm11;
+        this.#data[ 8] = this.#data[ 8] * rm22;
+        this.#data[ 9] = this.#data[ 9] * rm22;
+        this.#data[10] = this.#data[10] * rm22;
+        this.#data[11] = this.#data[11] * rm22;
+        
+        return this;
+    }
+
+    setOrtho(left, right, bottom, top, near, far) {
+        this.identity();
+        this.applyOrtho(left, right, bottom, top, near, far);
         return this;
     }
 }

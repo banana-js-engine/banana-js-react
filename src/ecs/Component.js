@@ -4,8 +4,9 @@ import { Vector3, Vector4 } from "../math/Vector";
 export const ComponentType = {
     None: -1,
     Transform: 0,
-    Sprite: 1
-} 
+    Sprite: 1,
+    Camera: 2
+};
 
 class Component {
     get type() {
@@ -31,11 +32,11 @@ export class TransformComponent extends Component {
 
     constructor(position, rotation, scale) {
         super();
-        this.#positionMat = new Matrix4();
-        this.#rotationXMat = new Matrix4();
-        this.#rotationYMat = new Matrix4();
-        this.#rotationZMat = new Matrix4();
-        this.#scaleMat = new Matrix4();
+        this.#positionMat = Matrix4.zero;
+        this.#rotationXMat = Matrix4.zero;
+        this.#rotationYMat = Matrix4.zero;
+        this.#rotationZMat = Matrix4.zero;
+        this.#scaleMat = Matrix4.zero;
 
         this.#position = Vector3.zero;
         this.#rotation = Vector3.zero;
@@ -163,6 +164,9 @@ export class TransformComponent extends Component {
     }
 }
 
+/**
+ * Represents a GameObject's 2D render information
+ */
 export class SpriteComponent extends Component {
     #color;
 
@@ -187,7 +191,7 @@ export class SpriteComponent extends Component {
             return { r: param.x, g: param.y, b: param.z, a: param.w };
         }
 
-        console.error('Invalid type for transform')
+        console.error('Invalid type for sprite')
         return null;
     }
     
@@ -200,5 +204,94 @@ export class SpriteComponent extends Component {
         this.#color.y = g;
         this.#color.z = b;
         this.#color.w = a;
+    }
+}
+
+/**
+ * Represent a camera, how the scene is viewed
+ */
+export class CameraComponent extends Component {
+
+    #projectionMatrix;
+    #clearColor;
+    #aspectRatio;
+
+    #size;
+    #near;
+    #far;
+
+    constructor(isOrtho, clearColor, size, near, far) {
+        super();
+
+        this.#projectionMatrix = Matrix4.zero;
+
+        this.#clearColor = new Vector4(0.345, 0.588, 0.809, 1);
+        if (clearColor) {
+            const cc = this.#processParameterType(clearColor);
+            this.setClearColor(cc.r, cc.g, cc.b, cc.a);
+        }
+
+        const canvas = document.getElementById('banana-canvas');
+        this.#aspectRatio = canvas.clientWidth / canvas.clientHeight;
+
+        this.#size = isOrtho ? 10 : 45;
+        this.#near = isOrtho ? -1 : 10;
+        this.#far =  isOrtho ? 1 : 1000;
+
+        if (size) {
+            this.#size = size;
+        }
+
+        if (near) {
+            this.#near = near;
+        }
+
+        if (far)
+            this.#far = far;
+
+        if (isOrtho) {
+            this.setOrthographic();
+        } else {
+            this.setPerspective();
+        }
+    }
+
+    get type() {
+        return ComponentType.Camera;
+    }
+
+    #processParameterType(param) {
+        if (typeof param[0] === 'number') {
+            return { r: param[0], g: param[1], b: param[2], a: param[3] };
+        } else if (param instanceof Vector4) {
+            return { r: param.x, g: param.y, b: param.z, a: param.w };
+        }
+
+        console.error('Invalid type for camera')
+        return null;
+    }
+
+    get projection() {
+        return this.#projectionMatrix;
+    }
+
+    get clearColor() {
+        return this.#clearColor;
+    }
+
+    setOrthographic() {
+        const left = -this.#size * this.#aspectRatio * 0.5;
+        const right = this.#size * this.#aspectRatio * 0.5;
+        const bottom = this.#size * 0.5;
+        const top = -this.#size * 0.5;
+
+        this.#projectionMatrix.setOrtho(left, right, bottom, top, this.#near, this.#far);
+    }
+
+    setClearColor(r, g, b, a) {
+        this.#clearColor.x = r;
+        this.#clearColor.y = g;
+        this.#clearColor.z = b;
+        this.#clearColor.w = a;
     }
 }

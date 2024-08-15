@@ -82,7 +82,7 @@ export class Shader {
         return this.#gl.getAttribLocation(this.#shaderId, name);
     }
 
-    getUniformLocation(name) {
+    #getUniformLocation(name) {
         if (this.#uniformLookupTable[name]) {
             return this.#uniformLookupTable[name];
         }
@@ -90,5 +90,10 @@ export class Shader {
         const uniformLocation = this.#gl.getUniformLocation(this.#shaderId, name);
         this.#uniformLookupTable[name] = uniformLocation;
         return uniformLocation;
+    }
+
+    setUniformMatrix4fv(name, value, transpose = false) {
+        const uniformLocation = this.#getUniformLocation(name);
+        this.#gl.uniformMatrix4fv(uniformLocation, transpose, value);
     }
 }

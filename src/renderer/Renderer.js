@@ -1,3 +1,4 @@
+import { Matrix4 } from "../math/Matrix";
 import { Vector3 } from "../math/Vector";
 import { IndexBuffer, VertexBuffer } from "./Buffer";
 import { Shader } from "./Shader";
@@ -66,6 +67,18 @@ export class Renderer {
         quadIB: null
     };
 
+    #sceneData = {
+        /**
+         * @type {Matrix4}
+         */
+        projection: Matrix4.zero,
+
+        /**
+         * @type {Matrix4}
+         */
+        view: Matrix4.zero
+    }
+
     /**
      * @type {QuadVertex} vertex of type quad (used for caching reasons)
      */
@@ -109,6 +122,25 @@ export class Renderer {
         this.#renderData.quadVB.linkAttributes();        
     }
 
+    beginScene(transform, camera) {
+        // setup the view matrix
+        this.#sceneData.view.identity();
+        this.#sceneData.view.multiply(transform.transformMatrix);
+        this.#sceneData.view.invert();
+        this.#sceneData.view.transpose();
+
+        // setup the (view-)projection matrix
+        this.#sceneData.projection.identity();
+        this.#sceneData.projection.multiply(camera.projection);
+        this.#sceneData.projection.multiply(this.#sceneData.view);
+
+        this.#renderData.quadShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
+    }
+
+    endScene() {
+        this.#flush();
+    }
+
     drawQuad(transform, sprite) {
 
         const t = transform.transformMatrix;
@@ -125,9 +157,13 @@ export class Renderer {
         this.#renderData.quadIndexCount += 6;
     }
 
-    flush() {
+    #flush() {
         this.#renderData.quadVB.bind();
         this.#gl.drawElements(this.#gl.TRIANGLES, this.#renderData.quadIndexCount, this.#gl.UNSIGNED_SHORT, 0);
+
+        // reset batch
+        this.#renderData.quadVertexCount = 0;
+        this.#renderData.quadIndexCount = 0;
     }
 
     clear() {

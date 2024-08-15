@@ -1,3 +1,11 @@
+// VECTORS //
+/* Vectors are inheritance based, meaning that we can pass a Vector3 instance
+ * to a function that expects a Vector2
+ */
+
+/**
+ * 2D vector representation (x, y)
+ */
 export class Vector2 {
     data;
 
@@ -51,6 +59,9 @@ export class Vector2 {
     }
 }
 
+/**
+ * 3D vector representation (x, y, z)
+ */
 export class Vector3 extends Vector2 {
     constructor(x, y, z) {
         super(x, y);
@@ -88,6 +99,9 @@ export class Vector3 extends Vector2 {
     }
 }
 
+/**
+ * 4D vector representation (x, y, z, w)
+ */
 export class Vector4 extends Vector3 {
     constructor(x, y, z, w) {
         super(x, y, z);

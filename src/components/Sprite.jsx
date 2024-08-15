@@ -4,6 +4,11 @@ import { useScene } from "./Scene";
 import { useGameObject } from "./GameObject";
 import { SpriteComponent } from "../ecs/Component";
 
+/**
+ * 
+ * @param {{ color: [number, number, number, number] }} props 
+ * @returns 
+ */
 export default function Sprite(props) {
 
     /**
