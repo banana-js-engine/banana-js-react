@@ -6,7 +6,8 @@ export const ComponentType = {
     None: -1,
     Transform: 0,
     Sprite: 1,
-    Camera: 2
+    Camera: 2,
+    Script: 3,
 };
 
 class Component {
@@ -303,5 +304,37 @@ export class CameraComponent extends Component {
         this.#clearColor.y = g;
         this.#clearColor.z = b;
         this.#clearColor.w = a;
+    }
+}
+
+export class ScriptComponent extends Component {
+
+    #id;
+    #ecs;
+
+    isReadyCalled;
+
+    constructor(id, ecs) {
+        super();
+
+        this.#id = id;
+        this.#ecs = ecs;
+
+        this.isReadyCalled = false;
+    }
+
+    get type() {
+        return ComponentType.Script;
+    }
+
+    // this function is called once when the game starts
+    ready() {}
+
+    // this function is called every frame
+    step(dt) {}
+
+    // component related functions
+    getComponent(type) {
+        return this.#ecs.get(this.#id, type);
     }
 }

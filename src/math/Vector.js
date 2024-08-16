@@ -108,6 +108,31 @@ export class Vector3 extends Vector2 {
         return new Vector3(1, 1, 1);
     }
 
+    // basic directions
+    static get right() {
+        return new Vector3(1, 0, 0);
+    }
+
+    static get left() {
+        return new Vector3(-1, 0, 0);
+    }
+
+    static get up() {
+        return new Vector3(0, 1, 0);
+    }
+
+    static get down() {
+        return new Vector3(0, -1, 0);
+    }
+
+    static get forward() {
+        return new Vector3(0, 0, 1);
+    }
+
+    static get back() {
+        return new Vector3(0, 0, -1);
+    }
+
     /*
      * new Vector3(2, 3, 1) (toString) -> [2, 3, 1]
      */

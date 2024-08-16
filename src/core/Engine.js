@@ -1,5 +1,6 @@
 import { ComponentType } from "../ecs/Component";
 import { BananaMath } from "../math/BananaMath";
+import { Input } from "./Input";
 
 /**
  * The class that controls the game-loop
@@ -32,6 +33,8 @@ export class Engine {
         this.#zeroCameraFlag = false;
         this.#multipleCameraFlag = false;
 
+        Input.init();
+
         this.#tick();
     }
 
@@ -53,6 +56,17 @@ export class Engine {
 
     #update(dt) {
         if (this.#activeScene) {
+            const goScripts = this.#activeScene.get_all(ComponentType.Script);
+
+            for (let i = 0; i < goScripts.length; i++) {
+                if (!goScripts[i].isReadyCalled) {
+                    goScripts[i].ready();
+                    goScripts[i].isReadyCalled = true;
+                }
+
+                goScripts[i].step(dt);
+            }
+
             const goCameras = this.#activeScene.get_all_with_entity(ComponentType.Camera);
             const size = Object.keys(goCameras).length;
             let cameraTransform; 
