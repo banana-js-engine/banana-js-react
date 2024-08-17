@@ -5,9 +5,12 @@ export class TestClass extends ScriptComponent {
     ready() {
         this.speed = 5;
         this.transform = this.getComponent(ComponentType.Transform);
+        
     }
 
     step(dt) {
+        this.audio = this.getComponent(ComponentType.Audio);
+
         const s = this.speed * dt;
 
         if (Input.getKey('w')) {
@@ -24,6 +27,11 @@ export class TestClass extends ScriptComponent {
 
         if (Input.getKey('d')) {
             this.transform.moveBy(s, 0, 0);
+        }
+
+        if (Input.getKey('p')) {
+            console.log(this.audio);
+            this.audio.resume();
         }
     }
 }

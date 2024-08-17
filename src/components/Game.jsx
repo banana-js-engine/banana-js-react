@@ -23,18 +23,26 @@ export function useEngine() {
     return useContext(EngineContext);
 }
 
+// audio context
+const AudioContextContext = createContext(null);
+
+export function useAudioContext() {
+    return useContext(AudioContextContext);
+}
+
 export default function Game(props) {
 
     // Refs
     const canvasRef = useRef();
     const rendererRef = useRef();
     const engineRef = useRef();
+    const audioRef = useRef();
 
     // States
     const [gl, setGL] = useState(null);
 
     const isInitialized = function() {
-        return gl && rendererRef.current && engineRef.current;
+        return gl && rendererRef.current && engineRef.current && audioRef.current;
     }
 
     useEffect(() => {
@@ -44,7 +52,7 @@ export default function Game(props) {
         canvasRef.current.width = props.width;
         canvasRef.current.height = props.height;
 
-        const context = canvasRef.current.getContext('webgl2');
+        const context = canvasRef.current.getContext('webgl2', { antialias: false });
         setGL(context);
 
         // initialize webgl
@@ -56,6 +64,8 @@ export default function Game(props) {
         // initialize engine
         engineRef.current = new Engine(rendererRef.current);
 
+        audioRef.current = new AudioContext();
+
     }, []);
 
     
@@ -64,19 +74,21 @@ export default function Game(props) {
         <EngineContext.Provider value={engineRef.current}>
             <RendererContext.Provider value={rendererRef.current}>
                 <GLContext.Provider value={gl}>
-                    <div
-                        style={{
-                            position: 'relative',
-                            width: '100%',
-                            height: '100%',
-                            overflow: 'hidden',
-                        }}>
-                        <div style={{ width: '100%', height: '100%' }}>
-                            <canvas id='banana-canvas' ref={canvasRef} style={{ display: 'block' }} tabIndex={1}>
-                                { isInitialized() && props.children }
-                            </canvas>
+                    <AudioContextContext.Provider value={audioRef.current}>
+                        <div
+                            style={{
+                                position: 'relative',
+                                width: '100%',
+                                height: '100%',
+                                overflow: 'hidden',
+                            }}>
+                            <div style={{ width: '100%', height: '100%' }}>
+                                <canvas id='banana-canvas' ref={canvasRef} style={{ display: 'block' }} tabIndex={1}>
+                                    { isInitialized() && props.children }
+                                </canvas>
+                            </div>
                         </div>
-                    </div>
+                    </AudioContextContext.Provider>
                 </GLContext.Provider>
             </RendererContext.Provider>
         </EngineContext.Provider>

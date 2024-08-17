@@ -2,6 +2,11 @@ import { useEffect } from "react";
 import { useScene } from "./Scene";
 import { useGameObject } from "./GameObject";
 
+/**
+ * 
+ * @param {{ src: string }} props 
+ * @returns 
+ */
 export default function Script(props) {
 
     /**

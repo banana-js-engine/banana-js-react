@@ -5,6 +5,7 @@ import Sprite from "./components/Sprite"
 import Transform from "./components/Transform"
 import OrthographicCamera from "./components/OrthographicCamera"
 import Script from "./components/Script"
+import Audio from "./components/Audio"
 
 export default function App() {
     return (
@@ -13,11 +14,13 @@ export default function App() {
                 <GameObject>
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]}/>
                     <OrthographicCamera/>   
+                    {/* <Audio src="testAudio.mp3" playOnStart={true} /> */}
                 </GameObject>
                 <GameObject>
-                    <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Sprite color={[1, 0, 0, 1]}/>
+                    <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[2, 2, 1]}/>
+                    <Sprite src="kitsune-umi.png"/>
                     <Script src="test.js"/>
+                    <Audio src="ah.wav"/>
                 </GameObject>
             </Scene>
         </Game>

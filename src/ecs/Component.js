@@ -8,6 +8,7 @@ export const ComponentType = {
     Sprite: 1,
     Camera: 2,
     Script: 3,
+    Audio: 4,
 };
 
 class Component {
@@ -336,5 +337,145 @@ export class ScriptComponent extends Component {
     // component related functions
     getComponent(type) {
         return this.#ecs.get(this.#id, type);
+    }
+}
+
+export class AudioComponent extends Component {
+
+    #audioContext;
+    #buffer;
+    #volume;
+    #playOnStart;
+    #loop;
+    #startTime;
+    #pauseTime;
+    #playing;
+
+    /**
+     * @type {AudioBufferSourceNode}
+     */
+    #source;
+
+    /**
+     * @type {GainNode}
+     */
+    #gainNode;
+
+    /**
+     * Create a audio source
+     * @param {AudioContext} audioContext 
+     * @param {AudioBuffer} buffer 
+     * @param {number} volume 
+     * @param {boolean} playOnStart 
+     * @param {boolean} loop 
+     */
+    constructor(audioContext, buffer, volume = 0.5, playOnStart = false, loop = false) {
+        super();
+
+        this.#audioContext = audioContext;
+        this.#buffer = buffer;
+        this.#volume = volume;
+        this.#playOnStart = playOnStart;
+        this.#loop = loop;
+        this.#pauseTime = 0;
+        this.#playing = false;
+
+        this.#gainNode = this.#audioContext.createGain();
+        this.#gainNode.connect(this.#audioContext.destination);
+
+        if (this.#playOnStart) {
+            this.play();
+        }
+    }
+
+    get type() {
+        return ComponentType.Audio;
+    }
+
+    /**
+     * starts playing the selected audio
+     */
+    play() {
+        const canvas = document.getElementById('banana-canvas');
+        canvas.addEventListener('click', this.#resume);
+        canvas.addEventListener('blur', this.#pause);
+
+        this.#startTime = this.#audioContext.currentTime;        
+    }
+
+    /**
+     * stops the audio
+     */
+    stop() {
+        if (this.#source) {
+            const canvas = document.getElementById('banana-canvas');
+            canvas.removeEventListener('click', this.#resume);
+            canvas.removeEventListener('blur', this.#pause);
+
+            this.#source.stop(0);
+            this.#source.disconnect();
+            this.#source = null;
+            this.#pauseTime = 0;
+            this.#playing = false;
+        }
+    }
+
+    /**
+     * resumes audio
+     */
+    resume() {
+        if (!this.#playing) {
+            this.#source = this.#audioContext.createBufferSource();
+            this.#source.buffer = this.#buffer;
+            this.#source.loop = this.#loop;
+            this.#source.connect(this.#gainNode);
+            this.#source.start(0);
+            this.#playing = true;
+
+            this.#source.addEventListener('ended', () => {
+                this.pause();
+            });
+        } 
+    } 
+
+    /**
+     * pause the audio
+     */
+    pause() {
+        this.#source.stop(0);
+        this.#source.disconnect();
+        this.#playing = false;
+    }
+
+    /**
+     * resumes audio, (private arrow function version)
+     */
+    #resume = () => {
+        if (!this.#playing) {
+            this.#source = this.#audioContext.createBufferSource();
+            this.#source.buffer = this.#buffer;
+            this.#source.loop = this.#loop;
+            this.#source.connect(this.#gainNode);
+            this.#source.start(0, this.#pauseTime);
+            this.#playing = true;
+        } 
+    }
+
+    /**
+     * pause the audio, (private arrow function version)
+     */
+    #pause = () => {
+        this.#pauseTime = this.#audioContext.currentTime - this.#startTime;
+        this.#source.stop(0);
+        this.#source.disconnect();
+        this.#playing = false;
+    }
+
+    /**
+     * sets the volume to @param volume
+     */
+    setVolume(volume) {
+        this.#volume = volume;
+        this.#gainNode.gain.volume = this.#volume;
     }
 }

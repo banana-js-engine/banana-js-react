@@ -9,7 +9,6 @@ export class Input {
 
     static init() {
         this.#canvas = document.getElementById('banana-canvas');
-        this.#canvas.focus();
 
         this.#canvas.addEventListener('keydown', (event) => {
             this.#keyStates[event.key] = true;
@@ -18,6 +17,13 @@ export class Input {
         this.#canvas.addEventListener('keyup', (event) => {
             this.#keyStates[event.key] = false;
         });
+
+        // toggle every key state off
+        this.#canvas.addEventListener('blur', () => {
+            for (const key in this.#keyStates) {
+                this.#keyStates[key] = false;
+            }
+        })
     }    
 
     static getKey(key) {
