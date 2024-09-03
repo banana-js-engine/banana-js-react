@@ -400,7 +400,8 @@ export class AudioComponent extends Component {
         canvas.addEventListener('click', this.#resume);
         canvas.addEventListener('blur', this.#pause);
 
-        this.#startTime = this.#audioContext.currentTime;        
+        this.#startTime = this.#audioContext.currentTime;
+        this.#resume();   
     }
 
     /**
@@ -421,21 +422,13 @@ export class AudioComponent extends Component {
     }
 
     /**
-     * resumes audio
+     * plays an audio once, (used typically for sfxs)
      */
-    resume() {
-        if (!this.#playing) {
-            this.#source = this.#audioContext.createBufferSource();
-            this.#source.buffer = this.#buffer;
-            this.#source.loop = this.#loop;
-            this.#source.connect(this.#gainNode);
-            this.#source.start(0);
-            this.#playing = true;
-
-            this.#source.addEventListener('ended', () => {
-                this.pause();
-            });
-        } 
+    playOnce() {
+        this.#source = this.#audioContext.createBufferSource();
+        this.#source.buffer = this.#buffer;
+        this.#source.connect(this.#gainNode);
+        this.#source.start(0);
     } 
 
     /**

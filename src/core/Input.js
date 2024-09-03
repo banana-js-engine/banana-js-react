@@ -6,6 +6,7 @@ export class Input {
     static #canvas;
 
     static #keyStates = {};
+    static #isAnyKeyDown = false;
 
     static init() {
         this.#canvas = document.getElementById('banana-canvas');
@@ -16,6 +17,7 @@ export class Input {
 
         this.#canvas.addEventListener('keyup', (event) => {
             this.#keyStates[event.key] = false;
+            this.#isAnyKeyDown = false;
         });
 
         // toggle every key state off
@@ -31,6 +33,19 @@ export class Input {
             return false;
         }
 
+        return this.#keyStates[key];
+    }
+
+    static getKeyDown(key) {
+        if (!this.#keyStates[key]) {
+            return false;
+        }
+
+        if (this.#isAnyKeyDown) {
+            return false;
+        }
+
+        this.#isAnyKeyDown = true;
         return this.#keyStates[key];
     }
 

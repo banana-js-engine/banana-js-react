@@ -29,9 +29,8 @@ export class TestClass extends ScriptComponent {
             this.transform.moveBy(s, 0, 0);
         }
 
-        if (Input.getKey('p')) {
-            console.log(this.audio);
-            this.audio.resume();
+        if (Input.getKeyDown('p')) {
+            this.audio.playOnce();
         }
     }
 }
