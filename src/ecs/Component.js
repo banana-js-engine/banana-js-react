@@ -83,6 +83,10 @@ export class TransformComponent extends Component {
         return this.#transform;
     }
 
+    get scale() {
+        return this.#scale;
+    }
+
     #processParameterType(param) {
         if (typeof param[0] === 'number') {
             return { x: param[0], y: param[1], z: param[2] };
@@ -174,7 +178,12 @@ export class SpriteComponent extends Component {
     #color;
     #texture;
 
-    constructor(gl, color, textureSrc) {
+    /**
+     * @type {TransformComponent} transform 
+     */
+    #transform;
+
+    constructor(gl, transform, color, textureSrc, flipX, flipY) {
         super();
         this.#color = Vector4.one;
 
@@ -185,6 +194,22 @@ export class SpriteComponent extends Component {
 
         if (textureSrc) {
             this.#texture = new Texture(gl, textureSrc);
+        }
+
+        this.#transform = transform;
+
+        if (flipX) {
+            this.flipX = flipX;
+        }
+        else {
+            this.flipX = false;
+        }
+
+        if (flipY) {
+            this.flipY = flipY;
+        }
+        else {
+            this.flipY = false;
         }
     }
 
@@ -216,6 +241,26 @@ export class SpriteComponent extends Component {
 
     get texture() {
         return this.#texture;
+    }
+
+    get flipX() {
+        return this.#transform.scale.y < 0;
+    }
+
+    get flipY() {
+        return this.#transform.scale.x < 0;
+    }
+
+    set flipX(newValue) {
+        if ((!newValue && this.flipX) || (newValue && !this.flipX)) {
+            this.#transform.scaleTo(-this.#transform.scale.x, -this.#transform.scale.y, this.#transform.scale.z)
+        }
+    }
+
+    set flipY(newValue) {
+        if ((!newValue && this.flipY) || (newValue && !this.flipY)) {
+            this.#transform.scaleTo(this.#transform.scale.x, -this.#transform.scale.y, this.#transform.scale.z)
+        }
     }
 }
 
