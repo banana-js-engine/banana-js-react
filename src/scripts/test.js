@@ -5,12 +5,10 @@ export class TestClass extends ScriptComponent {
     ready() {
         this.speed = 5;
         this.transform = this.getComponent(ComponentType.Transform);
-        
+        this.audio = this.getComponent(ComponentType.Audio);
     }
 
     step(dt) {
-        this.audio = this.getComponent(ComponentType.Audio);
-
         const s = this.speed * dt;
 
         if (Input.getKey('w')) {
