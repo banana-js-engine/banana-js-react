@@ -12,11 +12,11 @@ export class Input {
         this.#canvas = document.getElementById('banana-canvas');
 
         this.#canvas.addEventListener('keydown', (event) => {
-            this.#keyStates[event.key] = true;
+            this.#keyStates[event.key.toLowerCase()] = true;
         });
 
         this.#canvas.addEventListener('keyup', (event) => {
-            this.#keyStates[event.key] = false;
+            this.#keyStates[event.key.toLowerCase()] = false;
             this.#isAnyKeyDown = false;
         });
 
