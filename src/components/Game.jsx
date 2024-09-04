@@ -77,10 +77,15 @@ export default function Game(props) {
                     <AudioContextContext.Provider value={audioRef.current}>
                         <div
                             style={{
-                                position: 'relative',
+                                userSelect: 'none',
+                                position: 'absolute',
                                 width: '100%',
                                 height: '100%',
                                 overflow: 'hidden',
+                                left: '0px',
+                                top: '0px',
+                                right: '0px',
+                                bottom: '0px'
                             }}>
                             <div style={{ width: '100%', height: '100%' }}>
                                 <canvas id='banana-canvas' ref={canvasRef} style={{ display: 'block' }} tabIndex={1}>
