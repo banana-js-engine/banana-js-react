@@ -2,6 +2,13 @@ import React, { createContext, useContext, useEffect, useRef, useState } from 'r
 import { Renderer } from '../renderer/Renderer';
 import { Engine } from '../core/Engine';
 
+// canvas context
+const CanvasContext = createContext(null);
+
+export function useCanvas() {
+    return useContext(CanvasContext);
+}
+
 // gl context
 const GLContext = createContext(null);
 
@@ -42,7 +49,7 @@ export default function Game(props) {
     const [gl, setGL] = useState(null);
 
     const isInitialized = function() {
-        return gl && rendererRef.current && engineRef.current && audioRef.current;
+        return gl && canvasRef.current && rendererRef.current && engineRef.current && audioRef.current;
     }
 
     useEffect(() => {
@@ -51,6 +58,10 @@ export default function Game(props) {
         // set canvas size
         canvasRef.current.width = props.width;
         canvasRef.current.height = props.height;
+
+        canvasRef.current.addEventListener('contextmenu', (event) => {
+            event.preventDefault();
+        });
 
         const context = canvasRef.current.getContext('webgl2', { antialias: false });
         setGL(context);
@@ -71,31 +82,33 @@ export default function Game(props) {
     
 
     return (
-        <EngineContext.Provider value={engineRef.current}>
-            <RendererContext.Provider value={rendererRef.current}>
-                <GLContext.Provider value={gl}>
-                    <AudioContextContext.Provider value={audioRef.current}>
-                        <div
-                            style={{
-                                userSelect: 'none',
-                                position: 'absolute',
-                                width: '100%',
-                                height: '100%',
-                                overflow: 'hidden',
-                                left: '0px',
-                                top: '0px',
-                                right: '0px',
-                                bottom: '0px'
-                            }}>
-                            <div style={{ width: '100%', height: '100%' }}>
-                                <canvas id='banana-canvas' ref={canvasRef} style={{ display: 'block' }} tabIndex={1}>
-                                    { isInitialized() && props.children }
-                                </canvas>
+        <CanvasContext.Provider value={canvasRef.current}>
+            <EngineContext.Provider value={engineRef.current}>
+                <RendererContext.Provider value={rendererRef.current}>
+                    <GLContext.Provider value={gl}>
+                        <AudioContextContext.Provider value={audioRef.current}>
+                            <div
+                                style={{
+                                    userSelect: 'none',
+                                    position: 'absolute',
+                                    width: '100%',
+                                    height: '100%',
+                                    overflow: 'hidden',
+                                    left: '0px',
+                                    top: '0px',
+                                    right: '0px',
+                                    bottom: '0px'
+                                }}>
+                                <div style={{ width: '100%', height: '100%' }}>
+                                    <canvas id='banana-canvas' ref={canvasRef} style={{ display: 'block' }} tabIndex={1}>
+                                        { isInitialized() && props.children }
+                                    </canvas>
+                                </div>
                             </div>
-                        </div>
-                    </AudioContextContext.Provider>
-                </GLContext.Provider>
-            </RendererContext.Provider>
-        </EngineContext.Provider>
+                        </AudioContextContext.Provider>
+                    </GLContext.Provider>
+                </RendererContext.Provider>
+            </EngineContext.Provider>
+        </CanvasContext.Provider>
     );
 }

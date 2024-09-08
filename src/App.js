@@ -6,10 +6,12 @@ import Transform from "./components/Transform"
 import OrthographicCamera from "./components/OrthographicCamera"
 import Script from "./components/Script"
 import Audio from "./components/Audio"
+import Cursor from "./components/Cursor"
 
 export default function App() {
     return (
         <Game name='Game' width={800} height={600}>
+            <Cursor src="target_a.svg" size={100}/>
             <Scene>
                 <GameObject>
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]}/>
