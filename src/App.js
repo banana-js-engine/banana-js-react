@@ -21,8 +21,8 @@ export default function App() {
                 <GameObject>
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[2, 2, 1]}/>
                     <Sprite src="kitsune-umi.png"/>
+                    <Audio src="ah.wav"/>
                     <Script src="test.js"/>
-                    {/* <Audio src="ah.wav"/> */}
                 </GameObject>
             </Scene>
         </Game>

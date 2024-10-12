@@ -1,4 +1,4 @@
-import { Input } from "../core/Input";
+import { Input, KeyCode } from "../core/Input";
 import { ComponentType, ScriptComponent } from "../ecs/Component";
 
 export class TestClass extends ScriptComponent {
@@ -11,19 +11,19 @@ export class TestClass extends ScriptComponent {
     step(dt) {
         const s = this.speed * dt;
 
-        if (Input.getKey('w')) {
+        if (Input.getKey('w') || Input.getGamepadButton(KeyCode.DpadUp)) {
             this.transform.moveBy(0, -s, 0);
         }
 
-        if (Input.getKey('a')) {
+        if (Input.getKey('a') || Input.getGamepadButton(KeyCode.DpadLeft)) {
             this.transform.moveBy(-s, 0, 0);
         }
 
-        if (Input.getKey('s')) {
+        if (Input.getKey('s') || Input.getGamepadButton(KeyCode.DpadDown)) {
             this.transform.moveBy(0, s, 0);
         }
 
-        if (Input.getKey('d')) {
+        if (Input.getKey('d') || Input.getGamepadButton(KeyCode.DpadRight)) {
             this.transform.moveBy(s, 0, 0);
         }
 
