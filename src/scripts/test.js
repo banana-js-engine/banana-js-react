@@ -1,5 +1,6 @@
 import { Input, KeyCode } from "../core/Input";
-import { ComponentType, ScriptComponent } from "../ecs/Component";
+import { ScriptComponent } from "../ecs/Component";
+import { ComponentType } from "../core/Types";
 
 export class TestClass extends ScriptComponent {
     ready() {

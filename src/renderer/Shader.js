@@ -2,8 +2,16 @@
  * Class that represents WebGL shaders
  */
 export class Shader {
+
+    static get quadShaderPath() {
+        return 'shader/quad_shader.glsl';
+    }
+
+    static get lineShaderPath() {
+        return 'shader/line_shader.glsl';
+    }
+
     #gl
-    
     #shaderId;
     #uniformLookupTable;
 

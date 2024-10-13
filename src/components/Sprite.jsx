@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { ECS } from "../ecs/ECS";
 import { useScene } from "./Scene";
 import { useGameObject } from "./GameObject";
-import { ComponentType, SpriteComponent } from "../ecs/Component";
+import { SpriteComponent } from "../ecs/Component";
+import { ComponentType } from "../core/Types";
 import { useGL } from "./Game";
 
 /**

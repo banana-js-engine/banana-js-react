@@ -63,6 +63,8 @@ export default function Game(props) {
             event.preventDefault();
         });
 
+        canvasRef.current.focus();
+
         const context = canvasRef.current.getContext('webgl2', { antialias: false });
         setGL(context);
 

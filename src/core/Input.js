@@ -1,4 +1,4 @@
-export let KeyCode = {
+export const KeyCode = {
     A: 0,
     B: 1,
     X: 2,

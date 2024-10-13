@@ -1,5 +1,5 @@
 import { Matrix4 } from "../math/Matrix";
-import { Vector2, Vector3 } from "../math/Vector";
+import { Vector2, Vector3, Vector4 } from "../math/Vector";
 import { IndexBuffer, VertexBuffer } from "./Buffer";
 import { Shader } from "./Shader";
 import { Texture } from "./Texture";
@@ -31,6 +31,25 @@ class QuadVertex {
     }
 
     static vertexSize = 11;
+}
+
+class LineVertex {
+    position = Vector3.zero;
+    color = Vector4.zero;
+
+    get flat() {
+        return [
+            this.position.x,
+            this.position.y,
+            this.position.z,
+            this.color.x,
+            this.color.y,
+            this.color.z,
+            this.color.w
+        ];
+    }
+
+    static vertexSize = 7;
 }
 
 /**
@@ -79,6 +98,18 @@ export class Renderer {
          */
         quadIB: null,
 
+        lineVertexCount: 0,
+
+        /**
+         * @type {Shader}
+         */
+        lineShader: null,
+
+        /**
+         * @type {VertexBuffer}
+         */
+        lineVB: null,
+
         // texture data
         maxTextureSlotCount: -1,
         textureSlotIndex: 1,
@@ -112,6 +143,11 @@ export class Renderer {
     #quadVertex;
 
     /**
+     * @type {LineVertex} vertex of type line (used for caching reasons)
+     */
+    #lineVertex;
+
+    /**
      * 
      * @param {WebGL2RenderingContext} gl the WebGL context 
      */
@@ -129,6 +165,7 @@ export class Renderer {
 
         // initialize vertices of each type
         this.#quadVertex = new QuadVertex();
+        this.#lineVertex = new LineVertex();
 
         // prepare indices for index buffer creation
         const indices = new Uint16Array(this.#renderData.maxIndices);
@@ -147,7 +184,7 @@ export class Renderer {
         }
 
         // quads
-        this.#renderData.quadShader = new Shader(this.#gl, 'shader/quad_shader.glsl');
+        this.#renderData.quadShader = new Shader(this.#gl, Shader.quadShaderPath);
         this.#renderData.quadVB = new VertexBuffer(this.#gl, this.#renderData.maxVertices * QuadVertex.vertexSize);
         this.#renderData.quadIB = new IndexBuffer(this.#gl, indices);
 
@@ -159,7 +196,6 @@ export class Renderer {
         this.#renderData.quadVB.pushAttribute(quadColor, 4);
         this.#renderData.quadVB.pushAttribute(quadCoords, 2);
         this.#renderData.quadVB.pushAttribute(quadIndex, 1);
-        this.#renderData.quadVB.linkAttributes();        
 
         // textures
         const samplers = [];
@@ -170,6 +206,15 @@ export class Renderer {
         this.#renderData.quadShader.setUniform1iv('u_Textures', samplers);
 
         this.#renderData.textureSlots[0] = this.#renderData.whiteTexture;
+
+        this.#renderData.lineShader = new Shader(this.#gl, Shader.lineShaderPath);
+        this.#renderData.lineVB = new VertexBuffer(this.#gl, this.#renderData.maxVertices * LineVertex.vertexSize);
+
+        const linePosition = this.#renderData.lineShader.getAttributeLocation('a_Position');
+        const lineColor = this.#renderData.lineShader.getAttributeLocation('a_Color');
+
+        this.#renderData.lineVB.pushAttribute(linePosition, 3);
+        this.#renderData.lineVB.pushAttribute(lineColor, 4);
     }
 
     beginScene(transform, camera) {
@@ -183,8 +228,6 @@ export class Renderer {
         this.#sceneData.projection.identity();
         this.#sceneData.projection.multiply(camera.projection);
         this.#sceneData.projection.multiply(this.#sceneData.view);
-
-        this.#renderData.quadShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
     }
 
     endScene() {
@@ -235,19 +278,52 @@ export class Renderer {
         this.#renderData.quadIndexCount += 6;
     }
 
-    #flush() {
-        for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
-            this.#renderData.textureSlots[i].bind(i);
-        }
+    /**
+     * 
+     * @param {Vector3} p0 
+     * @param {Vector3} p1 
+     * @param {Vector4} color 
+     */
+    drawLine(p0, p1, color) {
+        this.#lineVertex.position.set(p0);
+        this.#lineVertex.color.set(color);
 
-        this.#renderData.quadVB.bind();
-        this.#gl.drawElements(this.#gl.TRIANGLES, this.#renderData.quadIndexCount, this.#gl.UNSIGNED_SHORT, 0);
+        this.#renderData.lineVB.addVertex(this.#renderData.lineVertexCount, this.#lineVertex.flat);
+        this.#renderData.lineVertexCount++;
+
+        this.#lineVertex.position.set(p1);
+
+        this.#renderData.lineVB.addVertex(this.#renderData.lineVertexCount, this.#lineVertex.flat);
+        this.#renderData.lineVertexCount++;
+    }
+
+    #flush() {
+        if (this.#renderData.quadIndexCount > 0) {
+            for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
+                this.#renderData.textureSlots[i].bind(i);
+            }
+    
+            this.#renderData.quadVB.bind();
+            this.#renderData.quadVB.linkAttributes();
+            this.#renderData.quadShader.bind();
+            this.#renderData.quadShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
+            this.#gl.drawElements(this.#gl.TRIANGLES, this.#renderData.quadIndexCount, this.#gl.UNSIGNED_SHORT, 0);
+        }
+        if (this.#renderData.lineVertexCount > 0) {
+            this.#renderData.lineVB.bind();
+            this.#renderData.lineVB.linkAttributes();
+            this.#renderData.lineShader.bind();
+            this.#renderData.lineShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
+            this.#gl.drawArrays(this.#gl.LINES, 0, this.#renderData.lineVertexCount);
+        }
 
         // reset batch
         this.#renderData.quadVertexCount = 0;
         this.#renderData.quadIndexCount = 0;
 
         this.#renderData.textureSlotIndex = 1;
+
+        this.#renderData.lineVertexCount = 0;
     }
 
     clear() {

@@ -1,15 +1,10 @@
 import { Matrix4 } from "../math/Matrix";
-import { Vector3, Vector4 } from "../math/Vector";
+import { Vector2, Vector3, Vector4 } from "../math/Vector";
+import { AABB } from "../physics/AABB";
 import { Texture } from "../renderer/Texture";
+import { ComponentType, ShapeType } from "../core/Types";
+import { BananaMath } from "../math/BananaMath";
 
-export const ComponentType = {
-    None: -1,
-    Transform: 0,
-    Sprite: 1,
-    Camera: 2,
-    Script: 3,
-    Audio: 4,
-};
 
 class Component {
     get type() {
@@ -83,6 +78,10 @@ export class TransformComponent extends Component {
         return this.#transform;
     }
 
+    get position() {
+        return this.#position;
+    }
+
     get scale() {
         return this.#scale;
     }
@@ -117,6 +116,20 @@ export class TransformComponent extends Component {
      * @param {number} z 
      */
     moveBy(x, y, z) {
+
+        if (x instanceof Vector3) {
+            this.#position.x += x.x;
+            this.#position.y += x.y;
+            this.#position.z += x.z;
+            return;
+        }
+
+        if (x instanceof Vector2) {
+            this.#position.x += x.x;
+            this.#position.y += x.y;
+            return;
+        }
+
         this.#position.x += x;
         this.#position.y += y;
         this.#position.z += z;
@@ -515,5 +528,183 @@ export class AudioComponent extends Component {
     setVolume(volume) {
         this.#volume = volume;
         this.#gainNode.gain.volume = this.#volume;
+    }
+}
+
+export class Body2DComponent extends Component {
+
+    /**
+     * @type {TransformComponent}
+     */
+    #transform
+
+    /**
+     * @type {AABB} transform 
+     */
+    #AABB;
+
+    #shapeType;
+    
+    #linearVelocity;
+    #angularVelocity;
+    #force;
+    #gravityScale;
+
+    #density;
+    #mass;
+    #inertia;
+    #restitution;
+    #isStatic;
+
+    #area;
+    #radius;
+    #width;
+    #height;
+
+    /**
+     * @type {Vector4[]} #vertices
+     */
+    #vertices;
+
+    #toAdd
+
+    constructor(transform, shapeType, density, mass, inertia, area, isStatic, radius, width, height, gravityScale) {
+        super();
+
+        this.#transform = transform;
+
+        this.#AABB = new AABB();
+
+        this.#shapeType = shapeType;
+
+        this.#linearVelocity = Vector2.zero;
+        this.#angularVelocity = 0;
+        this.#force = Vector2.zero;
+        this.#gravityScale = gravityScale;
+
+        this.#density = density
+        this.#mass = mass;
+        this.#inertia = inertia;
+        this.#area = area;
+        this.#isStatic = isStatic;
+        this.#radius = radius;
+        this.#width = width;
+        this.#height = height;
+
+        this.#vertices = [];
+        if (this.#shapeType == ShapeType.Box) {
+            this.#vertices[0] = new Vector4(-width / 2, -height / 2, 0, 1);
+            this.#vertices[1] = new Vector4(width / 2, -height / 2, 0, 1);
+            this.#vertices[2] = new Vector4(width / 2, height / 2, 0, 1);
+            this.#vertices[3] = new Vector4(-width / 2, height / 2, 0, 1);
+        }
+
+        this.#toAdd = Vector2.zero;
+    }
+
+    static createBoxBody2D(transform, width, height, density, isStatic, restitution, gravityScale) {
+        const area = width * height;
+        const mass = area * density;
+        const inertia = (1.0 / 12.0) * mass * (width * width + height * height);
+
+        restitution = BananaMath.clamp01(restitution);
+
+        return new Body2DComponent(transform, ShapeType.Box, density, mass, inertia, area, isStatic, 0, width, height, gravityScale);
+    }
+
+    static createCircleBody2D(transform, radius, density, isStatic, restitution, gravityScale) {
+        const area = Math.PI * radius * radius;
+        const mass = area * density;
+        const inertia = 0.5 * mass * radius * radius;
+
+        restitution = BananaMath.clamp01(restitution);
+
+        return new Body2DComponent(transform, ShapeType.Circle, density, mass, inertia, area, isStatic, radius, 0, 0, gravityScale);
+    }
+
+    get type() {
+        return ComponentType.Body2D;
+    }
+
+    get transform() {
+        return this.#transform;
+    }
+
+    get AABB() {
+        this.setAABB();
+        return this.#AABB;
+    }
+
+    get shapeType() {
+        return this.#shapeType;
+    }
+
+    get isStatic() {
+        return this.#isStatic;
+    }
+
+    get radius() {
+        return this.#radius;
+    }
+
+    get inverseMass() {
+        if (!this.#isStatic) {
+            return 1 / this.#mass;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    update(dt, gravity) {
+        if (this.#isStatic) {
+            return;
+        }
+
+        this.#toAdd.set(0, 0);
+        this.#toAdd.add(gravity);
+        this.#toAdd.mul(this.#gravityScale * dt);
+
+        this.#linearVelocity.add(this.#toAdd);
+        this.#linearVelocity.add(this.#force);
+
+        this.#transform.moveBy(this.#linearVelocity.x, this.#linearVelocity.y, 0);
+        this.#transform.rotateBy(0, 0, BananaMath.toDegrees(this.#angularVelocity) * dt);
+
+        this.#force.set(0, 0);
+    }
+
+    addForce(amount) {
+        this.#force.add(amount);
+    }
+
+    setAABB() {
+        let minX = Number.MAX_SAFE_INTEGER;
+        let minY = Number.MAX_SAFE_INTEGER;
+        let maxX = Number.MIN_SAFE_INTEGER;
+        let maxY = Number.MIN_SAFE_INTEGER;
+
+        if (this.#shapeType == ShapeType.Box) {
+            const matrix = this.#transform.transformMatrix;
+
+            for (let i = 0; i < this.#vertices.length; i++) {
+                const vector = matrix.multiplyVector4(this.#vertices[i]);
+
+                if (vector.x < minX) { minX = vector.x; }
+                if (vector.y < minY) { minY = vector.y; }
+                if (vector.x > maxX) { maxX = vector.x; }
+                if (vector.y > maxY) { maxY = vector.y; }
+            }
+        }
+        else if (this.#shapeType == ShapeType.Circle) {
+            const position = this.#transform.position;
+
+            minX = position.x - this.#radius;
+            minX = position.y - this.#radius;
+            maxX = position.x + this.#radius;
+            maxY = position.y + this.#radius;
+        }
+
+        this.#AABB.set(minX, minY, maxX, maxY);
     }
 }

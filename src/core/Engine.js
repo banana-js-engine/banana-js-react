@@ -1,6 +1,8 @@
-import { ComponentType } from "../ecs/Component";
+import { ComponentType } from "./Types";
 import { BananaMath } from "../math/BananaMath";
 import { Input } from "./Input";
+import { World2D } from "../physics/World2D";
+import { Vector3, Vector4 } from "../math/Vector";
 
 /**
  * The class that controls the game-loop
@@ -14,6 +16,9 @@ export class Engine {
 
     #scenes;
     #activeScene;
+    #world2d;
+
+    #firstUpdate
 
     /*
         Flags for warnings to be logged once in the loop
@@ -29,6 +34,9 @@ export class Engine {
 
         this.#scenes = [];
         this.#activeScene = null;
+        this.#world2d = new World2D();
+
+        this.#firstUpdate = true;
 
         this.#zeroCameraFlag = false;
         this.#multipleCameraFlag = false;
@@ -56,6 +64,17 @@ export class Engine {
 
     #update(dt) {
         if (this.#activeScene) {
+
+            if (this.#firstUpdate) {
+                this.#firstUpdate = false;
+
+                const goBodies = this.#activeScene.get_all(ComponentType.Body2D);
+
+                for (let i = 0; i < goBodies.length; i++) {
+                    this.#world2d.addBody(goBodies[i]);
+                }
+            }
+
             const goScripts = this.#activeScene.get_all(ComponentType.Script);
 
             for (let i = 0; i < goScripts.length; i++) {
@@ -92,6 +111,8 @@ export class Engine {
 
             }
 
+            this.#world2d.step(dt);
+
             // no camera, no rendering
             if (!cameraComponent) {
                 return;
@@ -108,6 +129,9 @@ export class Engine {
 
                 this.#rendererRef.drawQuad(transform, goSprites[id]);
             }
+
+            this.#rendererRef.drawLine(Vector3.left, Vector3.right, Vector4.one);
+            this.#rendererRef.drawLine(Vector3.up, Vector3.down, Vector4.one);
             
             this.#rendererRef.endScene();
         }

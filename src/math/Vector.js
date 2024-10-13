@@ -33,6 +33,18 @@ export class Vector2 {
         this.data[1] = newY;
     }
 
+    set(x, y) {
+
+        if (x instanceof Vector2) {
+            this.x = x.x;
+            this.y = x.y;
+            return;
+        }
+
+        this.x = x;
+        this.y = y;
+    }
+
     // useful vector properties
     get length() {
         return Math.sqrt(this.lengthSquared);
@@ -40,6 +52,84 @@ export class Vector2 {
 
     get lengthSquared() {
         return this.x * this.x + this.y * this.y;
+    }
+
+    get normalized() {
+        const len = this.length;
+        return new Vector2(this.x / len, this.y / len);
+    }
+
+    normalize() {
+        const len = this.length;
+        this.x /= len;
+        this.y /= len;
+        return this;
+    }
+
+    /**
+     * 
+     * @param {Vector2} to 
+     */
+    distance(to) {
+        return Math.sqrt((this.x - to.x) ** 2 + (this.y - to.y) ** 2);
+    }
+
+    /**
+     * 
+     * @param {Vector2} to 
+     */
+    distanceSquared(to) {
+        return (this.x - to.x) ** 2 + (this.y - to.y) ** 2;
+    }
+
+    // vector operations
+    /**
+     * 
+     * @param {Vector2} other
+     * @returns {Vector2} 
+     */
+    add(other) {
+        this.x += other.x;
+        this.y += other.y;
+        return this;
+    }
+
+    /**
+     * 
+     * @param {Vector2} other
+     * @returns {Vector2} 
+     */
+    sub(other) {
+        this.x -= other.x;
+        this.y -= other.y;
+        return this;
+    }
+
+    /**
+     * 
+     * @param {number} scalar
+     * @returns {Vector2} 
+     */
+    mul(scalar) {
+        this.x *= scalar;
+        this.y *= scalar;
+        return this;
+    }
+
+    /**
+     * 
+     * @param {number} scalar
+     * @returns {Vector2} 
+     */
+    div(scalar) {
+        if (scalar == 0) {
+            console.error('division by 0!');
+            return Vector2.zero;
+        }
+
+        this.x /= scalar;
+        this.y /= scalar;
+        return this;
     }
 
     // ready Vector2s
@@ -95,8 +185,87 @@ export class Vector3 extends Vector2 {
         this.data[2] = newZ;
     }
 
+    set(x, y, z) {
+
+        if (x instanceof Vector3) {
+            this.x = x.x;
+            this.y = x.y;
+            this.z = x.z;
+            return;
+        }
+
+        if (x instanceof Vector2) {
+            this.x = x.x;
+            this.y = x.y;
+            return;
+        }
+
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
     get lengthSquared() {
         return super.lengthSquared + this.z * this.z;
+    }
+
+    // vector operations
+    /**
+     * 
+     * @param {Vector3} other
+     * @returns {Vector3} 
+     */
+    add(other) {
+        super.add(other);
+        this.z += other.z;
+        return this;
+    }
+
+    /**
+     * 
+     * @param {Vector3} other
+     * @returns {Vector3} 
+     */
+    sub(other) {
+        super.sub(other);
+        this.z -= other.z;
+        return this;
+    }
+
+    /**
+     * 
+     * @param {number} scalar
+     * @returns {Vector3} 
+     */
+    mul(scalar) {
+        super.mul(scalar);
+        this.z *= scalar;
+        return this;
+    }
+
+    /**
+     * 
+     * @param {number} scalar
+     * @returns {Vector3} 
+     */
+    div(scalar) {
+        if (scalar == 0) {
+            console.error('division by 0!');
+            return Vector3.zero;
+        }
+
+        super.div(scalar);
+        this.z /= scalar;
+        return this;
+    }
+
+    /**
+     * 
+     * @param {Vector3} other
+     * @returns {number} 
+     */
+    dot(other) {
+        return this.x * other.x + this.y * other.y; 
     }
 
     // ready Vector3s
@@ -158,6 +327,22 @@ export class Vector4 extends Vector3 {
     // setters
     set w(newW) {
         this.data[3] = newW;
+    }
+
+    set(x, y, z, w) {
+        
+        if (x instanceof Vector4) {
+            this.x = x.x;
+            this.y = x.y;
+            this.z = x.z;
+            this.w = x.w;
+            return;
+        }
+
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
     }
 
     get lengthSquared() {
