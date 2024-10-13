@@ -19,6 +19,7 @@ export class Engine {
     #world2d;
 
     #firstUpdate
+    #iteration;
 
     /*
         Flags for warnings to be logged once in the loop
@@ -37,6 +38,7 @@ export class Engine {
         this.#world2d = new World2D();
 
         this.#firstUpdate = true;
+        this.#iteration = 0;
 
         this.#zeroCameraFlag = false;
         this.#multipleCameraFlag = false;
@@ -64,6 +66,11 @@ export class Engine {
 
     #update(dt) {
         if (this.#activeScene) {
+
+            if (this.#iteration < 10) {
+                this.#iteration++;
+                return;
+            }
 
             if (this.#firstUpdate) {
                 this.#firstUpdate = false;

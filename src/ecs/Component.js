@@ -459,7 +459,6 @@ export class AudioComponent extends Component {
         canvas.addEventListener('blur', this.#pause);
 
         this.#startTime = this.#audioContext.currentTime;
-        this.#resume();   
     }
 
     /**
