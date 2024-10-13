@@ -2,7 +2,7 @@ import { ComponentType } from "./Types";
 import { BananaMath } from "../math/BananaMath";
 import { Input } from "./Input";
 import { World2D } from "../physics/World2D";
-import { Vector3, Vector4 } from "../math/Vector";
+import { Vector2, Vector3, Vector4 } from "../math/Vector";
 
 /**
  * The class that controls the game-loop
@@ -132,6 +132,8 @@ export class Engine {
 
             this.#rendererRef.drawLine(Vector3.left, Vector3.right, Vector4.one);
             this.#rendererRef.drawLine(Vector3.up, Vector3.down, Vector4.one);
+
+            this.#rendererRef.drawRect(Vector3.zero, Vector2.one.mul(2), Vector4.one);
             
             this.#rendererRef.endScene();
         }

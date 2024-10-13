@@ -297,6 +297,37 @@ export class Renderer {
         this.#renderData.lineVertexCount++;
     }
 
+    /**
+     * 
+     * @param {Vector3} pos 
+     * @param {Vector2} size 
+     * @param {Vector4} color 
+     */
+    drawRect(pos, size, color) {
+        const p0 = Vector3.zero;
+        const p1 = Vector3.zero;
+        
+        p0.set(pos.x - size.x * 0.5, pos.y - size.y * 0.5, pos.z);
+        p1.set(pos.x + size.x * 0.5, pos.y - size.y * 0.5, pos.z)
+
+        this.drawLine(p0, p1, color);
+
+        p0.set(p1);
+        p1.y += size.y;
+
+        this.drawLine(p0, p1, color);
+        
+        p0.set(p1);
+        p1.x -= size.x;
+
+        this.drawLine(p0, p1, color);
+
+        p0.set(p1);
+        p1.y -= size.y;
+
+        this.drawLine(p0, p1, color);
+    }
+
     #flush() {
         if (this.#renderData.quadIndexCount > 0) {
             for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
