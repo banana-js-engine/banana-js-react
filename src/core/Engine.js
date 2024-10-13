@@ -137,7 +137,7 @@ export class Engine {
                 this.#rendererRef.drawQuad(transform, goSprites[id]);
             }
 
-            this.#rendererRef.drawLine(Vector3.left, Vector3.right, Vector4.one);
+            this.#rendererRef.drawLine(Vector3.left, Vector3.right.mul(6.5), Vector4.one);
             this.#rendererRef.drawLine(Vector3.up, Vector3.down, Vector4.one);
 
             this.#rendererRef.drawRect(Vector3.zero, Vector2.one.mul(2), Vector4.one);

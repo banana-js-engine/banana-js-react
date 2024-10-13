@@ -31,5 +31,11 @@ export class TestClass extends ScriptComponent {
         if (Input.getKeyDown('p')) {
             this.audio.playOnce();
         }
+
+        this.transform.moveTo(this.mainCamera.screenToWorldSpace(Input.mousePosition));
+
+        if (Input.getButtonDown(0)) {
+            console.log('press');
+        }
     }
 }

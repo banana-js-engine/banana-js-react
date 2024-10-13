@@ -12,7 +12,7 @@ import Body2D from "./components/Body2D"
 export default function App() {
     return (
         <Game name='Game' width={800} height={600}>
-            <Cursor src="target_a.svg" size={100}/>
+            <Cursor src="tool_sword_a.svg" size={100}/>
             <Scene>
                 <GameObject>
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]}/>

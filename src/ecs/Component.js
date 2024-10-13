@@ -104,6 +104,20 @@ export class TransformComponent extends Component {
      * @param {number} z 
      */
     moveTo(x, y, z) {
+
+        if (x instanceof Vector3) {
+            this.#position.x = x.x;
+            this.#position.y = x.y;
+            this.#position.z = x.z;
+            return;
+        }
+
+        if (x instanceof Vector2) {
+            this.#position.x = x.x;
+            this.#position.y = x.y;
+            return;
+        }
+
         this.#position.x = x;
         this.#position.y = y;
         this.#position.z = z;
@@ -282,6 +296,11 @@ export class SpriteComponent extends Component {
  */
 export class CameraComponent extends Component {
 
+    /**
+     * @type {HTMLCanvasElement}
+     */
+    #canvas;
+
     #projectionMatrix;
     #clearColor;
     #aspectRatio;
@@ -301,8 +320,8 @@ export class CameraComponent extends Component {
             this.setClearColor(cc.r, cc.g, cc.b, cc.a);
         }
 
-        const canvas = document.getElementById('banana-canvas');
-        this.#aspectRatio = canvas.clientWidth / canvas.clientHeight;
+        this.#canvas = document.getElementById('banana-canvas');
+        this.#aspectRatio = this.#canvas.clientWidth / this.#canvas.clientHeight;
 
         this.#size = isOrtho ? 10 : 45;
         this.#near = isOrtho ? -1 : 10;
@@ -364,6 +383,19 @@ export class CameraComponent extends Component {
         this.#clearColor.z = b;
         this.#clearColor.w = a;
     }
+
+    /**
+     * 
+     * @param {Vector2} vector 
+     * @returns {Vector3}
+     */
+    screenToWorldSpace(vector) {
+        return new Vector3(
+            (vector.x - this.#canvas.clientWidth / 2) / (this.#canvas.clientHeight / this.#size),
+            (vector.y - this.#canvas.clientHeight / 2) / (this.#canvas.clientHeight / this.#size),
+            0
+        );
+    }
 }
 
 export class ScriptComponent extends Component {
@@ -384,6 +416,19 @@ export class ScriptComponent extends Component {
 
     get type() {
         return ComponentType.Script;
+    }
+
+    /**
+     * @returns {CameraComponent}
+     */
+    get mainCamera() {
+        const cameras = this.#ecs.get_all(ComponentType.Camera);
+
+        if (cameras.length == 0) {
+            return null;
+        }
+
+        return cameras[0];
     }
 
     // this function is called once when the game starts
