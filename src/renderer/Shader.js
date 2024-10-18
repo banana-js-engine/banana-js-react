@@ -3,8 +3,12 @@
  */
 export class Shader {
 
-    static get quadShaderPath() {
-        return 'shader/quad_shader.glsl';
+    static get quadShader16Path() {
+        return 'shader/quad_shader_16.glsl';
+    }
+
+    static get quadShader48Path() {
+        return 'shader/quad_shader_48.glsl';
     }
 
     static get lineShaderPath() {

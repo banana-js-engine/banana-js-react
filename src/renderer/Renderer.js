@@ -186,7 +186,7 @@ export class Renderer {
         }
 
         // quads
-        this.#renderData.quadShader = new Shader(this.#gl, Shader.quadShaderPath);
+        this.#renderData.quadShader = new Shader(this.#gl, Shader.quadShader16Path);
         this.#renderData.quadVB = new VertexBuffer(this.#gl, this.#renderData.maxVertices * QuadVertex.vertexSize);
         this.#renderData.quadIB = new IndexBuffer(this.#gl, indices);
 

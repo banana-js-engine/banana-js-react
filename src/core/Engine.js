@@ -23,7 +23,7 @@ export class Engine {
     #iteration;
 
     /*
-        Flags for warnings to be logged once in the loop
+     *  Flags for warnings to be logged once in the loop
     */
     #zeroCameraFlag;
     #multipleCameraFlag;
@@ -89,16 +89,17 @@ export class Engine {
                         goAnimators[i].playAnimation(goAnimators[i].startAnim);
                     }
                 }
+
+                const goScripts = this.#activeScene.getAll(ComponentType.Script);
+
+                for (let i = 0; i < goScripts.length; i++) {
+                    goScripts[i].ready();
+                }
             }
 
             const goScripts = this.#activeScene.getAll(ComponentType.Script);
 
             for (let i = 0; i < goScripts.length; i++) {
-                if (!goScripts[i].isReadyCalled) {
-                    goScripts[i].ready();
-                    goScripts[i].isReadyCalled = true;
-                }
-
                 goScripts[i].step(dt);
             }
 

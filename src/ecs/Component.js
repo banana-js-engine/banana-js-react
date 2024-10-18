@@ -251,8 +251,20 @@ export class TransformComponent extends Component {
  * Represents a GameObject's 2D render information
  */
 export class SpriteComponent extends Component {
+
+    /**
+     * @type {Vector4}
+     */
     #color;
+
+    /**
+     * @type {Texture}
+     */
     #texture;
+
+    /**
+     * @type {Texture}
+     */
     #originalTexture;
 
     /**
@@ -353,10 +365,7 @@ export class SpriteComponent extends Component {
     }
 
     setColor(r, g, b, a) {
-        this.#color.x = r;
-        this.#color.y = g;
-        this.#color.z = b;
-        this.#color.w = a;
+        this.#color.set(r, g, b, a);
     }
 
     get texture() {
@@ -493,8 +502,6 @@ export class CameraComponent extends Component {
 
 export class ScriptComponent extends Component {
 
-    isReadyCalled;
-
     /**
      * 
      * @param {string} id 
@@ -502,8 +509,6 @@ export class ScriptComponent extends Component {
      */
     constructor(id, ecs) {
         super(id, ecs);
-
-        this.isReadyCalled = false;
     }
 
     get type() {
