@@ -38,6 +38,10 @@ export default function App() {
                     <Transform position={[2, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <Sprite src="shapes/circle.png"/>
                     <Body2D shape={ShapeType.Circle}/>
+
+                    <Animator startAnim="DinoIdle">
+                        <Animation src="Dino.png" name="DinoIdle" cellWidth={24} cellHeight={24} length={0.5} frames={4} firstFrame={0}/>
+                    </Animator>
                 </GameObject>
             </Scene>
         </Game>

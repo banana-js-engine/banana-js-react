@@ -874,20 +874,26 @@ export class AnimatorComponent extends Component {
 
     #currentAnimation;
     #playing;
+    #startAnim;
 
     /**
      * @type {SpriteComponent}
      */
     #spriteRenderer;
 
-    constructor(id, ecs) {
+    constructor(id, ecs, startAnim) {
         super(id, ecs);
 
         this.#animations = {};
+        this.#startAnim = startAnim;
     }
      
     get type() {
         return ComponentType.Animator;
+    }
+
+    get startAnim() {
+        return this.#startAnim;
     }
 
     /**

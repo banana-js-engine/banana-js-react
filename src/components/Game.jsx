@@ -100,7 +100,7 @@ export default function Game(props) {
                                     bottom: '0px'
                                 }}>
                                 <div style={{ width: '100%', height: '100%' }}>
-                                    <canvas id='banana-canvas' ref={canvasRef} style={{ display: 'block' }} tabIndex={1}>
+                                    <canvas id='banana-canvas' ref={canvasRef} style={{ outlineStyle: 'none' }} tabIndex={1}>
                                         { isInitialized() && props.children }
                                     </canvas>
                                 </div>

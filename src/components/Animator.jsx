@@ -9,13 +9,17 @@ export function useAnimator() {
     return useContext(AnimatorContext);
 }
 
+/**
+ * 
+ * @param {{ startAnim: string }} props 
+ */
 export default function Animator(props) {
 
 
     const ecs = useScene();
     const id = useGameObject();
 
-    const animatorRef = useRef(new AnimatorComponent(id, ecs));
+    const animatorRef = useRef(new AnimatorComponent(id, ecs, props.startAnim));
 
     useEffect(() => {
         ecs.emplace(id, animatorRef.current);

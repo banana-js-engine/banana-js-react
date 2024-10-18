@@ -81,6 +81,14 @@ export class Engine {
                 for (let i = 0; i < goBodies.length; i++) {
                     this.#world2d.addBody(goBodies[i]);
                 }
+
+                const goAnimators = this.#activeScene.getAll(ComponentType.Animator);
+
+                for (let i = 0; i < goAnimators.length; i++) {
+                    if (goAnimators[i].startAnim) {
+                        goAnimators[i].playAnimation(goAnimators[i].startAnim);
+                    }
+                }
             }
 
             const goScripts = this.#activeScene.getAll(ComponentType.Script);
