@@ -364,16 +364,16 @@ export class SpriteComponent extends Component {
     }
 
     get flipX() {
-        return this.#transform.scale.y < 0;
+        return this.#transform.scale.x < 0;
     }
 
     get flipY() {
-        return this.#transform.scale.x < 0;
+        return this.#transform.scale.y < 0;
     }
 
     set flipX(newValue) {
         if ((!newValue && this.flipX) || (newValue && !this.flipX)) {
-            this.#transform.scaleTo(-this.#transform.scale.x, -this.#transform.scale.y, this.#transform.scale.z)
+            this.#transform.scaleTo(-this.#transform.scale.x, this.#transform.scale.y, this.#transform.scale.z)
         }
     }
 

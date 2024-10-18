@@ -8,39 +8,40 @@ export class TestClass extends ScriptComponent {
         this.transform = this.getComponent(ComponentType.Transform);
         this.audio = this.getComponent(ComponentType.Audio);
         this.animator = this.getComponent(ComponentType.Animator);
+        this.sprite = this.getComponent(ComponentType.Sprite);
     }
 
     step(dt) {
         const s = this.speed * dt;
+        let isMoving = false;
 
         if (Input.getKey('w') || Input.getGamepadButton(KeyCode.DpadUp)) {
             this.transform.moveBy(0, -s, 0);
+            isMoving = true;
         }
 
         if (Input.getKey('a') || Input.getGamepadButton(KeyCode.DpadLeft)) {
             this.transform.moveBy(-s, 0, 0);
+            isMoving = true;
+            this.sprite.flipX = true;
         }
 
         if (Input.getKey('s') || Input.getGamepadButton(KeyCode.DpadDown)) {
             this.transform.moveBy(0, s, 0);
+            isMoving = true;
         }
 
         if (Input.getKey('d') || Input.getGamepadButton(KeyCode.DpadRight)) {
             this.transform.moveBy(s, 0, 0);
+            isMoving = true;
+            this.sprite.flipX = false;
         }
 
-        if (Input.getKeyDown('p')) {
-            this.animator.playAnimation('DinoIdle');
-        }
-        if (Input.getKeyDown('o')) {
+        if (isMoving) {
             this.animator.playAnimation('DinoRun');
         }
-        if (Input.getKeyDown('m')) {
-            this.animator.stopAnimation();
-        }
-
-        if (Input.getButtonDown(0)) {
-            
+        else {
+            this.animator.playAnimation('DinoIdle');
         }
     }
 }
