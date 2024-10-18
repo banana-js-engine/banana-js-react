@@ -24,8 +24,15 @@ export default function Sprite(props) {
     const gl = useGL();
 
     useEffect(() => {
-        const transform = ecs.get(gameObjectId, ComponentType.Transform);
-        ecs.emplace(gameObjectId, new SpriteComponent(gl, transform, props.color, props.src, props.flipX, props.flipY));
+        ecs.emplace(gameObjectId, new SpriteComponent(
+            gameObjectId,
+            ecs, 
+            gl, 
+            props.color, 
+            props.src, 
+            props.flipX, 
+            props.flipY
+        ));
     }, []);
 
     return null;

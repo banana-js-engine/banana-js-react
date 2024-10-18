@@ -4,11 +4,60 @@ import { AABB } from "../physics/AABB";
 import { Texture } from "../renderer/Texture";
 import { ComponentType, ShapeType } from "../core/Types";
 import { BananaMath } from "../math/BananaMath";
+import { ECS } from "./ECS";
+import { AnimationClip } from "../renderer/AnimationClip";
 
 
 class Component {
+
+    ecs;
+    gameObject;
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {ECS} ecs 
+     */
+    constructor(id, ecs) {
+        this.ecs = ecs;
+        this.gameObject = id;
+    }
+
     get type() {
         return ComponentType.None;
+    }
+
+    // component related functions
+    getComponent(type) {
+        return this.ecs.get(this.gameObject, type);
+    }
+
+    getComponents(type) {
+        return this.ecs.getAll(type);
+    }
+}
+
+export class NameComponent extends Component {
+    #name;
+
+    constructor(id, ecs, name) {
+        super(id, ecs);
+
+        if (name) {
+            this.#name = name;
+        }
+        else {
+            this.#name = 'GameObject';
+        }
+
+    }
+
+    get type() {
+        return ComponentType.Name;
+    }
+
+    get name() {
+        return this.#name;
     }
 }
 
@@ -28,8 +77,8 @@ export class TransformComponent extends Component {
 
     #transform;
 
-    constructor(position, rotation, scale) {
-        super();
+    constructor(id, ecs, position, rotation, scale) {
+        super(id, ecs);
         this.#positionMat = Matrix4.zero;
         this.#rotationXMat = Matrix4.zero;
         this.#rotationYMat = Matrix4.zero;
@@ -204,14 +253,20 @@ export class TransformComponent extends Component {
 export class SpriteComponent extends Component {
     #color;
     #texture;
+    #originalTexture;
+
+    /**
+     * @type {Vector2[]} #texCoords
+     */
+    #texCoords;
 
     /**
      * @type {TransformComponent} transform 
      */
     #transform;
 
-    constructor(gl, transform, color, textureSrc, flipX, flipY) {
-        super();
+    constructor(id, ecs, gl, color, textureSrc, flipX, flipY) {
+        super(id, ecs);
         this.#color = Vector4.one;
 
         if (color) {
@@ -221,9 +276,17 @@ export class SpriteComponent extends Component {
 
         if (textureSrc) {
             this.#texture = new Texture(gl, textureSrc);
+            this.#originalTexture = new Texture(gl, textureSrc);
         }
 
-        this.#transform = transform;
+        this.#texCoords = [
+            Vector2.zero,
+            Vector2.right,
+            Vector2.up,
+            Vector2.one,
+        ];
+
+        this.#transform = this.getComponent(ComponentType.Transform);
 
         if (flipX) {
             this.flipX = flipX;
@@ -242,6 +305,36 @@ export class SpriteComponent extends Component {
 
     get type() {
         return ComponentType.Sprite;
+    }
+
+    set texture(newTexture) {
+        this.#texture = newTexture;
+    }
+
+    get texCoords() {
+        return this.#texCoords;
+    }
+
+    /**
+     * @param {Vector2[]} newCoords 
+     */
+    set texCoords(newCoords) {
+        if (this.#texCoords.length != newCoords.length) {
+            return;
+        }
+
+        for (let i = 0; i < this.#texCoords.length; i++) {
+            this.#texCoords[i].set(newCoords[i]);
+        }
+    }
+
+    default() {
+        this.texture = this.#originalTexture;
+
+        this.#texCoords[0].set(0, 0);
+        this.#texCoords[1].set(1, 0);
+        this.#texCoords[2].set(0, 1);
+        this.#texCoords[3].set(1, 1);
     }
 
     #processParameterType(param) {
@@ -309,8 +402,8 @@ export class CameraComponent extends Component {
     #near;
     #far;
 
-    constructor(isOrtho, clearColor, size, near, far) {
-        super();
+    constructor(id, ecs, isOrtho, clearColor, size, near, far) {
+        super(id, ecs);
 
         this.#projectionMatrix = Matrix4.zero;
 
@@ -400,16 +493,15 @@ export class CameraComponent extends Component {
 
 export class ScriptComponent extends Component {
 
-    #id;
-    #ecs;
-
     isReadyCalled;
 
+    /**
+     * 
+     * @param {string} id 
+     * @param {ECS} ecs 
+     */
     constructor(id, ecs) {
-        super();
-
-        this.#id = id;
-        this.#ecs = ecs;
+        super(id, ecs);
 
         this.isReadyCalled = false;
     }
@@ -422,7 +514,7 @@ export class ScriptComponent extends Component {
      * @returns {CameraComponent}
      */
     get mainCamera() {
-        const cameras = this.#ecs.get_all(ComponentType.Camera);
+        const cameras = this.getComponents(ComponentType.Camera);
 
         if (cameras.length == 0) {
             return null;
@@ -437,9 +529,26 @@ export class ScriptComponent extends Component {
     // this function is called every frame
     step(dt) {}
 
-    // component related functions
-    getComponent(type) {
-        return this.#ecs.get(this.#id, type);
+    // game object related functions
+    create(name = 'GameObject') {
+        const newGO = this.ecs.create();
+        this.ecs.emplace(newGO, new NameComponent(this.gameObject, this.ecs, name))
+        this.ecs.emplace(newGO, new TransformComponent(this.gameObject, this.ecs));
+        return newGO;
+    }
+
+    /**
+     * 
+     * @param {Component | string} gameObject 
+     */
+    destroy(component) {
+        if (component instanceof Component) {
+            this.ecs.release(component.gameObject)
+            return;
+        }
+        else if (typeof component == 'string') {
+            this.ecs.release(component)
+        }
     }
 }
 
@@ -472,8 +581,8 @@ export class AudioComponent extends Component {
      * @param {boolean} playOnStart 
      * @param {boolean} loop 
      */
-    constructor(audioContext, buffer, volume = 0.5, playOnStart = false, loop = false) {
-        super();
+    constructor(id, ecs, audioContext, buffer, volume = 0.5, playOnStart = false, loop = false) {
+        super(id, ecs);
 
         this.#audioContext = audioContext;
         this.#buffer = buffer;
@@ -612,10 +721,10 @@ export class Body2DComponent extends Component {
 
     #toAdd
 
-    constructor(transform, shapeType, density, mass, inertia, area, isStatic, radius, width, height, gravityScale) {
-        super();
+    constructor(id, ecs, shapeType, density, mass, inertia, area, isStatic, radius, width, height, gravityScale) {
+        super(id, ecs);
 
-        this.#transform = transform;
+        this.#transform = this.getComponent(ComponentType.Transform);
 
         this.#AABB = new AABB();
 
@@ -646,24 +755,24 @@ export class Body2DComponent extends Component {
         this.#toAdd = Vector2.zero;
     }
 
-    static createBoxBody2D(transform, width, height, density, isStatic, restitution, gravityScale) {
+    static createBoxBody2D(id, ecs, width, height, density, isStatic, restitution, gravityScale) {
         const area = width * height;
         const mass = area * density;
         const inertia = (1.0 / 12.0) * mass * (width * width + height * height);
 
         restitution = BananaMath.clamp01(restitution);
 
-        return new Body2DComponent(transform, ShapeType.Box, density, mass, inertia, area, isStatic, 0, width, height, gravityScale);
+        return new Body2DComponent(id, ecs, ShapeType.Box, density, mass, inertia, area, isStatic, 0, width, height, gravityScale);
     }
 
-    static createCircleBody2D(transform, radius, density, isStatic, restitution, gravityScale) {
+    static createCircleBody2D(id, ecs, radius, density, isStatic, restitution, gravityScale) {
         const area = Math.PI * radius * radius;
         const mass = area * density;
         const inertia = 0.5 * mass * radius * radius;
 
         restitution = BananaMath.clamp01(restitution);
 
-        return new Body2DComponent(transform, ShapeType.Circle, density, mass, inertia, area, isStatic, radius, 0, 0, gravityScale);
+        return new Body2DComponent(id, ecs, ShapeType.Circle, density, mass, inertia, area, isStatic, radius, 0, 0, gravityScale);
     }
 
     get type() {
@@ -722,6 +831,9 @@ export class Body2DComponent extends Component {
         this.#force.add(amount);
     }
 
+    /**
+     * Find the AABB of the body depending on its current orientation
+     */
     setAABB() {
         let minX = Number.MAX_SAFE_INTEGER;
         let minY = Number.MAX_SAFE_INTEGER;
@@ -750,5 +862,91 @@ export class Body2DComponent extends Component {
         }
 
         this.#AABB.set(minX, minY, maxX, maxY);
+    }
+}
+
+export class AnimatorComponent extends Component {
+
+    /**
+     * @type {Map<string, AnimationClip>} #animations
+     */
+    #animations
+
+    #currentAnimation;
+    #playing;
+
+    /**
+     * @type {SpriteComponent}
+     */
+    #spriteRenderer;
+
+    constructor(id, ecs) {
+        super(id, ecs);
+
+        this.#animations = {};
+    }
+     
+    get type() {
+        return ComponentType.Animator;
+    }
+
+    /**
+     * 
+     * @param {AnimationClip} animation 
+     */
+    addAnimation(animation) {
+        this.#animations[animation.name] = animation;
+    }
+
+    /**
+     * Starts animator by playing animation with the given name
+     * @param {string} animationName name of the animation to be played
+     */
+    playAnimation(animationName) {
+        if (this.#animations[animationName].playing) {
+            return;
+        }
+
+        if (!this.#spriteRenderer) {
+            this.#spriteRenderer = this.getComponent(ComponentType.Sprite);
+        }
+
+        this.stopAnimation();
+
+        this.#animations[animationName].play();
+        this.#playing = true;
+        
+        this.#spriteRenderer.texture = this.#animations[animationName].texture;
+        this.#spriteRenderer.texCoords = this.#animations[animationName].currentFrame;
+
+        this.#currentAnimation = animationName;
+    }
+
+    /**
+     * Stops animator.
+     */
+    stopAnimation() {
+        if (!this.#currentAnimation) {
+            return;
+        }
+
+        this.#animations[this.#currentAnimation].stop();
+        this.#playing = false;
+
+        this.#spriteRenderer.default();
+    }
+
+    /**
+     * Runs every frame for animating
+     * @param {number} dt frame rate 
+     */
+    step(dt) {
+        if (!this.#playing) {
+            return;
+        }
+        
+        if (this.#animations[this.#currentAnimation].step(dt)) {
+            this.#spriteRenderer.texCoords = this.#animations[this.#currentAnimation].currentFrame;
+        }
     }
 }

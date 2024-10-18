@@ -25,7 +25,7 @@ export class ECS {
         return id;
     }
 
-    create_with_id(id) {
+    createWithId(id) {
         this.#list[this.#count++] = id;
 
         return id;
@@ -53,7 +53,7 @@ export class ECS {
         return this.#list.indexOf(entity) !== -1;
     }
 
-    get_all_entities() {
+    getAllEntities() {
         return this.#list;
     }
 
@@ -102,7 +102,7 @@ export class ECS {
         return this.#component[componentType][entity] || null;
     }
 
-    get_all(componentType) {
+    getAll(componentType) {
         if (!this.#component[componentType]) {
             return [];
         }
@@ -110,7 +110,7 @@ export class ECS {
         return Object.values(this.#component[componentType]);
     }
 
-    get_all_with_entity(componentType) {
+    getAllWithEntity(componentType) {
         if (!this.#component[componentType]) {
             return {};
         }

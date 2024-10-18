@@ -23,7 +23,15 @@ export default function PerspectiveCamera(props) {
    const gameObjectId = useGameObject();
    
    useEffect(() => {
-       ecs.emplace(gameObjectId, new CameraComponent(false, props.bgColor, props.size, props.near, props.far));
+       ecs.emplace(gameObjectId, new CameraComponent(
+        gameObjectId,
+        ecs, 
+        false, 
+        props.bgColor, 
+        props.size, 
+        props.near, 
+        props.far
+    ));
    }, []);
    
 

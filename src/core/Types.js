@@ -1,3 +1,6 @@
+/**
+ * Types of all components
+ */
 export const ComponentType = {
     None: -1,
     Transform: 0,
@@ -6,8 +9,13 @@ export const ComponentType = {
     Script: 3,
     Audio: 4,
     Body2D: 5,
+    Name: 6,
+    Animator: 7,
 };
 
+/**
+ * Types of all 2D body shapes
+ */
 export const ShapeType = { 
     Box: 0,
     Circle: 1,

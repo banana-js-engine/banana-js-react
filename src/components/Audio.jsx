@@ -23,7 +23,15 @@ export default function Audio(props) {
             .then(response => response.arrayBuffer())
             .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
             .then(buffer => {
-                ecs.emplace(gameObjectId, new AudioComponent(audioContext, buffer, props.volume, props.playOnStart, props.loop));
+                ecs.emplace(gameObjectId, new AudioComponent(
+                    gameObjectId,
+                    ecs, 
+                    audioContext, 
+                    buffer, 
+                    props.volume, 
+                    props.playOnStart, 
+                    props.loop
+                ));
             });
     }, []);
 

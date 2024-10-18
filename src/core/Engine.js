@@ -3,6 +3,7 @@ import { BananaMath } from "../math/BananaMath";
 import { Input } from "./Input";
 import { World2D } from "../physics/World2D";
 import { Vector2, Vector3, Vector4 } from "../math/Vector";
+import { Debug } from "./Debug";
 
 /**
  * The class that controls the game-loop
@@ -75,14 +76,14 @@ export class Engine {
             if (this.#firstUpdate) {
                 this.#firstUpdate = false;
 
-                const goBodies = this.#activeScene.get_all(ComponentType.Body2D);
+                const goBodies = this.#activeScene.getAll(ComponentType.Body2D);
 
                 for (let i = 0; i < goBodies.length; i++) {
                     this.#world2d.addBody(goBodies[i]);
                 }
             }
 
-            const goScripts = this.#activeScene.get_all(ComponentType.Script);
+            const goScripts = this.#activeScene.getAll(ComponentType.Script);
 
             for (let i = 0; i < goScripts.length; i++) {
                 if (!goScripts[i].isReadyCalled) {
@@ -93,7 +94,7 @@ export class Engine {
                 goScripts[i].step(dt);
             }
 
-            const goCameras = this.#activeScene.get_all_with_entity(ComponentType.Camera);
+            const goCameras = this.#activeScene.getAllWithEntity(ComponentType.Camera);
             const size = Object.keys(goCameras).length;
             let cameraTransform; 
             let cameraComponent;
@@ -124,12 +125,18 @@ export class Engine {
             if (!cameraComponent) {
                 return;
             }
+
+            const goAnimators = this.#activeScene.getAll(ComponentType.Animator);
+
+            for (let i = 0; i < goAnimators.length; i++) {
+                goAnimators[i].step(dt);
+            }
             
             this.#rendererRef.beginScene(cameraTransform, cameraComponent);
 
             this.#rendererRef.clear();
 
-            const goSprites = this.#activeScene.get_all_with_entity(ComponentType.Sprite);
+            const goSprites = this.#activeScene.getAllWithEntity(ComponentType.Sprite);
 
             for (const id in goSprites) {
                 const transform = this.#activeScene.get(id, ComponentType.Transform);
@@ -143,6 +150,12 @@ export class Engine {
             this.#rendererRef.drawRect(Vector3.zero, Vector2.one.mul(2), Vector4.one);
             
             this.#rendererRef.endScene();
+
+
+            // Debug
+            if (Input.getKey('control') && Input.getKey('alt') && Input.getKeyDown('s')) {
+                console.log(Debug.snapshot(this.#activeScene));
+            }
         }
 
     }

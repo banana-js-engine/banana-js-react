@@ -1,7 +1,9 @@
+import { SpriteComponent, TransformComponent } from "../ecs/Component";
 import { Matrix4 } from "../math/Matrix";
 import { Vector2, Vector3, Vector4 } from "../math/Vector";
 import { IndexBuffer, VertexBuffer } from "./Buffer";
 import { Shader } from "./Shader";
+import { SpriteSheet } from "./SpriteSheet";
 import { Texture } from "./Texture";
 
 class QuadVertex {
@@ -234,6 +236,11 @@ export class Renderer {
         this.#flush();
     }
 
+    /**
+     * 
+     * @param {TransformComponent} transform 
+     * @param {SpriteComponent} sprite 
+     */
     drawQuad(transform, sprite) {
 
         if (this.#renderData.quadIndexCount >= this.#renderData.maxIndices) {
@@ -267,7 +274,7 @@ export class Renderer {
         for (let i = 0; i < 4; i++) {
             this.#quadVertex.position = t.multiplyVector3(this.#renderData.initialVertexPositions[i]);
             this.#quadVertex.color = sprite.color;
-            this.#quadVertex.texCoords = this.#renderData.textureCoords[i];
+            this.#quadVertex.texCoords = sprite.texCoords[i];
             this.#quadVertex.texIndex = useTextureSlot;
 
             this.#renderData.quadVB.addVertex(this.#renderData.quadVertexCount, this.#quadVertex.flat);

@@ -18,6 +18,13 @@ export class BananaMath {
         return rad * (180 / Math.PI);
     }
 
+    /**
+     * Clamps a value between min and max
+     * @param {number} value 
+     * @param {number} min 
+     * @param {number} max 
+     * @returns clamped value
+     */
     static clamp(value, min, max) {
         if (min === max) {
             return min;
@@ -37,6 +44,11 @@ export class BananaMath {
         return value;
     }
 
+    /**
+     * Clamps a value between 0 and 1
+     * @param {number} value 
+     * @returns clamped value
+     */
     static clamp01(value) {
         return this.clamp(value, 0, 1);
     }

@@ -20,7 +20,13 @@ export default function Transform(props) {
     const gameObjectId = useGameObject();
 
     useEffect(() => {
-        ecs.emplace(gameObjectId, new TransformComponent(props.position, props.rotation, props.scale));
+        ecs.emplace(gameObjectId, new TransformComponent(
+            gameObjectId,
+            ecs, 
+            props.position, 
+            props.rotation, 
+            props.scale
+        ));
     }, []);
 
     return null;

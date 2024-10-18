@@ -7,6 +7,7 @@ export class TestClass extends ScriptComponent {
         this.speed = 5;
         this.transform = this.getComponent(ComponentType.Transform);
         this.audio = this.getComponent(ComponentType.Audio);
+        this.animator = this.getComponent(ComponentType.Animator);
     }
 
     step(dt) {
@@ -29,13 +30,17 @@ export class TestClass extends ScriptComponent {
         }
 
         if (Input.getKeyDown('p')) {
-            this.audio.playOnce();
+            this.animator.playAnimation('DinoIdle');
+        }
+        if (Input.getKeyDown('o')) {
+            this.animator.playAnimation('DinoRun');
+        }
+        if (Input.getKeyDown('m')) {
+            this.animator.stopAnimation();
         }
 
-        this.transform.moveTo(this.mainCamera.screenToWorldSpace(Input.mousePosition));
-
         if (Input.getButtonDown(0)) {
-            console.log('press');
+            
         }
     }
 }

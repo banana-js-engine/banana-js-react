@@ -23,7 +23,15 @@ export default function OrthographicCamera(props) {
     const gameObjectId = useGameObject();
     
     useEffect(() => {
-        ecs.emplace(gameObjectId, new CameraComponent(true, props.bgColor, props.size, props.near, props.far));
+        ecs.emplace(gameObjectId, new CameraComponent(
+            gameObjectId,
+            ecs, 
+            true, 
+            props.bgColor, 
+            props.size, 
+            props.near, 
+            props.far
+        ));
     }, []);
     
     return null;

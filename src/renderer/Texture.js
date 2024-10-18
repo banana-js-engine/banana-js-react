@@ -28,6 +28,14 @@ export class Texture {
         this.#image.addEventListener('load', this.#onImageLoaded)
     }
 
+    get width() {
+        return this.#image.width;
+    }
+
+    get height() {
+        return this.#image.height;
+    }
+
     bind(unit = 0) {
         this.#gl.activeTexture(this.#gl.TEXTURE0 + unit);
         this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.#textureId);
