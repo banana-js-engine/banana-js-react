@@ -2,8 +2,8 @@ import { ComponentType } from "./Types";
 import { BananaMath } from "../math/BananaMath";
 import { Input } from "./Input";
 import { World2D } from "../physics/World2D";
-import { Vector2, Vector3, Vector4 } from "../math/Vector";
 import { Debug } from "./Debug";
+import { SceneManager } from "../ecs/SceneManager";
 
 /**
  * The class that controls the game-loop
@@ -15,8 +15,6 @@ export class Engine {
 
     #rendererRef;
 
-    #scenes;
-    #activeScene;
     #world2d;
 
     #firstUpdate
@@ -34,8 +32,6 @@ export class Engine {
 
         this.#rendererRef = renderer;
 
-        this.#scenes = [];
-        this.#activeScene = null;
         this.#world2d = new World2D();
 
         this.#firstUpdate = true;
@@ -45,6 +41,12 @@ export class Engine {
         this.#multipleCameraFlag = false;
 
         Input.init();
+
+        SceneManager.onSceneChanged = () => {
+            this.#world2d.clear();
+            this.#firstUpdate = true;
+            this.#iteration = 0;
+        }
 
         this.#tick();
     }
@@ -66,7 +68,9 @@ export class Engine {
     }
 
     #update(dt) {
-        if (this.#activeScene) {
+        const activeScene = SceneManager.activeScene;
+
+        if (activeScene) {
 
             if (this.#iteration < 10) {
                 this.#iteration++;
@@ -76,13 +80,13 @@ export class Engine {
             if (this.#firstUpdate) {
                 this.#firstUpdate = false;
 
-                const goBodies = this.#activeScene.getAll(ComponentType.Body2D);
+                const goBodies = activeScene.getAll(ComponentType.Body2D);
 
                 for (let i = 0; i < goBodies.length; i++) {
                     this.#world2d.addBody(goBodies[i]);
                 }
 
-                const goAnimators = this.#activeScene.getAll(ComponentType.Animator);
+                const goAnimators = activeScene.getAll(ComponentType.Animator);
 
                 for (let i = 0; i < goAnimators.length; i++) {
                     if (goAnimators[i].startAnim) {
@@ -90,20 +94,20 @@ export class Engine {
                     }
                 }
 
-                const goScripts = this.#activeScene.getAll(ComponentType.Script);
+                const goScripts = activeScene.getAll(ComponentType.Script);
 
                 for (let i = 0; i < goScripts.length; i++) {
                     goScripts[i].ready();
                 }
             }
 
-            const goScripts = this.#activeScene.getAll(ComponentType.Script);
+            const goScripts = activeScene.getAll(ComponentType.Script);
 
             for (let i = 0; i < goScripts.length; i++) {
                 goScripts[i].step(dt);
             }
 
-            const goCameras = this.#activeScene.getAllWithEntity(ComponentType.Camera);
+            const goCameras = activeScene.getAllWithEntity(ComponentType.Camera);
             const size = Object.keys(goCameras).length;
             let cameraTransform; 
             let cameraComponent;
@@ -120,7 +124,7 @@ export class Engine {
             
             if (size === 1) {
                 const id = Object.keys(goCameras)[0];
-                cameraTransform = this.#activeScene.get(id, ComponentType.Transform);
+                cameraTransform = activeScene.get(id, ComponentType.Transform);
                 cameraComponent = goCameras[id];
 
                 const cc = cameraComponent.clearColor;
@@ -135,7 +139,7 @@ export class Engine {
                 return;
             }
 
-            const goAnimators = this.#activeScene.getAll(ComponentType.Animator);
+            const goAnimators = activeScene.getAll(ComponentType.Animator);
 
             for (let i = 0; i < goAnimators.length; i++) {
                 goAnimators[i].step(dt);
@@ -145,46 +149,22 @@ export class Engine {
 
             this.#rendererRef.clear();
 
-            const goSprites = this.#activeScene.getAllWithEntity(ComponentType.Sprite);
+            const goSprites = activeScene.getAllWithEntity(ComponentType.Sprite);
 
             for (const id in goSprites) {
-                const transform = this.#activeScene.get(id, ComponentType.Transform);
+                const transform = activeScene.get(id, ComponentType.Transform);
 
                 this.#rendererRef.drawQuad(transform, goSprites[id]);
             }
-
-            this.#rendererRef.drawLine(Vector3.left, Vector3.right.mul(6.5), Vector4.one);
-            this.#rendererRef.drawLine(Vector3.up, Vector3.down, Vector4.one);
-
-            this.#rendererRef.drawRect(Vector3.zero, Vector2.one.mul(2), Vector4.one);
             
             this.#rendererRef.endScene();
 
 
             // Debug
             if (Input.getKey('control') && Input.getKey('alt') && Input.getKeyDown('s')) {
-                console.log(Debug.snapshot(this.#activeScene));
+                console.log(Debug.snapshot(activeScene));
             }
         }
 
-    }
-
-    addScene(scene) {
-        this.#scenes.push(scene);
-        if (this.#scenes.length === 1) {
-            this.setActiveScene(0);
-        }
-    }
-
-    setActiveScene(index) {
-        if (index >= this.#scenes.length) {
-            console.error('index cannot be bigger than number of scenes');
-            return;
-        } else if (index < 0) {
-            console.error('negative index');
-            return;
-        }
-
-        this.#activeScene = this.#scenes[index];
-    }
+    }   
 }

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { ECS } from '../ecs/ECS';
-import { useEngine } from './Game';
+import { SceneManager } from '../ecs/SceneManager';
 
 // gl context
 const SceneContext = createContext(null);
@@ -14,11 +14,9 @@ export default function Scene(props) {
 
     const ecsRef = useRef(); 
 
-    const engine = useEngine();
-
     ecsRef.current = new ECS();
 
-    engine.addScene(ecsRef.current);
+    SceneManager.addScene(ecsRef.current);
 
     return (
         <SceneContext.Provider value={ecsRef.current}>

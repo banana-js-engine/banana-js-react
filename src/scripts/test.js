@@ -1,6 +1,7 @@
 import { Input, KeyCode } from "../core/Input";
 import { ScriptComponent } from "../ecs/Component";
 import { ComponentType } from "../core/Types";
+import { SceneManager } from "../ecs/SceneManager";
 
 export class TestClass extends ScriptComponent {
     ready() {
@@ -42,6 +43,10 @@ export class TestClass extends ScriptComponent {
         }
         else {
             this.animator.playAnimation('DinoIdle');
+        }
+
+        if (Input.getKeyDown('g')) {
+            SceneManager.setActiveScene(1);
         }
     }
 }

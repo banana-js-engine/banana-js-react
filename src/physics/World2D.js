@@ -83,4 +83,10 @@ export class World2D {
         const index = this.#bodies.indexOf(body);
         this.#bodies.splice(index, 1);
     }
+
+    clear() {
+        while (this.#bodies.length > 0) {
+            this.#bodies.splice(0, 1);
+        }
+    }
 }
