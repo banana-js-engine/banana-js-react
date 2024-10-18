@@ -37,7 +37,7 @@ export class World2D {
                     continue;
                 }
 
-                if (Collisions.checkAABBCollision(bodyA.AABB, bodyB.AABB)) {
+                if (!Collisions.checkAABBCollision(bodyA.AABB, bodyB.AABB)) {
                     continue;
                 }
 
@@ -48,6 +48,8 @@ export class World2D {
                         bodyB.transform.position,
                         bodyB.radius
                     );
+                } else if (bodyA.shapeType == ShapeType.Box && bodyB.shapeType == ShapeType.Box) {
+                    Collisions.checkPolygonCollision(bodyA.vertices, bodyB.vertices);
                 }
 
                 if (!Collisions.collInfo.colliding) {

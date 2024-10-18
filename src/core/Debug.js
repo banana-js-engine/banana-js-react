@@ -3,6 +3,8 @@ import { ComponentType } from './Types';
 
 export class Debug {
 
+    static showCollisionShapes = true;
+
     /**
      * take a snapshot of the given scene.
      * @param {ECS} scene

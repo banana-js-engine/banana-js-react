@@ -814,6 +814,16 @@ export class Body2DComponent extends Component {
         }
     }
 
+    get vertices() {
+        const transformedVertices = [];
+
+        for (let i = 0; i < 4; i++) {
+            transformedVertices.push(this.#transform.transformMatrix.multiplyVector4(this.#vertices[i]));
+        }
+
+        return transformedVertices;
+    }
+
     update(dt, gravity) {
         if (this.#isStatic) {
             return;
@@ -826,7 +836,7 @@ export class Body2DComponent extends Component {
         this.#linearVelocity.add(this.#toAdd);
         this.#linearVelocity.add(this.#force);
 
-        this.#transform.moveBy(this.#linearVelocity.x, this.#linearVelocity.y, 0);
+        this.#transform.moveBy(this.#linearVelocity.x * dt, this.#linearVelocity.y * dt, 0);
         this.#transform.rotateBy(0, 0, BananaMath.toDegrees(this.#angularVelocity) * dt);
 
         this.#force.set(0, 0);

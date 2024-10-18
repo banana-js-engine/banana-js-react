@@ -27,7 +27,7 @@ export default function App() {
                 <GameObject name="Circle">
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <Sprite src="shapes/circle.png"/>
-                    <Body2D shape={ShapeType.Circle}/>
+                    <Body2D shape={ShapeType.Box}/>
                     <Audio src="ah.wav"/>
                     <Script src="test.js"/>
 
@@ -39,7 +39,17 @@ export default function App() {
                 <GameObject>
                     <Transform position={[2, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <Sprite src="shapes/circle.png"/>
-                    <Body2D shape={ShapeType.Circle}/>
+                    <Body2D shape={ShapeType.Box}/>
+
+                    <Animator startAnim="DinoIdle">
+                        <Animation src="Dino.png" name="DinoIdle" cellWidth={24} cellHeight={24} length={0.5} frames={4} firstFrame={0}/>
+                    </Animator>
+                </GameObject>
+
+                <GameObject>
+                    <Transform position={[1, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
+                    <Sprite src="shapes/circle.png"/>
+                    <Body2D shape={ShapeType.Box}/>
 
                     <Animator startAnim="DinoIdle">
                         <Animation src="Dino.png" name="DinoIdle" cellWidth={24} cellHeight={24} length={0.5} frames={4} firstFrame={0}/>

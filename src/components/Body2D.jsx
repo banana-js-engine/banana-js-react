@@ -24,6 +24,17 @@ export default function Body2D(props) {
                 0.6,
                 0
             ));
+        } else if (props.shape == ShapeType.Box) {
+            ecs.emplace(gameObjectId, Body2DComponent.createBoxBody2D(
+                gameObjectId,
+                ecs,
+                1,
+                1,
+                0.2,
+                false,
+                0.6,
+                0
+            ));
         }
     }, []);
 

@@ -132,6 +132,15 @@ export class Vector2 {
         return this;
     }
 
+    /**
+     * 
+     * @param {Vector2} other
+     * @returns {number} 
+     */
+    dot(other) {
+        return this.x * other.x + this.y * other.y; 
+    }
+
     // ready Vector2s
     static get zero() {
         return new Vector2(0, 0);
@@ -257,15 +266,6 @@ export class Vector3 extends Vector2 {
         super.div(scalar);
         this.z /= scalar;
         return this;
-    }
-
-    /**
-     * 
-     * @param {Vector3} other
-     * @returns {number} 
-     */
-    dot(other) {
-        return this.x * other.x + this.y * other.y; 
     }
 
     // ready Vector3s

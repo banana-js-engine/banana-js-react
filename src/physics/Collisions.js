@@ -108,6 +108,7 @@ export class Collisions {
         const terminus = Vector2.zero;
 
         this.collInfo.resetInfo();
+        this.collInfo.depth = Number.MAX_SAFE_INTEGER;
 
         for (let i = 0; i < verticesA.length; i++) {
             origin.set(verticesA[i]);
@@ -117,7 +118,95 @@ export class Collisions {
             const axis = new Vector2(terminus.y, -terminus.x);
             axis.normalize();
 
-            
+            const projA = this.#projectVertices(verticesA, axis);
+            const projB = this.#projectVertices(verticesB, axis);
+
+            if (projA.min >= projB.max || projB.min >= projA.max) {
+                return;
+            }
+
+            const axisDepth = Math.min(projB.max - projA.min, projA.max - projB.min);
+
+            if (axisDepth < this.collInfo.depth) {
+                this.collInfo.depth = axisDepth;
+                this.collInfo.normal.set(axis);
+            }
         }
+
+        for (let i = 0; i < verticesB.length; i++) {
+            origin.set(verticesB[i]);
+            terminus.set(verticesB[(i + 1) % verticesB.length]);
+
+            terminus.sub(origin);
+            const axis = new Vector2(terminus.y, -terminus.x);
+            axis.normalize();
+
+            const projA = this.#projectVertices(verticesA, axis);
+            const projB = this.#projectVertices(verticesB, axis);
+
+            if (projA.min >= projB.max || projB.min >= projA.max) {
+                return;
+            }
+
+            const axisDepth = Math.min(projB.max - projA.min, projA.max - projB.min);
+
+            if (axisDepth < this.collInfo.depth) {
+                this.collInfo.depth = axisDepth;
+                this.collInfo.normal.set(axis);
+            }
+        }
+
+        this.collInfo.colliding = true;
+
+        const centerA = this.#findCenter(verticesA);
+        const centerB = this.#findCenter(verticesB);
+
+        centerB.sub(centerA);
+
+        if (centerB.dot(this.collInfo.normal) < 0) {
+            this.collInfo.normal.mul(-1);
+        }
+    }
+
+    /**
+     * 
+     * @param {Vector4[]} vertices 
+     * @param {Vector2} axis 
+     */
+    static #projectVertices(vertices, axis) {
+        let min = Number.MAX_SAFE_INTEGER;
+        let max = Number.MIN_SAFE_INTEGER;
+
+        const currentVertex = Vector2.zero;
+
+        for (let i = 0; i < vertices.length; i++) {
+            currentVertex.set(vertices[i]);
+
+            const proj = currentVertex.dot(axis);
+
+            if (proj < min) {
+                min = proj;
+            }
+            if (proj > max) {
+                max = proj;
+            }
+        }
+
+        return { min, max };
+    }
+
+    /**
+     * 
+     * @param {Vector4[]} vertices 
+     */
+    static #findCenter(vertices) {
+        const center = Vector2.zero;
+
+        for (let i = 0; i < vertices.length; i++) {
+            center.add(vertices[i]);
+        }
+
+        center.div(vertices.length);
+        return center;
     }
 }

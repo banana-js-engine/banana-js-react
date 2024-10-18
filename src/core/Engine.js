@@ -1,9 +1,11 @@
-import { ComponentType } from "./Types";
+import { ComponentType, ShapeType } from "./Types";
 import { BananaMath } from "../math/BananaMath";
 import { Input } from "./Input";
 import { World2D } from "../physics/World2D";
 import { Debug } from "./Debug";
 import { SceneManager } from "../ecs/SceneManager";
+import { Color } from "../renderer/Color";
+import { Collisions } from "../physics/Collisions";
 
 /**
  * The class that controls the game-loop
@@ -155,6 +157,22 @@ export class Engine {
                 const transform = activeScene.get(id, ComponentType.Transform);
 
                 this.#rendererRef.drawQuad(transform, goSprites[id]);
+            }
+
+            if (Debug.showCollisionShapes) {
+                const goBodies = activeScene.getAll(ComponentType.Body2D);
+
+
+                for (let i = 0; i < goBodies.length; i++) {
+                    
+                    if (goBodies[i].shapeType == ShapeType.Box) {
+                        const vertices = goBodies[i].vertices;
+    
+                        for (let j = 0; j < vertices.length; j++) {
+                            this.#rendererRef.drawLine(vertices[j], vertices[(j + 1) % vertices.length], Color.green);
+                        }
+                    }
+                }
             }
             
             this.#rendererRef.endScene();
