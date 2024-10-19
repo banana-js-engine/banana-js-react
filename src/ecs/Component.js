@@ -131,6 +131,10 @@ export class TransformComponent extends Component {
         return this.#position;
     }
 
+    get rotation() {
+        return this.#rotation;
+    }
+
     get scale() {
         return this.#scale;
     }
@@ -288,7 +292,7 @@ export class SpriteComponent extends Component {
 
         if (textureSrc) {
             this.#texture = new Texture(gl, textureSrc);
-            this.#originalTexture = new Texture(gl, textureSrc);
+            this.#originalTexture = this.#texture;
         }
 
         this.#texCoords = [
@@ -365,6 +369,12 @@ export class SpriteComponent extends Component {
     }
 
     setColor(r, g, b, a) {
+
+        if (r instanceof Vector4) {
+            this.#color.set(r);
+            return;
+        }
+
         this.#color.set(r, g, b, a);
     }
 
@@ -411,6 +421,8 @@ export class CameraComponent extends Component {
     #near;
     #far;
 
+    #isOrtho;
+
     constructor(id, ecs, isOrtho, clearColor, size, near, far) {
         super(id, ecs);
 
@@ -426,8 +438,8 @@ export class CameraComponent extends Component {
         this.#aspectRatio = this.#canvas.clientWidth / this.#canvas.clientHeight;
 
         this.#size = isOrtho ? 10 : 45;
-        this.#near = isOrtho ? -1 : 10;
-        this.#far =  isOrtho ? 1 : 1000;
+        this.#near = isOrtho ? -10 : 0.1;
+        this.#far =  isOrtho ? 10 : 1000;
 
         if (size) {
             this.#size = size;
@@ -445,6 +457,8 @@ export class CameraComponent extends Component {
         } else {
             this.setPerspective();
         }
+
+        this.#isOrtho = isOrtho;
     }
 
     get type() {
@@ -470,6 +484,10 @@ export class CameraComponent extends Component {
         return this.#clearColor;
     }
 
+    get isOrtho() {
+        return this.#isOrtho;
+    }
+
     setOrthographic() {
         const left = -this.#size * this.#aspectRatio * 0.5;
         const right = this.#size * this.#aspectRatio * 0.5;
@@ -479,11 +497,12 @@ export class CameraComponent extends Component {
         this.#projectionMatrix.setOrtho(left, right, bottom, top, this.#near, this.#far);
     }
 
+    setPerspective() {
+        this.#projectionMatrix.setPerspective(this.#size, this.#aspectRatio, this.#near, this.#far);
+    }
+
     setClearColor(r, g, b, a) {
-        this.#clearColor.x = r;
-        this.#clearColor.y = g;
-        this.#clearColor.z = b;
-        this.#clearColor.w = a;
+        this.#clearColor.set(r, g, b, a);
     }
 
     /**
@@ -970,4 +989,12 @@ export class AnimatorComponent extends Component {
             this.#spriteRenderer.texCoords = this.#animations[this.#currentAnimation].currentFrame;
         }
     }
+}
+
+export class MeshComponent extends Component {
+
+    get type() {
+        return ComponentType.Mesh;
+    }
+
 }

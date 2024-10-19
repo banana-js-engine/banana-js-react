@@ -1,9 +1,9 @@
-import { SpriteComponent, TransformComponent } from "../ecs/Component";
+import { MeshComponent, SpriteComponent, TransformComponent } from "../ecs/Component";
 import { Matrix4 } from "../math/Matrix";
 import { Vector2, Vector3, Vector4 } from "../math/Vector";
 import { IndexBuffer, VertexBuffer } from "./Buffer";
+import { Color } from "./Color";
 import { Shader } from "./Shader";
-import { SpriteSheet } from "./SpriteSheet";
 import { Texture } from "./Texture";
 
 class QuadVertex {
@@ -54,6 +54,29 @@ class LineVertex {
     static vertexSize = 7;
 }
 
+class CubeVertex {
+    position;
+    normal;
+    color;
+
+    get flat() {
+        return [
+            this.position.x,
+            this.position.y,
+            this.position.z,
+            this.normal.x,
+            this.normal.y,
+            this.normal.z,
+            this.color.x,
+            this.color.y,
+            this.color.z,
+            this.color.w
+        ];
+    }
+
+    static vertexSize = 10;
+}
+
 /**
  * Class that does the rendering by using the encapsulated WebGL objects
  */
@@ -72,6 +95,39 @@ export class Renderer {
             new Vector3(0.5, -0.5, 0),
             new Vector3(-0.5, 0.5, 0),
             new Vector3(0.5, 0.5, 0),
+        ],
+
+        initialVertexPositions3D: [
+            new Vector3(-0.5, -0.5, -0.5),
+            new Vector3(0.5, -0.5, -0.5),
+            new Vector3(-0.5, 0.5, -0.5),
+            new Vector3(0.5, 0.5, -0.5),
+            new Vector3(-0.5, -0.5, 0.5),
+            new Vector3(0.5, -0.5, 0.5),
+            new Vector3(-0.5, 0.5, 0.5),
+            new Vector3(0.5, 0.5, 0.5),
+        ],
+
+        defaultColors: [
+            Color.black,
+            Color.red,
+            Color.green,
+            Color.orange,
+            Color.blue,
+            Color.yellow,
+            Color.purple,
+            Color.cyan
+        ],
+
+        initialVertexNormals: [
+            new Vector3(0.33, 0.67, 0.67),
+            new Vector3(-0.82, 0.41, 0.41),
+            new Vector3(0.67, -0.67, 0.33),
+            new Vector3(-0.41, -0.41, 0.82),
+            new Vector3(0.82, 0.41, -0.41),
+            new Vector3(-0.33, 0.67, -0.67),
+            new Vector3(0.41, -0.41, -0.82),
+            new Vector3(-0.67, -0.67, -0.33),
         ],
 
         textureCoords: [
@@ -112,6 +168,24 @@ export class Renderer {
          */
         lineVB: null,
 
+        cubeVertexCount: 0,
+        cubeIndexCount: 0,
+
+        /**
+         * @type {Shader}
+         */
+        cubeShader: null,
+
+        /**
+         * @type {VertexBuffer}
+         */
+        cubeVB: null,
+
+        /**
+         * @type {IndexBuffer}
+         */
+        cubeIB: null,
+
         // texture data
         maxTextureSlotCount: -1,
         textureSlotIndex: 1,
@@ -150,6 +224,11 @@ export class Renderer {
     #lineVertex;
 
     /**
+     * @type {CubeVertex} vertex of type line (used for caching reasons)
+     */
+    #cubeVertex;
+
+    /**
      * 
      * @param {WebGL2RenderingContext} gl the WebGL context 
      */
@@ -160,7 +239,7 @@ export class Renderer {
         this.#gl.blendEquation(this.#gl.FUNC_ADD);
         this.#gl.blendFunc(this.#gl.SRC_ALPHA, this.#gl.ONE_MINUS_SRC_ALPHA);
         this.#gl.disable(this.#gl.CULL_FACE);
-        this.#gl.disable(this.#gl.DEPTH_TEST);
+        this.#gl.enable(this.#gl.DEPTH_TEST);
 
         this.#renderData.maxTextureSlotCount = this.#gl.getParameter(this.#gl.MAX_TEXTURE_IMAGE_UNITS);
         this.#renderData.whiteTexture = new Texture(this.#gl); // without src, we'll get the default 1x1 white texture
@@ -168,9 +247,10 @@ export class Renderer {
         // initialize vertices of each type
         this.#quadVertex = new QuadVertex();
         this.#lineVertex = new LineVertex();
+        this.#cubeVertex = new CubeVertex();
 
         // prepare indices for index buffer creation
-        const indices = new Uint16Array(this.#renderData.maxIndices);
+        let indices = new Uint16Array(this.#renderData.maxIndices);
 
         let offset = 0;
         for (let i = 0; i < this.#renderData.maxIndices; i += 6) {
@@ -217,10 +297,82 @@ export class Renderer {
 
         this.#renderData.lineVB.pushAttribute(linePosition, 3);
         this.#renderData.lineVB.pushAttribute(lineColor, 4);
+
+        // 3D
+        // prepare indices for index buffer creation
+        indices = new Uint16Array(this.#renderData.maxIndices);
+
+        offset = 0;
+        for (let i = 0; i < this.#renderData.maxIndices; i += 36) {
+            indices[i +  0] = offset + 0;
+            indices[i +  1] = offset + 1;
+            indices[i +  2] = offset + 2;
+            
+            indices[i +  3] = offset + 2;
+            indices[i +  4] = offset + 1;
+            indices[i +  5] = offset + 3;
+
+            indices[i +  6] = offset + 4;
+            indices[i +  7] = offset + 6;
+            indices[i +  8] = offset + 5;
+
+            indices[i +  9] = offset + 5;
+            indices[i + 10] = offset + 6;
+            indices[i + 11] = offset + 7;
+
+            indices[i + 12] = offset + 0;
+            indices[i + 13] = offset + 4;
+            indices[i + 14] = offset + 2;
+
+            indices[i + 15] = offset + 2;
+            indices[i + 16] = offset + 4;
+            indices[i + 17] = offset + 6;
+
+            indices[i + 18] = offset + 1;
+            indices[i + 19] = offset + 5;
+            indices[i + 20] = offset + 3;
+            
+            indices[i + 21] = offset + 3;
+            indices[i + 22] = offset + 5;
+            indices[i + 23] = offset + 7;
+
+            indices[i + 24] = offset + 0;
+            indices[i + 25] = offset + 1;
+            indices[i + 26] = offset + 4;
+
+            indices[i + 27] = offset + 4;
+            indices[i + 28] = offset + 1;
+            indices[i + 29] = offset + 5;
+
+            indices[i + 30] = offset + 2;
+            indices[i + 31] = offset + 3;
+            indices[i + 32] = offset + 6;
+
+            indices[i + 33] = offset + 6;
+            indices[i + 34] = offset + 3;
+            indices[i + 35] = offset + 7;
+        
+            offset += 8;
+        }
+
+        this.#renderData.cubeShader = new Shader(this.#gl, Shader.cubeShaderPath);
+        this.#renderData.cubeVB = new VertexBuffer(this.#gl, this.#renderData.maxVertices * QuadVertex.vertexSize);
+        this.#renderData.cubeIB = new IndexBuffer(this.#gl, indices);
+
+        const cubePosition = this.#renderData.cubeShader.getAttributeLocation('a_Position');
+        const cubeNormal = this.#renderData.cubeShader.getAttributeLocation('a_Normal');
+        const cubeColor = this.#renderData.cubeShader.getAttributeLocation('a_Color');
+        this.#renderData.cubeVB.pushAttribute(cubePosition, 3);
+        this.#renderData.cubeVB.pushAttribute(cubeNormal, 3);
+        this.#renderData.cubeVB.pushAttribute(cubeColor, 4);
     }
 
     beginScene(transform, camera) {
         // setup the view matrix
+        if (!camera.isOrtho) {
+            transform.scaleTo(1, -1, 1);
+        }
+
         this.#sceneData.view.identity();
         this.#sceneData.view.multiply(transform.transformMatrix);
         this.#sceneData.view.invert();
@@ -248,10 +400,11 @@ export class Renderer {
         }
 
         let useTextureSlot = -1;
-        
+
         if (sprite.texture) {
+            
             for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
-                if (this.#renderData.textureSlots[i] === sprite.texture) {
+                if (this.#renderData.textureSlots[i] == sprite.texture) {
                     useTextureSlot = i;
                     break;
                 }
@@ -335,12 +488,38 @@ export class Renderer {
         this.drawLine(p0, p1, color);
     }
 
+    /**
+     * 
+     * @param {TransformComponent} transform 
+     * @param {MeshComponent} mesh 
+     */
+    drawMesh(transform, mesh) {
+        if (this.#renderData.cubeIndexCount >= this.#renderData.maxIndices) {
+            this.#flush();
+        }
+
+        const t = transform.transformMatrix;
+
+        for (let i = 0; i < 8; i++) {
+            this.#cubeVertex.position = t.multiplyVector3(this.#renderData.initialVertexPositions3D[i]);
+            this.#cubeVertex.normal = this.#renderData.initialVertexNormals[i];
+            this.#cubeVertex.color = Color.red;
+
+            this.#renderData.cubeVB.addVertex(this.#renderData.cubeVertexCount, this.#cubeVertex.flat);
+
+            this.#renderData.cubeVertexCount++;
+        }
+
+        this.#renderData.cubeIndexCount += 36;
+    }
+
     #flush() {
         if (this.#renderData.quadIndexCount > 0) {
             for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
                 this.#renderData.textureSlots[i].bind(i);
             }
     
+            this.#renderData.quadIB.bind();
             this.#renderData.quadVB.bind();
             this.#renderData.quadVB.linkAttributes();
             this.#renderData.quadShader.bind();
@@ -354,6 +533,18 @@ export class Renderer {
             this.#renderData.lineShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
             this.#gl.drawArrays(this.#gl.LINES, 0, this.#renderData.lineVertexCount);
         }
+        if (this.#renderData.cubeIndexCount > 0) {
+            for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
+                this.#renderData.textureSlots[i].bind(i);
+            }
+    
+            this.#renderData.cubeIB.bind();
+            this.#renderData.cubeVB.bind();
+            this.#renderData.cubeVB.linkAttributes();
+            this.#renderData.cubeShader.bind();
+            this.#renderData.cubeShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
+            this.#gl.drawElements(this.#gl.TRIANGLES, this.#renderData.cubeIndexCount, this.#gl.UNSIGNED_SHORT, 0);
+        }
 
         // reset batch
         this.#renderData.quadVertexCount = 0;
@@ -362,13 +553,24 @@ export class Renderer {
         this.#renderData.textureSlotIndex = 1;
 
         this.#renderData.lineVertexCount = 0;
+
+        this.#renderData.cubeVertexCount = 0;
+        this.#renderData.cubeIndexCount = 0;
     }
 
     clear() {
-        this.#gl.clear(this.#gl.COLOR_BUFFER_BIT);
+        this.#gl.clear(this.#gl.COLOR_BUFFER_BIT | this.#gl.DEPTH_BUFFER_BIT);
     }
 
     setClearColor(r, g, b, a) {
         this.#gl.clearColor(r, g, b, a);
+    }
+
+    settings2d() {
+        this.#gl.disable(this.#gl.DEPTH_TEST);
+    }
+
+    settings3d() {
+        this.#gl.enable(this.#gl.DEPTH_TEST);
     }
 }

@@ -13,15 +13,19 @@ import Animation from "./components/Animation"
 import { ShapeType } from "./core/Types"
 import { Color } from "./renderer/Color"
 import PerspectiveCamera from "./components/PerspectiveCamera"
+import Mesh from "./components/Mesh"
+import { RotateScript } from "./scripts/RotateScript"
 
 export default function App() {
     return (
         <Game name='Game' width={800} height={600}>
             <Cursor src="tool_sword_a.svg" size={100}/>
+
             <Scene>
                 <GameObject name="Camera">
-                    <Transform position={[0, 0, 0]} rotation={[0, 0, 0]}/>
+                    <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <OrthographicCamera/>   
+                    {/* <Script src="RotateScript.js"/> */}
                     {/* <Audio src="testAudio.mp3" playOnStart={true} /> */}
                 </GameObject>
                 <GameObject name="Circle">
@@ -31,7 +35,7 @@ export default function App() {
                     <Audio src="ah.wav"/>
                     <Script src="test.js"/>
 
-                    <Animator>
+                    <Animator startAnim="DinoIdle">
                         <Animation src="Dino.png" name="DinoIdle" cellWidth={24} cellHeight={24} length={0.5} frames={4} firstFrame={0}/>
                         <Animation src="Dino.png" name="DinoRun" cellWidth={24} cellHeight={24} length={0.5} frames={6} firstFrame={4}/>
                     </Animator>
@@ -59,21 +63,15 @@ export default function App() {
 
             <Scene>
                 <GameObject name="Camera">
-                    <Transform position={[0, 0, 0]} rotation={[0, 0, 0]}/>
-                    <OrthographicCamera bgColor={Color.orange}/>   
-                    {/* <Audio src="testAudio.mp3" playOnStart={true} /> */}
+                    <Transform position={[0, 0, 0]} rotation={[20, 0, 0]} scale={[1, 1, 1]}/>
+                    <OrthographicCamera/>   
+                    <Script src="RotateScript.js"/>
                 </GameObject>
-                <GameObject name="Circle">
-                    <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Sprite src="shapes/circle.png"/>
-                    <Body2D shape={ShapeType.Circle}/>
-                    <Audio src="ah.wav"/>
-                    <Script src="test.js"/>
 
-                    <Animator>
-                        <Animation src="Dino.png" name="DinoIdle" cellWidth={24} cellHeight={24} length={0.5} frames={4} firstFrame={0}/>
-                        <Animation src="Dino.png" name="DinoRun" cellWidth={24} cellHeight={24} length={0.5} frames={6} firstFrame={4}/>
-                    </Animator>
+                <GameObject name="Cube">
+                    <Transform position={[0, 0, 0]} rotation={[0, 45, 0]} scale={[1, 2, 3]}/>
+                    <Mesh/>
+                    <Script src="MovementScript.js"/>
                 </GameObject>
             </Scene>
         </Game>

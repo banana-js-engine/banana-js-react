@@ -33,6 +33,10 @@ export class World2D {
             for (let j = i + 1; j < this.#bodies.length; j++) {
                 const bodyB = this.#bodies[j];
 
+                if (bodyA.transform.position.z != bodyB.transform.position.z) {
+                    continue;
+                }
+
                 if (bodyA.isStatic && bodyB.isStatic) {
                     continue;
                 }

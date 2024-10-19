@@ -3,7 +3,7 @@ import { ComponentType } from './Types';
 
 export class Debug {
 
-    static showCollisionShapes = true;
+    static showCollisionShapes = false;
 
     /**
      * take a snapshot of the given scene.

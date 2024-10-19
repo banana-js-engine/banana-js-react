@@ -15,6 +15,10 @@ export class Shader {
         return 'shader/line_shader.glsl';
     }
 
+    static get cubeShaderPath() {
+        return 'shader/cube_shader.glsl';
+    }
+
     #gl
     #shaderId;
     #uniformLookupTable;

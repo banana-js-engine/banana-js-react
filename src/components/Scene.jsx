@@ -9,7 +9,11 @@ export function useScene() {
     return useContext(SceneContext);
 }
 
-
+/**
+ * 
+ * @param props 
+ * @returns 
+ */
 export default function Scene(props) {
 
     const ecsRef = useRef(); 

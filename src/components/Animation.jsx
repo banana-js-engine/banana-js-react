@@ -12,18 +12,15 @@ export default function Animation(props) {
     const animator = useAnimator();
     const gl = useGL();
 
-    useEffect(() => {
-        const animation = new AnimationClip(
-            gl, 
-            props.src, 
-            props.name, 
-            props.frames,
-            props.firstFrame,  
-            props.length, 
-            props.cellWidth, 
-            props.cellHeight
-        );
-        animator.addAnimation(animation);
-    }, []);
-
+    const animation = new AnimationClip(
+        gl, 
+        props.src, 
+        props.name, 
+        props.frames,
+        props.firstFrame,  
+        props.length, 
+        props.cellWidth, 
+        props.cellHeight
+    );
+    animator.addAnimation(animation);
 }

@@ -19,8 +19,10 @@ export default function Animator(props) {
     const ecs = useScene();
     const id = useGameObject();
 
-    const animatorRef = useRef(new AnimatorComponent(id, ecs, props.startAnim));
+    const animatorRef = useRef();
 
+    animatorRef.current = new AnimatorComponent(id, ecs, props.startAnim);
+    
     useEffect(() => {
         ecs.emplace(id, animatorRef.current);
     }, []);

@@ -150,7 +150,7 @@ export class Engine {
             this.#rendererRef.beginScene(cameraTransform, cameraComponent);
 
             this.#rendererRef.clear();
-
+            
             const goSprites = activeScene.getAllWithEntity(ComponentType.Sprite);
 
             for (const id in goSprites) {
@@ -159,9 +159,16 @@ export class Engine {
                 this.#rendererRef.drawQuad(transform, goSprites[id]);
             }
 
+            const goMeshes = activeScene.getAllWithEntity(ComponentType.Mesh);
+
+            for (const id in goMeshes) {
+                const transform = activeScene.get(id, ComponentType.Transform);
+
+                this.#rendererRef.drawMesh(transform, goMeshes[id]);
+            }
+
             if (Debug.showCollisionShapes) {
                 const goBodies = activeScene.getAll(ComponentType.Body2D);
-
 
                 for (let i = 0; i < goBodies.length; i++) {
                     

@@ -34,6 +34,5 @@ export default function PerspectiveCamera(props) {
     ));
    }, []);
    
-
    return null;
 }
