@@ -5,11 +5,11 @@ export class WavefrontParser {
     static async parseObj(src) {
         const text = await this.#readFileAsText(src)
 
+        const vertices = [];
+
         const positions = [];
         const texCoords = [];
         const normals = [];
-
-        const vertices = [];
 
         const lines = text.split('\n');
         
@@ -75,6 +75,47 @@ export class WavefrontParser {
 
         return vertices;
         
+    }
+
+    static async parseMtl(src) {
+        const text = await this.#readFileAsText(src);
+
+        const material = {
+            'ambientColor': null,
+            'diffuseColor': null,
+            'specularColor': null,
+            'shininess': null,
+        };
+
+        const lines = text.split('\n');
+
+        for (let i = 0; i < lines.length; i++) {
+            const words = lines[i].split(' ');
+
+            if (words[0] == 'Ka') {
+                const x = Number(words[1]);
+                const y = Number(words[2]);
+                const z = Number(words[3]);
+
+                material.ambientColor = new Vector3(x, y, z);
+            } else if (words[0] == 'Kd') {
+                const x = Number(words[1]);
+                const y = Number(words[2]);
+                const z = Number(words[3]);
+
+                material.diffuseColor = new Vector3(x, y, z);
+            } else if (words[0] == 'Ks') {
+                const x = Number(words[1]);
+                const y = Number(words[2]);
+                const z = Number(words[3]);
+
+                material.specularColor = new Vector3(x, y, z);
+            } else if (words[0] == 'Ns') {
+                material.shininess = Number(words[1]);
+            }
+        }
+
+        return material;
     }
 
     static async #readFileAsText(src) {

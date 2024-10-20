@@ -64,23 +64,24 @@ export default function App() {
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 0]} rotation={[20, 0, 0]} scale={[1, 1, 1]}/>
                     <OrthographicCamera/>   
+                    <Script src="CameraController.js"/>
                 </GameObject>
 
                 <GameObject name="Icosphere">
                     <Transform position={[4, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Mesh objSrc="defaultModels/Icosphere.obj"/>
+                    <Mesh objSrc="defaultModels/Icosphere.obj" mtlSrc="defaultModels/Icosphere.mtl"/>
                     <Script src="RotateScript.js"/>
                 </GameObject>
 
                 <GameObject name="Torus">
                     <Transform position={[0, 4, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Mesh objSrc="defaultModels/Torus.obj"/>
+                    <Mesh objSrc="defaultModels/Torus.obj" mtlSrc="defaultModels/Torus.mtl"/>
                     <Script src="RotateScript.js"/>
                 </GameObject>
 
                 <GameObject name="Sphere">
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Mesh objSrc="defaultModels/Sphere.obj"/>
+                    <Mesh objSrc="defaultModels/Sphere.obj" mtlSrc="defaultModels/Sphere.mtl"/>
                     <Script src="RotateScript.js"/>
                 </GameObject>
             </Scene>

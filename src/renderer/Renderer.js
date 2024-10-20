@@ -1,4 +1,4 @@
-import { MeshComponent, SpriteComponent, TransformComponent } from "../ecs/Component";
+import { CameraComponent, MeshComponent, SpriteComponent, TransformComponent } from "../ecs/Component";
 import { Matrix4 } from "../math/Matrix";
 import { Vector2, Vector3, Vector4 } from "../math/Vector";
 import { IndexBuffer, VertexBuffer } from "./Buffer";
@@ -58,6 +58,10 @@ class CubeVertex {
     position;
     texCoord;
     normal;
+    ambientColor;
+    diffuseColor;
+    specularColor;
+    shininess;
 
     get flat() {
         return [
@@ -69,10 +73,20 @@ class CubeVertex {
             this.normal.x,
             this.normal.y,
             this.normal.z,
+            this.ambientColor.x,
+            this.ambientColor.y,
+            this.ambientColor.z,
+            this.diffuseColor.x,
+            this.diffuseColor.y,
+            this.diffuseColor.z,
+            this.specularColor.x,
+            this.specularColor.y,
+            this.specularColor.z,
+            this.shininess
         ];
     }
 
-    static vertexSize = 8;
+    static vertexSize = 18;
 }
 
 /**
@@ -169,7 +183,12 @@ export class Renderer {
         /**
          * @type {Matrix4}
          */
-        view: Matrix4.zero
+        view: Matrix4.zero,
+
+        /**
+         * @type {Vector3}
+         */
+        cameraPos: Vector3.zero,
     }
 
     /**
@@ -264,11 +283,24 @@ export class Renderer {
         const cubePosition = this.#renderData.cubeShader.getAttributeLocation('a_Position');
         const cubeTexCoord = this.#renderData.cubeShader.getAttributeLocation('a_TexCoord');
         const cubeNormal = this.#renderData.cubeShader.getAttributeLocation('a_Normal');
+        const cubeAmbient = this.#renderData.cubeShader.getAttributeLocation('a_Ambient');
+        const cubeDiffuse = this.#renderData.cubeShader.getAttributeLocation('a_Diffuse');
+        const cubeSpecular = this.#renderData.cubeShader.getAttributeLocation('a_Specular');
+        const cubeShininess = this.#renderData.cubeShader.getAttributeLocation('a_Shininess');
         this.#renderData.cubeVB.pushAttribute(cubePosition, 3);
         this.#renderData.cubeVB.pushAttribute(cubeTexCoord, 2);
         this.#renderData.cubeVB.pushAttribute(cubeNormal, 3);
+        this.#renderData.cubeVB.pushAttribute(cubeAmbient, 3);
+        this.#renderData.cubeVB.pushAttribute(cubeDiffuse, 3);
+        this.#renderData.cubeVB.pushAttribute(cubeSpecular, 3);
+        this.#renderData.cubeVB.pushAttribute(cubeShininess, 1);
     }
 
+    /**
+     * 
+     * @param {TransformComponent} transform 
+     * @param {CameraComponent} camera 
+     */
     beginScene(transform, camera) {
         // setup the view matrix
         if (!camera.isOrtho) {
@@ -284,6 +316,8 @@ export class Renderer {
         this.#sceneData.projection.identity();
         this.#sceneData.projection.multiply(camera.projection);
         this.#sceneData.projection.multiply(this.#sceneData.view);
+
+        this.#sceneData.cameraPos.set(transform.position);
     }
 
     endScene() {
@@ -395,17 +429,23 @@ export class Renderer {
      * @param {TransformComponent} transform 
      * @param {MeshComponent} mesh 
      */
-    drawMesh(transform, parsedObj) {
+    drawMesh(transform, mesh) {
         if (this.#renderData.cubeIndexCount >= this.#renderData.maxIndices) {
             this.#flush();
         }
 
         const t = transform.transformMatrix;
+        const parsedObj = mesh.vertices;
+        const parsedMtl = mesh.material;
 
         for (let i = 0; i < parsedObj.length; i++) {
             this.#cubeVertex.position = t.multiplyVector3(parsedObj[i].position);
             this.#cubeVertex.texCoord = parsedObj[i].texCoord;
             this.#cubeVertex.normal = t.multiplyVector3(parsedObj[i].normal);
+            this.#cubeVertex.ambientColor = parsedMtl.ambientColor;
+            this.#cubeVertex.diffuseColor = parsedMtl.diffuseColor;
+            this.#cubeVertex.specularColor = parsedMtl.specularColor;
+            this.#cubeVertex.shininess = parsedMtl.shininess;
 
             this.#renderData.cubeVB.addVertex(this.#renderData.cubeVertexCount, this.#cubeVertex.flat);
 
@@ -442,6 +482,7 @@ export class Renderer {
             this.#renderData.cubeVB.linkAttributes();
             this.#renderData.cubeShader.bind();
             this.#renderData.cubeShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
+            this.#renderData.cubeShader.setUniform3fv('u_CameraPosition', this.#sceneData.cameraPos.data);
             this.#gl.drawArrays(this.#gl.TRIANGLES, 0, this.#renderData.cubeVertexCount);
         }
 

@@ -163,7 +163,7 @@ export class Engine {
             for (const id in goMeshes) {
                 const transform = activeScene.get(id, ComponentType.Transform);
 
-                this.#rendererRef.drawMesh(transform, goMeshes[id].vertices);
+                this.#rendererRef.drawMesh(transform, goMeshes[id]);
             }
 
             if (Debug.showCollisionShapes) {

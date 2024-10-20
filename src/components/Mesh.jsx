@@ -5,7 +5,7 @@ import { MeshComponent } from "../ecs/Component";
 
 /**
  * 
- * @param {{ objSrc: string }} props 
+ * @param {{ objSrc: string, mtlSrc: string }} props 
  */
 export default function Mesh(props) {
     
@@ -13,7 +13,7 @@ export default function Mesh(props) {
     const id = useGameObject();
 
     useEffect(() => {
-        ecs.emplace(id, new MeshComponent(id, ecs, props.objSrc));
+        ecs.emplace(id, new MeshComponent(id, ecs, props.objSrc, props.mtlSrc));
     }, []);
 
 }

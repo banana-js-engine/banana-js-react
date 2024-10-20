@@ -131,4 +131,9 @@ export class Shader {
         const uniformLocation = this.#getUniformLocation(name);
         this.#gl.uniform1iv(uniformLocation, value);
     }
+
+    setUniform3fv(name, value) {
+        const uniformLocation = this.#getUniformLocation(name);
+        this.#gl.uniform3fv(uniformLocation, value);
+    }
 }

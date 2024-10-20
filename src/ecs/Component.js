@@ -995,13 +995,19 @@ export class AnimatorComponent extends Component {
 export class MeshComponent extends Component {
 
     #vertices;
+    #material;
 
-    constructor(id, ecs, objSrc) {
+    constructor(id, ecs, objSrc, mtlSrc) {
         super(id, ecs);
 
         WavefrontParser.parseObj(objSrc)
         .then(vertices => {
             this.#vertices = vertices;
+        });
+
+        WavefrontParser.parseMtl(mtlSrc)
+        .then(material => {
+            this.#material = material;
         });
     }
 
@@ -1011,6 +1017,10 @@ export class MeshComponent extends Component {
 
     get vertices() {
         return this.#vertices;
+    }
+
+    get material() {
+        return this.#material;
     }
 
 }
