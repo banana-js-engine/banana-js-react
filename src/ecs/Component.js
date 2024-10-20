@@ -6,6 +6,7 @@ import { ComponentType, ShapeType } from "../core/Types";
 import { BananaMath } from "../math/BananaMath";
 import { ECS } from "./ECS";
 import { AnimationClip } from "../renderer/AnimationClip";
+import { WavefrontParser } from "../renderer/WavefrontParser";
 
 
 class Component {
@@ -993,8 +994,23 @@ export class AnimatorComponent extends Component {
 
 export class MeshComponent extends Component {
 
+    #vertices;
+
+    constructor(id, ecs, objSrc) {
+        super(id, ecs);
+
+        WavefrontParser.parseObj(objSrc)
+        .then(vertices => {
+            this.#vertices = vertices;
+        });
+    }
+
     get type() {
         return ComponentType.Mesh;
+    }
+
+    get vertices() {
+        return this.#vertices;
     }
 
 }

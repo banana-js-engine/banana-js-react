@@ -14,7 +14,6 @@ import { ShapeType } from "./core/Types"
 import { Color } from "./renderer/Color"
 import PerspectiveCamera from "./components/PerspectiveCamera"
 import Mesh from "./components/Mesh"
-import { RotateScript } from "./scripts/RotateScript"
 
 export default function App() {
     return (
@@ -30,7 +29,7 @@ export default function App() {
                 </GameObject>
                 <GameObject name="Circle">
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Sprite src="shapes/circle.png"/>
+                    <Sprite src="defaultShapes/circle.png"/>
                     <Body2D shape={ShapeType.Box}/>
                     <Audio src="ah.wav"/>
                     <Script src="test.js"/>
@@ -42,7 +41,7 @@ export default function App() {
                 </GameObject>
                 <GameObject>
                     <Transform position={[2, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Sprite src="shapes/circle.png"/>
+                    <Sprite src="defaultShapes/circle.png"/>
                     <Body2D shape={ShapeType.Box}/>
 
                     <Animator startAnim="DinoIdle">
@@ -52,7 +51,7 @@ export default function App() {
 
                 <GameObject>
                     <Transform position={[1, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Sprite src="shapes/circle.png"/>
+                    <Sprite src="defaultShapes/circle.png"/>
                     <Body2D shape={ShapeType.Box}/>
 
                     <Animator startAnim="DinoIdle">
@@ -65,13 +64,24 @@ export default function App() {
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 0]} rotation={[20, 0, 0]} scale={[1, 1, 1]}/>
                     <OrthographicCamera/>   
+                </GameObject>
+
+                <GameObject name="Icosphere">
+                    <Transform position={[4, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
+                    <Mesh objSrc="defaultModels/Icosphere.obj"/>
                     <Script src="RotateScript.js"/>
                 </GameObject>
 
-                <GameObject name="Cube">
-                    <Transform position={[0, 0, 0]} rotation={[0, 45, 0]} scale={[1, 2, 3]}/>
-                    <Mesh/>
-                    <Script src="MovementScript.js"/>
+                <GameObject name="Torus">
+                    <Transform position={[0, 4, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
+                    <Mesh objSrc="defaultModels/Torus.obj"/>
+                    <Script src="RotateScript.js"/>
+                </GameObject>
+
+                <GameObject name="Sphere">
+                    <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
+                    <Mesh objSrc="defaultModels/Sphere.obj"/>
+                    <Script src="RotateScript.js"/>
                 </GameObject>
             </Scene>
         </Game>

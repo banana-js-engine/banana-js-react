@@ -16,7 +16,7 @@ export class Shader {
     }
 
     static get cubeShaderPath() {
-        return 'shader/cube_shader.glsl';
+        return 'shader/mesh_shader.glsl';
     }
 
     #gl
@@ -86,18 +86,32 @@ export class Shader {
         return program;
     }
 
+    /**
+     * Binds the shader
+     */
     bind() {
         this.#gl.useProgram(this.#shaderId);
     }
 
+    /**
+     * Unbinds the shader
+     */
     unbind() {
         this.#gl.useProgram(null);
     }
 
+    /**
+     * @param {string} name name of the attribute (starting with a_) 
+     * @returns the location of the attribute
+     */
     getAttributeLocation(name) {
         return this.#gl.getAttribLocation(this.#shaderId, name);
     }
 
+    /**
+     * @param {string} name name of the uniform (starting with u_) 
+     * @returns the location of the uniform
+     */
     #getUniformLocation(name) {
         if (this.#uniformLookupTable[name]) {
             return this.#uniformLookupTable[name];

@@ -5,7 +5,6 @@ import { World2D } from "../physics/World2D";
 import { Debug } from "./Debug";
 import { SceneManager } from "../ecs/SceneManager";
 import { Color } from "../renderer/Color";
-import { Collisions } from "../physics/Collisions";
 
 /**
  * The class that controls the game-loop
@@ -164,7 +163,7 @@ export class Engine {
             for (const id in goMeshes) {
                 const transform = activeScene.get(id, ComponentType.Transform);
 
-                this.#rendererRef.drawMesh(transform, goMeshes[id]);
+                this.#rendererRef.drawMesh(transform, goMeshes[id].vertices);
             }
 
             if (Debug.showCollisionShapes) {
