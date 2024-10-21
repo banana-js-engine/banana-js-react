@@ -24,13 +24,13 @@ export default function App() {
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <OrthographicCamera/>   
-                    {/* <Script src="RotateScript.js"/> */}
+                    <Script src="CameraController.js"/>
                     {/* <Audio src="testAudio.mp3" playOnStart={true} /> */}
                 </GameObject>
                 <GameObject name="Circle">
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <Sprite src="defaultShapes/circle.png"/>
-                    <Body2D shape={ShapeType.Box}/>
+                    <Body2D shape={ShapeType.Box} isStatic={false} gravityScale={0}/>
                     <Audio src="ah.wav"/>
                     <Script src="test.js"/>
 
@@ -42,7 +42,7 @@ export default function App() {
                 <GameObject>
                     <Transform position={[2, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <Sprite src="defaultShapes/circle.png"/>
-                    <Body2D shape={ShapeType.Box}/>
+                    <Body2D shape={ShapeType.Box} isStatic={false} gravityScale={0}/>
 
                     <Animator startAnim="DinoIdle">
                         <Animation src="Dino.png" name="DinoIdle" cellWidth={24} cellHeight={24} length={0.5} frames={4} firstFrame={0}/>
@@ -52,11 +52,17 @@ export default function App() {
                 <GameObject>
                     <Transform position={[1, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <Sprite src="defaultShapes/circle.png"/>
-                    <Body2D shape={ShapeType.Box}/>
+                    <Body2D shape={ShapeType.Box} isStatic={false} gravityScale={0}/>
 
                     <Animator startAnim="DinoIdle">
                         <Animation src="Dino.png" name="DinoIdle" cellWidth={24} cellHeight={24} length={0.5} frames={4} firstFrame={0}/>
                     </Animator>
+                </GameObject>
+
+                <GameObject name="ground">
+                    <Transform position={[0, 2, 0]} rotation={[0, 0, 0]} scale={[4, 1, 1]}/>
+                    <Sprite color={Color.green}/>
+                    <Body2D shape={ShapeType.Box} isStatic={true} gravityScale={0}/>
                 </GameObject>
             </Scene>
 

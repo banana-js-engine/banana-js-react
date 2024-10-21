@@ -339,7 +339,7 @@ export class Renderer {
 
         if (sprite.texture) {
             
-            for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
+            for (let i = 1; i < this.#renderData.textureSlotIndex; i++) {
                 if (this.#renderData.textureSlots[i] == sprite.texture) {
                     useTextureSlot = i;
                     break;

@@ -62,7 +62,9 @@ export class Input {
                 this.#keyStates[key] = false;
                 this.#isKeyDown[key] = false;
             }
+        });
 
+        this.#canvas.addEventListener('mouseleave', () => {
             for (const button in this.#buttonStates) {
                 this.#buttonStates[button] = false;
                 this.#isButtonDown[button] = false;

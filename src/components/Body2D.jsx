@@ -6,7 +6,7 @@ import { ComponentType, ShapeType } from "../core/Types";
 
 /**
  * 
- * @param {{ shape: number }} props 
+ * @param {{ shape: number, isStatic: boolean, gravityScale: number }} props 
  */
 export default function Body2D(props) {
 
@@ -20,9 +20,9 @@ export default function Body2D(props) {
                 ecs,
                 0.5,
                 0.2,
-                false,
+                props.isStatic,
                 0.6,
-                0
+                props.gravityScale
             ));
         } else if (props.shape == ShapeType.Box) {
             ecs.emplace(gameObjectId, Body2DComponent.createBoxBody2D(
@@ -31,9 +31,9 @@ export default function Body2D(props) {
                 1,
                 1,
                 0.2,
-                false,
+                props.isStatic,
                 0.6,
-                0
+                props.gravityScale
             ));
         }
     }, []);
