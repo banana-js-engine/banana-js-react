@@ -439,8 +439,8 @@ export class CameraComponent extends Component {
         this.#aspectRatio = this.#canvas.clientWidth / this.#canvas.clientHeight;
 
         this.#size = isOrtho ? 10 : 45;
-        this.#near = isOrtho ? -10 : 0.1;
-        this.#far =  isOrtho ? 10 : 1000;
+        this.#near = isOrtho ? -100 : 0.1;
+        this.#far =  isOrtho ? 100 : 1000;
 
         if (size) {
             this.#size = size;

@@ -14,8 +14,10 @@ out vec3 v_Ambient;
 out vec3 v_Diffuse;
 out vec3 v_Specular;
 out float v_Shininess;
+out vec3 v_SurfaceToView;
 
 uniform mat4 u_ViewProjectionMatrix;
+uniform vec3 u_CameraPosition;
 
 void main() {
     v_TexCoord = a_TexCoord;
@@ -25,7 +27,9 @@ void main() {
     v_Specular = a_Specular;
     v_Shininess = a_Shininess;
 
-    gl_Position = u_ViewProjectionMatrix * vec4(a_Position, 1.0);
+    v_SurfaceToView = u_CameraPosition - a_Position.xyz; 
+
+    gl_Position = u_ViewProjectionMatrix * vec4(a_Position, 1.0);;
 }
 
 #version 300 es
@@ -38,10 +42,9 @@ in vec3 v_Ambient;
 in vec3 v_Diffuse;
 in vec3 v_Specular;
 in float v_Shininess;
+in vec3 v_SurfaceToView;
 
 out vec4 fragColor;
-
-uniform vec3 u_CameraPosition;
 
 void main() {
     vec3 lightDirection = normalize(vec3(0.5, 0.7, 1.0));
@@ -53,11 +56,13 @@ void main() {
     
     vec3 diffuse = Kd * v_Diffuse;
 
-    vec3 viewDirection = normalize(u_CameraPosition);
-    vec3 reflectionDirection = reflect(lightDirection, normal);
+    vec3 viewDirection = normalize(v_SurfaceToView);
+    vec3 halfVector = normalize(lightDirection + viewDirection);
+ 
+    float fakeLight = dot(lightDirection, normal) * .5 + .5;
+    float specularLight = clamp(dot(normal, halfVector), 0.0, 1.0);
 
-    float specAngle = max(dot(reflectionDirection, viewDirection), 0.0);
-    float Ks = pow(specAngle, v_Shininess);
+    float Ks = pow(specularLight, v_Shininess);
     vec3 specular = Ks * v_Specular;
 
     fragColor.xyz = ambient + diffuse + specular;

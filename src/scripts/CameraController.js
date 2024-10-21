@@ -30,6 +30,32 @@ export class CameraController extends ScriptComponent {
 
         }
         this.#previousMousePosition.set(currentMousePosition);
+
+        if (Input.getButton(2)) {
+            if (Input.getKey('a')) {
+                this.transform.moveBy(-this.#speed * dt, 0, 0);
+            }
+
+            if (Input.getKey('w')) {
+                this.transform.moveBy(0, 0, -this.#speed * dt);
+            }
+
+            if (Input.getKey('d')) {
+                this.transform.moveBy(this.#speed * dt, 0, 0);
+            }
+
+            if (Input.getKey('s')) {
+                this.transform.moveBy(0, 0, this.#speed * dt);
+            }
+
+            if (Input.getKey('q')) {
+                this.transform.moveBy(0, this.#speed * dt, 0);
+            }
+
+            if (Input.getKey('e')) {
+                this.transform.moveBy(0, -this.#speed * dt, 0);
+            }
+        }
     }
 
 }

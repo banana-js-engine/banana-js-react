@@ -25,7 +25,6 @@ export default function App() {
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <OrthographicCamera/>   
                     <Script src="CameraController.js"/>
-                    {/* <Audio src="testAudio.mp3" playOnStart={true} /> */}
                 </GameObject>
                 <GameObject name="Circle">
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
@@ -68,26 +67,14 @@ export default function App() {
 
             <Scene>
                 <GameObject name="Camera">
-                    <Transform position={[0, 0, 0]} rotation={[20, 0, 0]} scale={[1, 1, 1]}/>
-                    <OrthographicCamera/>   
+                    <Transform position={[0, 0, 5]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
+                    <PerspectiveCamera/>   
                     <Script src="CameraController.js"/>
                 </GameObject>
 
-                <GameObject name="Icosphere">
-                    <Transform position={[4, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Mesh objSrc="defaultModels/Icosphere.obj" mtlSrc="defaultModels/Icosphere.mtl"/>
-                    <Script src="RotateScript.js"/>
-                </GameObject>
-
-                <GameObject name="Torus">
-                    <Transform position={[0, 4, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Mesh objSrc="defaultModels/Torus.obj" mtlSrc="defaultModels/Torus.mtl"/>
-                    <Script src="RotateScript.js"/>
-                </GameObject>
-
-                <GameObject name="Sphere">
+                <GameObject name="Cube">
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Mesh objSrc="defaultModels/Sphere.obj" mtlSrc="defaultModels/Sphere.mtl"/>
+                    <Mesh objSrc="defaultModels/Cube.obj" mtlSrc="defaultModels/Cube.mtl"/>
                     <Script src="RotateScript.js"/>
                 </GameObject>
             </Scene>
