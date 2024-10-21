@@ -44,9 +44,5 @@ export class TestClass extends ScriptComponent {
         else {
             this.animator.playAnimation('DinoIdle');
         }
-
-        if (Input.getKeyDown('g')) {
-            SceneManager.setActiveScene(1);
-        }
     }
 }

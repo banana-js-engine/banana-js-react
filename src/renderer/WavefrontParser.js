@@ -35,40 +35,30 @@ export class WavefrontParser {
                 normals.push(new Vector3(x, y, z));
             } else if (words[0] == 'f') {
 
-                if (words.length == 5) {
-                    const i1 = words[1].split('/');
-                    const i2 = words[2].split('/');
-                    const i3 = words[3].split('/');
-                    const i4 = words[4].split('/');
-    
-                    const indices = [i1, i2, i3, i4];
-                    const sequence = [0, 1, 2, 0, 2, 3];
-    
-                    for (let j = 0; j < sequence.length; j++) {
-                        const index = indices[sequence[j]];
-    
-                        vertices.push({ 
-                            'position': positions[index[0] - 1],
-                            'texCoord': texCoords[index[1] - 1],
-                            'normal'  : normals[index[2] - 1]
-                        });
-                    }
-                } else if (words.length == 4) {
-                    const i1 = words[1].split('/');
-                    const i2 = words[2].split('/');
-                    const i3 = words[3].split('/');
+                const indices = [];
 
-                    const indices = [i1, i2, i3];
+                for (let i = 1; i < words.length; i++) {
+                    indices.push(words[i].split('/'));
+                }
 
-                    for (let j = 0; j < 3; j++) {
-                        const index = indices[j];
+                for (let i = 1; i < indices.length - 1; i++) {
+                    vertices.push({ 
+                        'position': positions[indices[0][0] - 1],
+                        'texCoord': texCoords[indices[0][1] - 1],
+                        'normal'  : normals[indices[0][2] - 1]
+                    });
 
-                        vertices.push({ 
-                            'position': positions[index[0] - 1],
-                            'texCoord': texCoords[index[1] - 1],
-                            'normal'  : normals[index[2] - 1]
-                        });
-                    }
+                    vertices.push({ 
+                        'position': positions[indices[i][0] - 1],
+                        'texCoord': texCoords[indices[i][1] - 1],
+                        'normal'  : normals[indices[i][2] - 1]
+                    });
+
+                    vertices.push({ 
+                        'position': positions[indices[i+1][0] - 1],
+                        'texCoord': texCoords[indices[i+1][1] - 1],
+                        'normal'  : normals[indices[i+1][2] - 1]
+                    });
                 }
             }
         }

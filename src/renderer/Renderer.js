@@ -302,10 +302,6 @@ export class Renderer {
      * @param {CameraComponent} camera 
      */
     beginScene(transform, camera) {
-        // setup the view matrix
-        if (!camera.isOrtho) {
-            transform.scaleTo(1, -1, 1);
-        }
 
         this.#sceneData.view.identity();
         this.#sceneData.view.multiply(transform.transformMatrix);

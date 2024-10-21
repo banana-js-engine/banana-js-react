@@ -24,7 +24,7 @@ export default function App() {
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <OrthographicCamera/>   
-                    <Script src="CameraController.js"/>
+                    <Script src="OrthographicCameraController.js"/>
                 </GameObject>
                 <GameObject name="Circle">
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
@@ -63,19 +63,39 @@ export default function App() {
                     <Sprite color={Color.green}/>
                     <Body2D shape={ShapeType.Box} isStatic={true} gravityScale={0}/>
                 </GameObject>
+
+                <GameObject>
+                    <Script src="SceneChangeScript.js"/>
+                </GameObject>
             </Scene>
 
             <Scene>
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 5]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <PerspectiveCamera/>   
-                    <Script src="CameraController.js"/>
+                    <Script src="PerspectiveCameraController.js"/>
                 </GameObject>
 
                 <GameObject name="Cube">
                     <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
-                    <Mesh objSrc="defaultModels/Cube.obj" mtlSrc="defaultModels/Cube.mtl"/>
+                    <Mesh objSrc="defaultModels/Cylinder.obj" mtlSrc="defaultModels/Cylinder.mtl"/>
                     <Script src="RotateScript.js"/>
+                </GameObject>
+
+                <GameObject>
+                    <Script src="SceneChangeScript.js"/>
+                </GameObject>
+            </Scene>
+
+            <Scene>
+                <GameObject name="Camera">
+                    <Transform position={[0, 0, 0]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
+                    <OrthographicCamera bgColor={Color.green}/>   
+                    <Script src="OrthographicCameraController.js"/>
+                </GameObject>
+
+                <GameObject>
+                    <Script src="SceneChangeScript.js"/>
                 </GameObject>
             </Scene>
         </Game>
