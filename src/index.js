@@ -24,7 +24,7 @@ export { Vector2, Vector3, Vector4 } from './math/Vector';
 
 export { Color } from './renderer/Color';
 
-if (process.env.NODE_ENV != 'production') {
-    const App = require('./App');
-    require('react-dom/client').createRoot(document.getElementById('root')).render(<App.default/>);
-}
+
+// const App = require('./App');
+// require('react-dom/client').createRoot(document.getElementById('root')).render(<App.default/>);
+

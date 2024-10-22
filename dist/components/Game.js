@@ -93,16 +93,18 @@ function Game(props) {
             value: audioRef.current,
             children: /*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
               style: {
-                userSelect: 'none',
                 position: 'absolute',
+                top: 0,
+                left: 0,
                 width: '100%',
-                height: '100%',
-                overflow: 'hidden'
+                height: '100%'
               },
               children: /*#__PURE__*/(0, _jsxRuntime.jsx)("canvas", {
                 id: "banana-canvas",
                 ref: canvasRef,
                 style: {
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
                   outlineStyle: 'none'
                 },
                 tabIndex: 1,
