@@ -1,6 +1,7 @@
 #version 300 es
 
 in vec3 a_Position;
+in vec3 a_Color;
 in vec2 a_TexCoord;
 in vec3 a_Normal;
 in vec3 a_Ambient;
@@ -8,6 +9,7 @@ in vec3 a_Diffuse;
 in vec3 a_Specular;
 in float a_Shininess;
 
+out vec3 v_Color;
 out vec2 v_TexCoord;
 out vec3 v_Normal;
 out vec3 v_Ambient;
@@ -20,6 +22,7 @@ uniform mat4 u_ViewProjectionMatrix;
 uniform vec3 u_CameraPosition;
 
 void main() {
+    v_Color = a_Color;
     v_TexCoord = a_TexCoord;
     v_Normal = a_Normal;
     v_Ambient = a_Ambient;
@@ -36,6 +39,7 @@ void main() {
 
 precision mediump float;
 
+in vec3 v_Color;
 in vec2 v_TexCoord;
 in vec3 v_Normal;
 in vec3 v_Ambient;
@@ -65,6 +69,6 @@ void main() {
     float Ks = pow(specularLight, v_Shininess);
     vec3 specular = Ks * v_Specular;
 
-    fragColor.xyz = ambient + diffuse + specular;
+    fragColor.xyz = (ambient + diffuse + specular) * v_Color;
     fragColor.a = 1.0;
 }

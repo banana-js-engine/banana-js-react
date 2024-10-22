@@ -35,6 +35,7 @@ class LineVertex {
 }
 class CubeVertex {
   position;
+  color;
   texCoord;
   normal;
   ambientColor;
@@ -42,9 +43,9 @@ class CubeVertex {
   specularColor;
   shininess;
   get flat() {
-    return [this.position.x, this.position.y, this.position.z, this.texCoord.x, this.texCoord.y, this.normal.x, this.normal.y, this.normal.z, this.ambientColor.x, this.ambientColor.y, this.ambientColor.z, this.diffuseColor.x, this.diffuseColor.y, this.diffuseColor.z, this.specularColor.x, this.specularColor.y, this.specularColor.z, this.shininess];
+    return [this.position.x, this.position.y, this.position.z, this.color.x, this.color.y, this.color.z, this.texCoord.x, this.texCoord.y, this.normal.x, this.normal.y, this.normal.z, this.ambientColor.x, this.ambientColor.y, this.ambientColor.z, this.diffuseColor.x, this.diffuseColor.y, this.diffuseColor.z, this.specularColor.x, this.specularColor.y, this.specularColor.z, this.shininess];
   }
-  static vertexSize = 18;
+  static vertexSize = 21;
 }
 
 /**
@@ -196,6 +197,7 @@ class Renderer {
     this.#renderData.cubeShader = new _Shader.Shader(this.#gl, _Shader.Shader.cubeShaderPath);
     this.#renderData.cubeVB = new _Buffer.VertexBuffer(this.#gl, this.#renderData.maxVertices * CubeVertex.vertexSize);
     const cubePosition = this.#renderData.cubeShader.getAttributeLocation('a_Position');
+    const cubeColor = this.#renderData.cubeShader.getAttributeLocation('a_Color');
     const cubeTexCoord = this.#renderData.cubeShader.getAttributeLocation('a_TexCoord');
     const cubeNormal = this.#renderData.cubeShader.getAttributeLocation('a_Normal');
     const cubeAmbient = this.#renderData.cubeShader.getAttributeLocation('a_Ambient');
@@ -203,6 +205,7 @@ class Renderer {
     const cubeSpecular = this.#renderData.cubeShader.getAttributeLocation('a_Specular');
     const cubeShininess = this.#renderData.cubeShader.getAttributeLocation('a_Shininess');
     this.#renderData.cubeVB.pushAttribute(cubePosition, 3);
+    this.#renderData.cubeVB.pushAttribute(cubeColor, 3);
     this.#renderData.cubeVB.pushAttribute(cubeTexCoord, 2);
     this.#renderData.cubeVB.pushAttribute(cubeNormal, 3);
     this.#renderData.cubeVB.pushAttribute(cubeAmbient, 3);
@@ -217,6 +220,9 @@ class Renderer {
    * @param {CameraComponent} camera 
    */
   beginScene(transform, camera) {
+    if (!camera.isOrtho) {
+      transform.scale.set(transform.scale.x, -1, transform.scale.z);
+    }
     this.#sceneData.view.identity();
     this.#sceneData.view.multiply(transform.transformMatrix);
     this.#sceneData.view.invert();
@@ -316,20 +322,22 @@ class Renderer {
    * @param {MeshComponent} mesh 
    */
   drawMesh(transform, mesh) {
-    if (this.#renderData.cubeIndexCount >= this.#renderData.maxIndices) {
+    if (this.#renderData.cubeVertexCount >= this.#renderData.maxVertices) {
       this.#flush();
     }
     const t = transform.transformMatrix;
     const parsedObj = mesh.vertices;
     const parsedMtl = mesh.material;
     for (let i = 0; i < parsedObj.length; i++) {
+      const material = parsedMtl[parsedObj[i].material];
       this.#cubeVertex.position = t.multiplyVector3(parsedObj[i].position);
+      this.#cubeVertex.color = parsedObj[i].color;
       this.#cubeVertex.texCoord = parsedObj[i].texCoord;
       this.#cubeVertex.normal = t.multiplyVector3(parsedObj[i].normal);
-      this.#cubeVertex.ambientColor = parsedMtl.ambientColor;
-      this.#cubeVertex.diffuseColor = parsedMtl.diffuseColor;
-      this.#cubeVertex.specularColor = parsedMtl.specularColor;
-      this.#cubeVertex.shininess = parsedMtl.shininess;
+      this.#cubeVertex.ambientColor = material && material.ambientColor ? material.ambientColor : _Vector.Vector3.one;
+      this.#cubeVertex.diffuseColor = material && material.diffuseColor ? material.diffuseColor : _Vector.Vector3.one;
+      this.#cubeVertex.specularColor = material && material.specularColor ? material.specularColor : _Vector.Vector3.zero;
+      this.#cubeVertex.shininess = material && material.shininess ? material.shininess : 1.0;
       this.#renderData.cubeVB.addVertex(this.#renderData.cubeVertexCount, this.#cubeVertex.flat);
       this.#renderData.cubeVertexCount++;
     }

@@ -35,7 +35,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "babel src --out-dir dist"
+    "build": "babel src --out-dir dist",
+    "deploy": "npm publish --access public"
   },
   "eslintConfig": {
     "extends": [

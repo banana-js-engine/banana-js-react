@@ -56,6 +56,7 @@ class LineVertex {
 
 class CubeVertex {
     position;
+    color;
     texCoord;
     normal;
     ambientColor;
@@ -68,6 +69,9 @@ class CubeVertex {
             this.position.x,
             this.position.y,
             this.position.z,
+            this.color.x,
+            this.color.y,
+            this.color.z,
             this.texCoord.x,
             this.texCoord.y,
             this.normal.x,
@@ -86,7 +90,7 @@ class CubeVertex {
         ];
     }
 
-    static vertexSize = 18;
+    static vertexSize = 21;
 }
 
 /**
@@ -281,6 +285,7 @@ export class Renderer {
         this.#renderData.cubeVB = new VertexBuffer(this.#gl, this.#renderData.maxVertices * CubeVertex.vertexSize);
 
         const cubePosition = this.#renderData.cubeShader.getAttributeLocation('a_Position');
+        const cubeColor = this.#renderData.cubeShader.getAttributeLocation('a_Color');
         const cubeTexCoord = this.#renderData.cubeShader.getAttributeLocation('a_TexCoord');
         const cubeNormal = this.#renderData.cubeShader.getAttributeLocation('a_Normal');
         const cubeAmbient = this.#renderData.cubeShader.getAttributeLocation('a_Ambient');
@@ -288,6 +293,7 @@ export class Renderer {
         const cubeSpecular = this.#renderData.cubeShader.getAttributeLocation('a_Specular');
         const cubeShininess = this.#renderData.cubeShader.getAttributeLocation('a_Shininess');
         this.#renderData.cubeVB.pushAttribute(cubePosition, 3);
+        this.#renderData.cubeVB.pushAttribute(cubeColor, 3);
         this.#renderData.cubeVB.pushAttribute(cubeTexCoord, 2);
         this.#renderData.cubeVB.pushAttribute(cubeNormal, 3);
         this.#renderData.cubeVB.pushAttribute(cubeAmbient, 3);
@@ -302,6 +308,10 @@ export class Renderer {
      * @param {CameraComponent} camera 
      */
     beginScene(transform, camera) {
+
+        if (!camera.isOrtho) {
+            transform.scale.set(transform.scale.x, -1, transform.scale.z);
+        } 
 
         this.#sceneData.view.identity();
         this.#sceneData.view.multiply(transform.transformMatrix);
@@ -439,14 +449,15 @@ export class Renderer {
             const material = parsedMtl[parsedObj[i].material];
 
             this.#cubeVertex.position = t.multiplyVector3(parsedObj[i].position);
+            this.#cubeVertex.color = parsedObj[i].color;
             this.#cubeVertex.texCoord = parsedObj[i].texCoord;
             this.#cubeVertex.normal = t.multiplyVector3(parsedObj[i].normal);
 
-            this.#cubeVertex.ambientColor = material.ambientColor;
-            this.#cubeVertex.diffuseColor = material.diffuseColor;
+            this.#cubeVertex.ambientColor = (material && material.ambientColor) ? material.ambientColor : Vector3.one;
+            this.#cubeVertex.diffuseColor = (material && material.diffuseColor) ? material.diffuseColor : Vector3.one;
 
-            this.#cubeVertex.specularColor = material.specularColor ? material.specularColor : Vector3.zero;
-            this.#cubeVertex.shininess = material.shininess ? material.shininess : 1.0;
+            this.#cubeVertex.specularColor = (material && material.specularColor) ? material.specularColor : Vector3.zero;
+            this.#cubeVertex.shininess = (material && material.shininess) ? material.shininess : 1.0;
 
             this.#renderData.cubeVB.addVertex(this.#renderData.cubeVertexCount, this.#cubeVertex.flat);
 
