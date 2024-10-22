@@ -1,14 +1,14 @@
 {
-  "name": "banana-js",
-  "version": "1.0.0",
+  "name": "@mfkucuk/banana-js",
+  "version": "1.0.5",
   "description": "A game framework that can be used in web dev along React",
   "main": "dist/index.js",
   "repository": {"url": "https://github.com/banana-js-engine/banana-js-react"},
   "author": {"name": "Mehmet Feyyaz Kucuk"},
   "license": "MIT",
   "files": [
-    "src",
-    "templates",
+    "dist",
+    "template",
     "README.md",
     "LICENSE"
   ],
@@ -21,16 +21,16 @@
     "@babel/preset-env": "^7.25.8",
     "@babel/preset-react": "^7.25.7",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-scripts": "5.0.1",
+    "fs-extra": "^10.1.0"
   },
   "peerDependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
-  "devDependencies": {
-    "fs-extra": "^10.1.0"
-  },
   "scripts": {
+    "start": "react-scripts start",
     "build": "babel src --out-dir dist"
   },
   "eslintConfig": {

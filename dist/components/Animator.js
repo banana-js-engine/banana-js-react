@@ -9,6 +9,7 @@ var _react = require("react");
 var _GameObject = require("./GameObject");
 var _Scene = require("./Scene");
 var _Component = require("../ecs/Component");
+var _jsxRuntime = require("react/jsx-runtime");
 const AnimatorContext = /*#__PURE__*/(0, _react.createContext)(null);
 function useAnimator() {
   return (0, _react.useContext)(AnimatorContext);
@@ -26,7 +27,8 @@ function Animator(props) {
   (0, _react.useEffect)(() => {
     ecs.emplace(id, animatorRef.current);
   }, []);
-  return /*#__PURE__*/React.createElement(AnimatorContext.Provider, {
-    value: animatorRef.current
-  }, animatorRef.current && props.children);
+  return /*#__PURE__*/(0, _jsxRuntime.jsx)(AnimatorContext.Provider, {
+    value: animatorRef.current,
+    children: animatorRef.current && props.children
+  });
 }

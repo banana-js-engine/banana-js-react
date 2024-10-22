@@ -27,6 +27,7 @@ const createProject = (projectName) => {
                 react: "^18.0.0", // replace with the desired version
                 "react-dom": "^18.0.0", // replace with the desired version
                 "react-scripts": "5.0.1",
+                "@mfkucuk/banana-js": "1.0.0"
             },
             "browserslist": {
               "production": [
@@ -58,7 +59,7 @@ const createProject = (projectName) => {
         installPackages(projectPath, ['react', 'react-dom']);
 
         // Optionally link the local version of your main package
-        linkLocalPackage(projectPath, 'banana-js');
+        // linkLocalPackage(projectPath, 'banana-js');
     } else {
         console.error(`Project ${projectName} already exists.`);
     }

@@ -9,6 +9,7 @@ var _react = require("react");
 var _Scene = require("./Scene");
 var _ECS = require("../ecs/ECS");
 var _Component = require("../ecs/Component");
+var _jsxRuntime = require("react/jsx-runtime");
 const GameObjectContext = /*#__PURE__*/(0, _react.createContext)(null);
 function useGameObject() {
   return (0, _react.useContext)(GameObjectContext);
@@ -26,7 +27,8 @@ function GameObject(props) {
   const ecs = (0, _Scene.useScene)();
   gameObjectRef.current = ecs.create();
   ecs.emplace(gameObjectRef.current, new _Component.NameComponent(gameObjectRef.current, ecs, props.name));
-  return /*#__PURE__*/React.createElement(GameObjectContext.Provider, {
-    value: gameObjectRef.current
-  }, props.children);
+  return /*#__PURE__*/(0, _jsxRuntime.jsx)(GameObjectContext.Provider, {
+    value: gameObjectRef.current,
+    children: props.children
+  });
 }

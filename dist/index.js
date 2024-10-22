@@ -33,6 +33,12 @@ Object.defineProperty(exports, "Body2D", {
     return _Body2D.default;
   }
 });
+Object.defineProperty(exports, "Color", {
+  enumerable: true,
+  get: function () {
+    return _Color.Color;
+  }
+});
 Object.defineProperty(exports, "ComponentType", {
   enumerable: true,
   get: function () {
@@ -161,4 +167,5 @@ var _SceneManager = require("./ecs/SceneManager");
 var _BananaMath = require("./math/BananaMath");
 var _Matrix = require("./math/Matrix");
 var _Vector = require("./math/Vector");
+var _Color = require("./renderer/Color");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }

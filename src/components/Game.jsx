@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Renderer } from '../renderer/Renderer';
 import { Engine } from '../core/Engine';
+import './Game.css';
 
 // canvas context
 const CanvasContext = createContext(null);
@@ -82,13 +83,12 @@ export default function Game(props) {
                 <RendererContext.Provider value={rendererRef.current}>
                     <GLContext.Provider value={gl}>
                         <AudioContextContext.Provider value={audioRef.current}>
-                            <div style={{ userSelect: 'none', position: 'absolute', width: '100%', height: '100%', overflow: 'hidden' }}>
+                            <div className='container'>
                                 <canvas
                                     id='banana-canvas'
                                     ref={canvasRef}
-                                    style={{ outlineStyle: 'none' }}
-                                    tabIndex={1}
-                                >
+                                    style={{ userSelect: 'none', WebkitUserSelect: 'none', outlineStyle: 'none' }}
+                                    tabIndex={1}>
                                     {initialized && props.children}
                                 </canvas>
                             </div>
