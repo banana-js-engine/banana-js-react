@@ -10,9 +10,11 @@ export class WavefrontParser {
         const positions = [];
         const texCoords = [];
         const normals = [];
+        const material = [];
 
         const lines = text.split('\n');
-        
+
+        let currentMaterial = "";
         for (let i = 0; i < lines.length; i++) {
             const words = lines[i].split(' ');
 
@@ -45,21 +47,26 @@ export class WavefrontParser {
                     vertices.push({ 
                         'position': positions[indices[0][0] - 1],
                         'texCoord': texCoords[indices[0][1] - 1],
-                        'normal'  : normals[indices[0][2] - 1]
+                        'normal'  : normals[indices[0][2] - 1],
+                        'material': currentMaterial
                     });
 
                     vertices.push({ 
                         'position': positions[indices[i][0] - 1],
                         'texCoord': texCoords[indices[i][1] - 1],
-                        'normal'  : normals[indices[i][2] - 1]
+                        'normal'  : normals[indices[i][2] - 1],
+                        'material': currentMaterial
                     });
 
                     vertices.push({ 
                         'position': positions[indices[i+1][0] - 1],
                         'texCoord': texCoords[indices[i+1][1] - 1],
-                        'normal'  : normals[indices[i+1][2] - 1]
+                        'normal'  : normals[indices[i+1][2] - 1],
+                        'material': currentMaterial
                     });
                 }
+            } else if (words[0] == 'usemtl') {
+                currentMaterial = words[1];
             }
         }
 
@@ -70,15 +77,11 @@ export class WavefrontParser {
     static async parseMtl(src) {
         const text = await this.#readFileAsText(src);
 
-        const material = {
-            'ambientColor': null,
-            'diffuseColor': null,
-            'specularColor': null,
-            'shininess': null,
-        };
+        const material = { };
 
         const lines = text.split('\n');
 
+        let currentMaterial = '';
         for (let i = 0; i < lines.length; i++) {
             const words = lines[i].split(' ');
 
@@ -87,21 +90,24 @@ export class WavefrontParser {
                 const y = Number(words[2]);
                 const z = Number(words[3]);
 
-                material.ambientColor = new Vector3(x, y, z);
+                material[currentMaterial].ambientColor = new Vector3(x, y, z);
             } else if (words[0] == 'Kd') {
                 const x = Number(words[1]);
                 const y = Number(words[2]);
                 const z = Number(words[3]);
 
-                material.diffuseColor = new Vector3(x, y, z);
+                material[currentMaterial].diffuseColor = new Vector3(x, y, z);
             } else if (words[0] == 'Ks') {
                 const x = Number(words[1]);
                 const y = Number(words[2]);
                 const z = Number(words[3]);
 
-                material.specularColor = new Vector3(x, y, z);
+                material[currentMaterial].specularColor = new Vector3(x, y, z);
             } else if (words[0] == 'Ns') {
-                material.shininess = Number(words[1]);
+                material[currentMaterial].shininess = Number(words[1]);
+            } else if (words[0] == 'newmtl') {
+                currentMaterial = words[1];
+                material[currentMaterial] = {};
             }
         }
 

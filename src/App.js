@@ -1,5 +1,6 @@
 import Game from "./components/Game";
 import GameObject from "./components/GameObject";
+import Mesh from "./components/Mesh";
 import OrthographicCamera from "./components/OrthographicCamera";
 import Scene from "./components/Scene";
 import Sprite from "./components/Sprite";
@@ -15,7 +16,7 @@ export default function App() {
                 </GameObject>
                 <GameObject name="Square">
                     <Transform/>
-                    <Sprite color={[0, 1, 0, 1]}/>
+                    <Mesh objSrc="defaultModels/Chair.obj" mtlSrc="defaultModels/Chair.mtl"/>
                 </GameObject>
             </Scene>
         </Game>

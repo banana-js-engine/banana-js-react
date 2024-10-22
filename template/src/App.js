@@ -1,4 +1,4 @@
-import { Game, Scene, GameObject, Transform, OrthographicCamera, Sprite } from 'banana-js';
+import { Game, Scene, GameObject, Transform, OrthographicCamera, Sprite } from '@mfkucuk/banana-js';
 
 export default function App() {
     return (

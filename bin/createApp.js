@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 const fse = require('fs-extra'); // 'fs-extra' makes file copying easy
+const pkg = require('./package.json');
 
 // Function to create a new project directory and files
 const createProject = (projectName) => {
@@ -27,7 +28,7 @@ const createProject = (projectName) => {
                 react: "^18.0.0", // replace with the desired version
                 "react-dom": "^18.0.0", // replace with the desired version
                 "react-scripts": "5.0.1",
-                "@mfkucuk/banana-js": "1.0.0"
+                "@mfkucuk/banana-js": pkg.version
             },
             "browserslist": {
               "production": [

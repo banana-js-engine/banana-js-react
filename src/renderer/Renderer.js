@@ -426,7 +426,7 @@ export class Renderer {
      * @param {MeshComponent} mesh 
      */
     drawMesh(transform, mesh) {
-        if (this.#renderData.cubeIndexCount >= this.#renderData.maxIndices) {
+        if (this.#renderData.cubeVertexCount >= this.#renderData.maxVertices) {
             this.#flush();
         }
 
@@ -435,13 +435,18 @@ export class Renderer {
         const parsedMtl = mesh.material;
 
         for (let i = 0; i < parsedObj.length; i++) {
+
+            const material = parsedMtl[parsedObj[i].material];
+
             this.#cubeVertex.position = t.multiplyVector3(parsedObj[i].position);
             this.#cubeVertex.texCoord = parsedObj[i].texCoord;
             this.#cubeVertex.normal = t.multiplyVector3(parsedObj[i].normal);
-            this.#cubeVertex.ambientColor = parsedMtl.ambientColor;
-            this.#cubeVertex.diffuseColor = parsedMtl.diffuseColor;
-            this.#cubeVertex.specularColor = parsedMtl.specularColor;
-            this.#cubeVertex.shininess = parsedMtl.shininess;
+
+            this.#cubeVertex.ambientColor = material.ambientColor;
+            this.#cubeVertex.diffuseColor = material.diffuseColor;
+
+            this.#cubeVertex.specularColor = material.specularColor ? material.specularColor : Vector3.zero;
+            this.#cubeVertex.shininess = material.shininess ? material.shininess : 1.0;
 
             this.#renderData.cubeVB.addVertex(this.#renderData.cubeVertexCount, this.#cubeVertex.flat);
 
