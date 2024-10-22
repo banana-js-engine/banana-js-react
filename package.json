@@ -1,22 +1,37 @@
 {
-  "name": "banana-js-react",
-  "version": "0.1.0",
-  "homepage": ".",
-  "private": true,
+  "name": "banana-js",
+  "version": "1.0.0",
+  "description": "A game framework that can be used in web dev along React",
+  "main": "dist/index.js",
+  "repository": {"url": "https://github.com/banana-js-engine/banana-js-react"},
+  "author": {"name": "Mehmet Feyyaz Kucuk"},
+  "license": "MIT",
+  "files": [
+    "src",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "create-bananajs-app": "./bin/createApp.js"
+  },
   "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
+    "@babel/cli": "^7.25.7",
+    "@babel/core": "^7.25.8",
+    "@babel/preset-env": "^7.25.8",
+    "@babel/preset-react": "^7.25.7",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "react-dom": "^18.3.1"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "fs-extra": "^10.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "babel src --out-dir dist"
   },
   "eslintConfig": {
     "extends": [

@@ -38,7 +38,6 @@ export function useAudioContext() {
 }
 
 export default function Game(props) {
-
     // Refs
     const canvasRef = useRef();
     const rendererRef = useRef();
@@ -47,10 +46,7 @@ export default function Game(props) {
 
     // States
     const [gl, setGL] = useState(null);
-
-    const isInitialized = function() {
-        return gl && canvasRef.current && rendererRef.current && engineRef.current && audioRef.current;
-    }
+    const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
         document.title = props.name;
@@ -58,8 +54,7 @@ export default function Game(props) {
         // set canvas size
         canvasRef.current.width = props.width;
         canvasRef.current.height = props.height;
-
-        canvasRef.current.addEventListener('contextmenu', (event) => {
+        canvasRef.current.addEventListener('contextmenu', event => {
             event.preventDefault();
         });
 
@@ -74,12 +69,12 @@ export default function Game(props) {
 
         // initialize engine
         engineRef.current = new Engine(rendererRef.current);
-
         audioRef.current = new AudioContext();
 
-    }, []);
+        // Set initialized to true
+        setInitialized(true);
 
-    
+    }, []);
 
     return (
         <CanvasContext.Provider value={canvasRef.current}>
@@ -87,23 +82,15 @@ export default function Game(props) {
                 <RendererContext.Provider value={rendererRef.current}>
                     <GLContext.Provider value={gl}>
                         <AudioContextContext.Provider value={audioRef.current}>
-                            <div
-                                style={{
-                                    userSelect: 'none',
-                                    position: 'absolute',
-                                    width: '100%',
-                                    height: '100%',
-                                    overflow: 'hidden',
-                                    left: '0px',
-                                    top: '0px',
-                                    right: '0px',
-                                    bottom: '0px'
-                                }}>
-                                <div style={{ width: '100%', height: '100%' }}>
-                                    <canvas id='banana-canvas' ref={canvasRef} style={{ outlineStyle: 'none' }} tabIndex={1}>
-                                        { isInitialized() && props.children }
-                                    </canvas>
-                                </div>
+                            <div style={{ userSelect: 'none', position: 'absolute', width: '100%', height: '100%', overflow: 'hidden' }}>
+                                <canvas
+                                    id='banana-canvas'
+                                    ref={canvasRef}
+                                    style={{ outlineStyle: 'none' }}
+                                    tabIndex={1}
+                                >
+                                    {initialized && props.children}
+                                </canvas>
                             </div>
                         </AudioContextContext.Provider>
                     </GLContext.Provider>

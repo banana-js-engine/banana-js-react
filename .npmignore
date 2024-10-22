@@ -1,0 +1,23 @@
+# Exclude source files
+/src
+
+# Exclude local configuration
+/.babelrc
+/webpack.config.js
+
+# Exclude node_modules
+/node_modules
+
+# Exclude test files and directories
+/tests
+/__tests__
+/test
+/spec
+/*.test.js
+/*.spec.js
+
+# Exclude miscellaneous files
+/.DS_Store
+/npm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*

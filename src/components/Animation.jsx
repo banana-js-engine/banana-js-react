@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useAnimator } from "./Animator";
 import { useGL } from "./Game";
 import { AnimationClip } from "../renderer/AnimationClip";
