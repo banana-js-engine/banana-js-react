@@ -59,9 +59,6 @@ export default function Game(props) {
         });
 
         const context = canvasRef.current.getContext('webgl2', { antialias: false });
-        const ctx2d = canvasRef.current.getContext('2d');
-        ctx2d.translate(0, canvasRef.current.height);
-        ctx2d.scale(1, -1);
         setGL(context);
 
         // initialize webgl
