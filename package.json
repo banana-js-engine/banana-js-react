@@ -1,6 +1,6 @@
 {
   "name": "@mfkucuk/banana-js",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "A game framework that can be used in web dev along React",
   "main": "dist/index.js",
   "repository": {
