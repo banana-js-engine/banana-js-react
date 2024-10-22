@@ -17,6 +17,8 @@ void main() {
     v_TexIndex = a_TexIndex; 
 
     gl_Position = u_ViewProjectionMatrix * vec4(a_Position, 1.0);
+    gl_Position /= gl_Position.w;
+    gl_Position /= gl_Position.w;
 }
 
 #version 300 es

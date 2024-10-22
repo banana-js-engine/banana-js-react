@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 const fse = require('fs-extra'); // 'fs-extra' makes file copying easy
-const pkg = require('./package.json');
+const pkg = require('../package.json');
 
 // Function to create a new project directory and files
 const createProject = (projectName) => {
