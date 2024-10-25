@@ -1,4 +1,4 @@
-import { Game, Scene, GameObject, Transform, OrthographicCamera, Sprite } from '@mfkucuk/banana-js';
+import { Game, Scene, GameObject, Transform, OrthographicCamera, Sprite, Script } from '@mfkucuk/banana-js';
 
 export default function App() {
     return (
@@ -11,6 +11,7 @@ export default function App() {
                 <GameObject name="Square">
                     <Transform/>
                     <Sprite/>
+                    <Script src="HelloWorldScript.js"/>
                 </GameObject>
             </Scene>
         </Game>

@@ -170,6 +170,16 @@ export class Collisions {
 
     /**
      * 
+     * @param {Vector2} center 
+     * @param {number} radius 
+     * @param {Vector4[]} vertices 
+     */
+    static checkCirclePolygonCollision(center, radius, vertices) {
+        
+    }
+
+    /**
+     * 
      * @param {Vector4[]} vertices 
      * @param {Vector2} axis 
      */
