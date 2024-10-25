@@ -22,10 +22,3 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# scripts
-OrthographicCameraController.js
-PerspectiveCameraController.js
-RotateScript.js
-MovementScript.js
-SceneChangeScript.js

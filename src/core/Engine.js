@@ -190,5 +190,6 @@ export class Engine {
             }
         }
 
+        Input.mouseDelta.set(0, 0);
     }   
 }
