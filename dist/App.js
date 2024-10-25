@@ -26,9 +26,9 @@ function App() {
       children: [/*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.default, {
         name: "Camera",
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.default, {
-          rotation: [0, 0, 0]
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_PerspectiveCamera.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.default, {
-          src: "PerspectiveCameraController.js"
+          position: [0, 0, 0]
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_OrthographicCamera.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.default, {
+          src: "OrthographicCameraController.js"
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.default, {
         name: "Square",
@@ -39,7 +39,9 @@ function App() {
           objSrc: "book.obj"
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.default, {
-        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Animator.default, {
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.default, {
+          src: "defaultShapes/circle.png"
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Animator.default, {
           startAnim: "DinoIdle",
           children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_Animation.default, {
             name: "DinoIdle",

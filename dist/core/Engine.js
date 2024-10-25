@@ -142,6 +142,7 @@ class Engine {
         console.log(_Debug.Debug.snapshot(activeScene));
       }
     }
+    _Input.Input.mouseDelta.set(0, 0);
   }
 }
 exports.Engine = Engine;

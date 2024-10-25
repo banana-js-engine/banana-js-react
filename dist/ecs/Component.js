@@ -435,6 +435,12 @@ class CameraComponent extends Component {
   get clearColor() {
     return this.#clearColor;
   }
+  get size() {
+    return this.#size;
+  }
+  set size(newSize) {
+    this.#size = newSize;
+  }
   get isOrtho() {
     return this.#isOrtho;
   }

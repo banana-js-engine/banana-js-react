@@ -27,6 +27,7 @@ class Input {
 
   // Mouse
   static mousePosition = (() => _Vector.Vector2.zero)();
+  static mouseDelta = (() => _Vector.Vector2.zero)();
   static #buttonStates = {};
   static #isButtonDown = {};
 
@@ -51,6 +52,9 @@ class Input {
     this.#canvas.addEventListener('mousemove', event => {
       this.mousePosition.x = event.x;
       this.mousePosition.y = event.y;
+    });
+    this.#canvas.addEventListener('wheel', event => {
+      this.mouseDelta.set(event.deltaX, event.deltaY);
     });
 
     // toggle every key state off
