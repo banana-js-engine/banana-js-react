@@ -148,7 +148,7 @@ export class Engine {
             
             this.#rendererRef.beginScene(cameraTransform, cameraComponent);
 
-            this.#rendererRef.clear();
+            this.#rendererRef.clear(1);
             
             const goSprites = activeScene.getAllWithEntity(ComponentType.Sprite);
 

@@ -32,7 +32,7 @@ function App() {
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.default, {
           position: [0, 0, 0]
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_OrthographicCamera.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.default, {
-          import: Promise.resolve().then(() => _interopRequireWildcard(require('../src/scripts/OrthographicCameraController')))
+          import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/OrthographicCameraController')))
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.default, {
         name: "Square",
@@ -68,7 +68,7 @@ function App() {
           isStatic: false,
           gravityScale: 0
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.default, {
-          import: Promise.resolve().then(() => _interopRequireWildcard(require('../src/scripts/MovementScript')))
+          import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/MovementScript')))
         })]
       })]
     })

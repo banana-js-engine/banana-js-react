@@ -54,6 +54,20 @@ export class World2D {
                     );
                 } else if (bodyA.shapeType == ShapeType.Box && bodyB.shapeType == ShapeType.Box) {
                     Collisions.checkPolygonCollision(bodyA.vertices, bodyB.vertices);
+                } else if (bodyA.shapeType == ShapeType.Circle && bodyB.shapeType == ShapeType.Box) {
+                    Collisions.checkCirclePolygonCollision(
+                        bodyA.transform.position,
+                        bodyA.radius,
+                        bodyB.vertices
+                    );
+                } else if (bodyA.shapeType == ShapeType.Box && bodyB.shapeType == ShapeType.Circle) {
+                    Collisions.checkCirclePolygonCollision(
+                        bodyB.transform.position,
+                        bodyB.radius,
+                        bodyA.vertices
+                    );
+
+                    Collisions.collInfo.normal.mul(-1);
                 }
 
                 if (!Collisions.collInfo.colliding) {

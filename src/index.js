@@ -16,6 +16,7 @@ export { default as Transform } from './components/Transform';
 export { Input } from './core/Input';
 export { ComponentType, ShapeType } from './core/Types';
 
+export { ScriptComponent } from './ecs/Component';
 export { SceneManager } from './ecs/SceneManager';
 
 export { BananaMath } from './math/BananaMath';
@@ -25,6 +26,6 @@ export { Vector2, Vector3, Vector4 } from './math/Vector';
 export { Color } from './renderer/Color';
 
 
-// const App = require('./App');
+// const App = require('./GameApp');
 // require('react-dom/client').createRoot(document.getElementById('root')).render(<App.default/>);
 

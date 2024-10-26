@@ -175,7 +175,62 @@ export class Collisions {
      * @param {Vector4[]} vertices 
      */
     static checkCirclePolygonCollision(center, radius, vertices) {
+        const origin = Vector2.zero;
+        const terminus = Vector2.zero;
+
+        this.collInfo.resetInfo();
+        this.collInfo.depth = Number.MAX_SAFE_INTEGER;
+
+        for (let i = 0; i < vertices.length; i++) {
+            origin.set(vertices[i]);
+            terminus.set(vertices[(i + 1) % vertices.length]);
+
+            terminus.sub(origin);
+            const axis = new Vector2(terminus.y, -terminus.x);
+            axis.normalize();
+
+            const projA = this.#projectVertices(vertices, axis);
+            const projB = this.#projectCircle(center, radius, axis);
+
+            if (projA.min >= projB.max || projB.min >= projA.max) {
+                return;
+            }
+
+            const axisDepth = Math.min(projB.max - projA.min, projA.max - projB.min);
+
+            if (axisDepth < this.collInfo.depth) {
+                this.collInfo.depth = axisDepth;
+                this.collInfo.normal.set(axis);
+            }
+        }
+
+        const closestPoint = this.#findClosedPointOnPolygon(center, vertices);
+        closestPoint.sub(center)
+            .normalize();
         
+        const projA = this.#projectVertices(vertices, closestPoint);
+        const projB = this.#projectCircle(center, radius, closestPoint);
+
+        if (projA.min >= projB.max || projB.min >= projA.max) {
+            return;
+        }
+
+        const axisDepth = Math.min(projB.max - projA.min, projA.max - projB.min);
+
+        if (axisDepth < this.collInfo.depth) {
+            this.collInfo.depth = axisDepth;
+            this.collInfo.normal.set(closestPoint);
+        }
+
+        this.collInfo.colliding = true;
+     
+        const polygonCenter = this.#findCenter(vertices);
+
+        polygonCenter.sub(center);
+
+        if (polygonCenter.dot(this.collInfo.normal) < 0) {
+            this.collInfo.normal.mul(-1);
+        }
     }
 
     /**
@@ -207,6 +262,35 @@ export class Collisions {
 
     /**
      * 
+     * @param {Vector2} center 
+     * @param {number} radius 
+     * @param {Vector2} axis 
+     */
+    static #projectCircle(center, radius, axis) {
+        const direction = Vector2.zero;
+        direction.set(axis);
+        direction.normalize()
+            .mul(radius);
+
+        direction.add(center);
+
+        let min = direction.dot(axis);
+
+        direction.sub(center)
+            .mul(-1)
+            .add(center);
+
+        let max = direction.dot(axis);
+
+        if (min > max) {
+            [min, max] = [max, min];
+        }
+
+        return { min, max };
+    }
+
+    /**
+     * 
      * @param {Vector4[]} vertices 
      */
     static #findCenter(vertices) {
@@ -218,5 +302,28 @@ export class Collisions {
 
         center.div(vertices.length);
         return center;
+    }
+
+    /**
+     * 
+     * @param {Vector2} center 
+     * @param {Vector4[]} vertices 
+     * @returns {Vector2}
+     */
+    static #findClosedPointOnPolygon(center, vertices) {
+        let minDistance = Number.MAX_SAFE_INTEGER;
+        const closestPoint = Vector2.zero;
+
+        for (let i = 0; i < vertices.length; i++) {
+            const distance = center.distance(vertices[i]);
+
+            if (distance < minDistance) {
+                minDistance = distance;
+
+                closestPoint.set(vertices[i]);
+            }
+        }
+
+        return closestPoint;
     }
 }

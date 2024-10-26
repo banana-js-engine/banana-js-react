@@ -51,7 +51,7 @@ const createProject = (projectName) => {
         fse.copySync(templateDir, projectPath);
 
         // Replace placeholders in specific files (e.g., App.js)
-        const appJsPath = path.join(projectPath, 'src', 'App.js');
+        const appJsPath = path.join(projectPath, 'src', 'GameApp.js');
         let appJsContent = fs.readFileSync(appJsPath, 'utf8');
         appJsContent = appJsContent.replace('{process.env.PROJECT_NAME}', projectName);
         fs.writeFileSync(appJsPath, appJsContent);

@@ -9,6 +9,8 @@ import Animator from "./components/Animator";
 import Animation from "./components/Animation";
 import Script from "./components/Script";
 import PerspectiveCamera from "./components/PerspectiveCamera"
+import Body2D from "./components/Body2D";
+import { ShapeType } from "./core/Types";
 
 export default function App() {
     return (
@@ -17,18 +19,29 @@ export default function App() {
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 0]}/>
                     <OrthographicCamera/>   
-                    <Script src="OrthographicCameraController.js"/>
+                    <Script import={import('./scripts/OrthographicCameraController')}/>
                 </GameObject>
                 <GameObject name="Square">
-                    <Transform position={[0, 3, 0]} scale={[5, -5, 5]}/>
-                    <Mesh objSrc="book.obj"/>
+                    <Transform position={[0, 3, 0]}/>
+                    <Sprite src="defaultShapes/circle.png"/>
+                    <Body2D shape={ShapeType.Circle} isStatic={false} gravityScale={0}/>
+
+                    <Script>
+                        {`
+                            function ready() {
+                                console.log('Hello, world!');
+                            }
+                        `}
+                    </Script>
                 </GameObject>
                 <GameObject>
                     <Transform/>
-                    <Sprite src="defaultShapes/circle.png"/>
+                    <Sprite/>
                     <Animator startAnim="DinoIdle">
                         <Animation name="DinoIdle" src="Dino.png" firstFrame={0} frames={4} length={0.5} cellWidth={24} cellHeight={24}/>
                     </Animator>
+                    <Body2D shape={ShapeType.Box} isStatic={false} gravityScale={0}/>
+                    <Script import={import('./scripts/MovementScript')}/>
                 </GameObject>
             </Scene>
         </Game>

@@ -111,6 +111,12 @@ Object.defineProperty(exports, "Script", {
     return _Script.default;
   }
 });
+Object.defineProperty(exports, "ScriptComponent", {
+  enumerable: true,
+  get: function () {
+    return _Component.ScriptComponent;
+  }
+});
 Object.defineProperty(exports, "ShapeType", {
   enumerable: true,
   get: function () {
@@ -163,6 +169,7 @@ var _Sprite = _interopRequireDefault(require("./components/Sprite"));
 var _Transform = _interopRequireDefault(require("./components/Transform"));
 var _Input = require("./core/Input");
 var _Types = require("./core/Types");
+var _Component = require("./ecs/Component");
 var _SceneManager = require("./ecs/SceneManager");
 var _BananaMath = require("./math/BananaMath");
 var _Matrix = require("./math/Matrix");

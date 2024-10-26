@@ -11,7 +11,7 @@ export default function App() {
                 <GameObject name="Square">
                     <Transform/>
                     <Sprite/>
-                    <Script src="HelloWorldScript.js"/>
+                    <Script import={import('./scripts/HelloWorldScript')}/>
                 </GameObject>
             </Scene>
         </Game>

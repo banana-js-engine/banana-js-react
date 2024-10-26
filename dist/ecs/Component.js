@@ -797,7 +797,7 @@ class Body2DComponent extends Component {
     } else if (this.#shapeType == _Types.ShapeType.Circle) {
       const position = this.#transform.position;
       minX = position.x - this.#radius;
-      minX = position.y - this.#radius;
+      minY = position.y - this.#radius;
       maxX = position.x + this.#radius;
       maxY = position.y + this.#radius;
     }

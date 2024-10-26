@@ -113,7 +113,7 @@ class Engine {
         goAnimators[i].step(dt);
       }
       this.#rendererRef.beginScene(cameraTransform, cameraComponent);
-      this.#rendererRef.clear();
+      this.#rendererRef.clear(1);
       const goSprites = activeScene.getAllWithEntity(_Types.ComponentType.Sprite);
       for (const id in goSprites) {
         const transform = activeScene.get(id, _Types.ComponentType.Transform);

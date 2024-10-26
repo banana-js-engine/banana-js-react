@@ -43,6 +43,11 @@ class World2D {
           _Collisions.Collisions.checkCircleCollision(bodyA.transform.position, bodyA.radius, bodyB.transform.position, bodyB.radius);
         } else if (bodyA.shapeType == _Types.ShapeType.Box && bodyB.shapeType == _Types.ShapeType.Box) {
           _Collisions.Collisions.checkPolygonCollision(bodyA.vertices, bodyB.vertices);
+        } else if (bodyA.shapeType == _Types.ShapeType.Circle && bodyB.shapeType == _Types.ShapeType.Box) {
+          _Collisions.Collisions.checkCirclePolygonCollision(bodyA.transform.position, bodyA.radius, bodyB.vertices);
+        } else if (bodyA.shapeType == _Types.ShapeType.Box && bodyB.shapeType == _Types.ShapeType.Circle) {
+          _Collisions.Collisions.checkCirclePolygonCollision(bodyB.transform.position, bodyB.radius, bodyA.vertices);
+          _Collisions.Collisions.collInfo.normal.mul(-1);
         }
         if (!_Collisions.Collisions.collInfo.colliding) {
           continue;
