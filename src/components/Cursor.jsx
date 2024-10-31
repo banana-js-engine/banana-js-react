@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useCanvas } from "./Game";
 
 /**
  * 
@@ -8,7 +7,7 @@ import { useCanvas } from "./Game";
 */
 export default function Cursor(props) {
 
-    const canvas = useCanvas();
+    const canvas = document.getElementById('banana-canvas');
 
     useEffect(() => {
         if (!props.src) {

@@ -2,25 +2,11 @@ import React, { createContext, useContext, useEffect, useRef, useState } from 'r
 import { Renderer } from '../renderer/Renderer';
 import { Engine } from '../core/Engine';
 
-// canvas context
-const CanvasContext = createContext(null);
-
-export function useCanvas() {
-    return useContext(CanvasContext);
-}
-
 // gl context
 const GLContext = createContext(null);
 
 export function useGL() {
     return useContext(GLContext);
-}
-
-// renderer context
-const RendererContext = createContext(null);
-
-export function useRenderer() {
-    return useContext(RendererContext);
 }
 
 // engine context
@@ -39,8 +25,6 @@ export function useAudioContext() {
 
 export default function Game(props) {
     // Refs
-    const canvasRef = useRef();
-    const rendererRef = useRef();
     const engineRef = useRef();
     const audioRef = useRef();
 
@@ -52,23 +36,28 @@ export default function Game(props) {
         document.title = props.name;
 
         // set canvas size
-        canvasRef.current.width = props.width;
-        canvasRef.current.height = props.height;
-        canvasRef.current.addEventListener('contextmenu', event => {
+        const canvas = document.getElementById('banana-canvas');
+        canvas.width = props.width;
+        canvas.height = props.height;
+        canvas.addEventListener('contextmenu', event => {
             event.preventDefault();
         });
 
-        const context = canvasRef.current.getContext('webgl2', { antialias: false });
+        const context = canvas.getContext('webgl2', { antialias: false });
         setGL(context);
 
         // initialize webgl
         context.viewport(0, 0, props.width, props.height);
 
-        // initialize renderer
-        rendererRef.current = new Renderer(context);
+        // initialize renderer(s)
+        const renderer = new Renderer(context);
+        const textCanvas = document.getElementById('banana-text');
+        textCanvas.width = props.width;
+        textCanvas.height = props.height;
+        const ctx = textCanvas.getContext('2d');
 
         // initialize engine
-        engineRef.current = new Engine(rendererRef.current);
+        engineRef.current = new Engine(renderer, ctx);
         audioRef.current = new AudioContext();
 
         // Set initialized to true
@@ -76,25 +65,31 @@ export default function Game(props) {
 
     }, []);
 
+    const onClick = function() {
+        document.getElementById('banana-canvas').focus();
+    } 
+
     return (
-        <CanvasContext.Provider value={canvasRef.current}>
-            <EngineContext.Provider value={engineRef.current}>
-                <RendererContext.Provider value={rendererRef.current}>
-                    <GLContext.Provider value={gl}>
-                        <AudioContextContext.Provider value={audioRef.current}>
-                            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                                <canvas
-                                    id='banana-canvas'
-                                    ref={canvasRef}
-                                    style={{ userSelect: 'none', WebkitUserSelect: 'none', outlineStyle: 'none' }}
-                                    tabIndex={1}>
-                                    {initialized && props.children}
-                                </canvas>
-                            </div>
-                        </AudioContextContext.Provider>
-                    </GLContext.Provider>
-                </RendererContext.Provider>
-            </EngineContext.Provider>
-        </CanvasContext.Provider>
+        <EngineContext.Provider value={engineRef.current}>
+            <GLContext.Provider value={gl}>
+                <AudioContextContext.Provider value={audioRef.current}>
+                    <div style={{ position: 'absolute', top: 0, left: 0, width: props.width, height: props.height }}
+                        onClick={onClick}>
+                        
+                        <canvas 
+                            id='banana-text'
+                            style={{ position: 'absolute', top: 0, left: 0, outlineStyle: 'none' }}
+                            tabIndex={-1}>
+                        </canvas>
+                        <canvas
+                            id='banana-canvas'
+                            style={{ userSelect: 'none', WebkitUserSelect: 'none', outlineStyle: 'none' }}
+                            tabIndex={1}>
+                            {initialized && props.children}
+                        </canvas>
+                    </div>
+                </AudioContextContext.Provider>
+            </GLContext.Provider>
+        </EngineContext.Provider>
     );
 }

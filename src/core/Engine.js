@@ -6,6 +6,7 @@ import { Debug } from "./Debug";
 import { SceneManager } from "../ecs/SceneManager";
 import { Color } from "../renderer/Color";
 import { Vector2, Vector3 } from "../math/Vector";
+import { Renderer } from "../renderer/Renderer";
 
 /**
  * The class that controls the game-loop
@@ -15,7 +16,8 @@ export class Engine {
     #running;
     #previousFrameTime;
 
-    #rendererRef;
+    #renderer;
+    #ctx2d;
 
     #world2d;
 
@@ -28,11 +30,17 @@ export class Engine {
     #zeroCameraFlag;
     #multipleCameraFlag;
 
-    constructor(renderer) {
+    /**
+     * 
+     * @param {Renderer} renderer 
+     * @param {CanvasRenderingContext2D} ctx2d 
+     */
+    constructor(renderer, ctx2d) {
         this.#running = true;
         this.#previousFrameTime = 0;
 
-        this.#rendererRef = renderer;
+        this.#renderer = renderer;
+        this.#ctx2d = ctx2d;
 
         this.#world2d = new World2D();
 
@@ -130,7 +138,7 @@ export class Engine {
                 cameraComponent = goCameras[id];
 
                 const cc = cameraComponent.clearColor;
-                this.#rendererRef.setClearColor(cc.x, cc.y, cc.z, cc.w);
+                this.#renderer.setClearColor(cc.x, cc.y, cc.z, cc.w);
 
             }
 
@@ -147,16 +155,16 @@ export class Engine {
                 goAnimators[i].step(dt);
             }
             
-            this.#rendererRef.beginScene(cameraTransform, cameraComponent);
+            this.#renderer.beginScene(cameraTransform, cameraComponent);
 
-            this.#rendererRef.clear(1);
+            this.#renderer.clear(1);
             
             const goSprites = activeScene.getAllWithEntity(ComponentType.Sprite);
 
             for (const id in goSprites) {
                 const transform = activeScene.get(id, ComponentType.Transform);
 
-                this.#rendererRef.drawQuad(transform, goSprites[id]);
+                this.#renderer.drawQuad(transform, goSprites[id]);
             }
 
             const goMeshes = activeScene.getAllWithEntity(ComponentType.Mesh);
@@ -164,7 +172,7 @@ export class Engine {
             for (const id in goMeshes) {
                 const transform = activeScene.get(id, ComponentType.Transform);
 
-                this.#rendererRef.drawMesh(transform, goMeshes[id]);
+                this.#renderer.drawMesh(transform, goMeshes[id]);
             }
 
             if (Debug.showCollisionShapes) {
@@ -176,7 +184,7 @@ export class Engine {
                         const vertices = goBodies[i].vertices;
     
                         for (let j = 0; j < vertices.length; j++) {
-                            this.#rendererRef.drawLine(vertices[j], vertices[(j + 1) % vertices.length], Color.green);
+                            this.#renderer.drawLine(vertices[j], vertices[(j + 1) % vertices.length], Color.green);
                         }
                     }
                 }
@@ -186,11 +194,11 @@ export class Engine {
                 for (let i = 0; i < this.#world2d.contactPoints.length; i++) {
                     const point = Vector3.zero;
                     point.set(this.#world2d.contactPoints[i]);
-                    this.#rendererRef.drawRect(point, Vector2.one.mul(0.2), Color.orange);   
+                    this.#renderer.drawRect(point, Vector2.one.mul(0.2), Color.orange);   
                 }
             }
             
-            this.#rendererRef.endScene();
+            this.#renderer.endScene();
 
 
             // Debug
@@ -200,5 +208,7 @@ export class Engine {
         }
 
         Input.mouseDelta.set(0, 0);
+
+        this.#ctx2d.clearRect(0, 0, this.#ctx2d.canvas.width, this.#ctx2d.canvas.height);
     }   
 }

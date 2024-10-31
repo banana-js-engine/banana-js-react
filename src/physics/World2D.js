@@ -148,8 +148,6 @@ export class World2D {
         let j = (- 1 - e) * rDotN;
         j /= bodyA.inverseMass + bodyB.inverseMass;
 
-        console.log(rDotN);
-
         Collisions.collInfo.normal.mul(j);
         relativeVelocity.set(Collisions.collInfo.normal);
 

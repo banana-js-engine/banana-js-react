@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TransformComponent = exports.SpriteComponent = exports.ScriptComponent = exports.NameComponent = exports.MeshComponent = exports.CameraComponent = exports.Body2DComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
+exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.NameComponent = exports.MeshComponent = exports.CameraComponent = exports.Body2DComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
 var _Matrix = require("../math/Matrix");
 var _Vector = require("../math/Vector");
 var _AABB = require("../physics/AABB");
@@ -912,3 +912,16 @@ class MeshComponent extends Component {
   }
 }
 exports.MeshComponent = MeshComponent;
+class TextComponent extends Component {
+  #text;
+  constructor(text) {
+    this.#text = text;
+  }
+  get type() {
+    return _Types.ComponentType.Text;
+  }
+  get text() {
+    return this.#text;
+  }
+}
+exports.TextComponent = TextComponent;

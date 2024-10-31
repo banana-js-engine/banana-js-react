@@ -17,7 +17,8 @@ const ComponentType = exports.ComponentType = {
   Body2D: 5,
   Name: 6,
   Animator: 7,
-  Mesh: 8
+  Mesh: 8,
+  Text: 9
 };
 
 /**

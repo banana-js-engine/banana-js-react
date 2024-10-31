@@ -111,7 +111,6 @@ class World2D {
     const e = Math.min(bodyA.restitution, bodyB.restitution);
     let j = (-1 - e) * rDotN;
     j /= bodyA.inverseMass + bodyB.inverseMass;
-    console.log(rDotN);
     _Collisions.Collisions.collInfo.normal.mul(j);
     relativeVelocity.set(_Collisions.Collisions.collInfo.normal);
     _Collisions.Collisions.collInfo.normal.mul(bodyA.inverseMass);

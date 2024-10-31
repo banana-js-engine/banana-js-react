@@ -1040,3 +1040,20 @@ export class MeshComponent extends Component {
     }
 
 }
+
+export class TextComponent extends Component {
+
+    #text;
+
+    constructor(text) {
+        this.#text = text;
+    }
+
+    get type() {
+        return ComponentType.Text;
+    }
+
+    get text() {
+        return this.#text;
+    }
+}
