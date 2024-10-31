@@ -26,12 +26,12 @@ export class CollisionInfo {
     /**
      * @type {Vector2}
      */
-    contact1;
+    contact1 = Vector2.zero;
 
     /**
      * @type {Vector2}
      */
-    contact2;
+    contact2 = Vector2.zero;
 
     contactCount;
 
@@ -80,6 +80,21 @@ export class Collisions {
         this.collInfo.normal.sub(centerA);
         this.collInfo.normal.normalize();
         this.collInfo.depth = radii - distance;
+
+        this.#findCircleContactPoints(centerA, radiusA);
+    }
+
+    /**
+     * 
+     * @param {Vector2} centerA 
+     * @param {number} radius 
+     * @param {Vector2} normal 
+     */
+    static #findCircleContactPoints(centerA, radius) {
+        this.collInfo.contact1.set(this.collInfo.normal);
+        this.collInfo.contact1.mul(radius);
+        this.collInfo.contact1.add(centerA);
+        this.collInfo.contactCount = 1;
     }
 
     /**
@@ -166,6 +181,15 @@ export class Collisions {
         if (centerB.dot(this.collInfo.normal) < 0) {
             this.collInfo.normal.mul(-1);
         }
+    }
+
+    /**
+     * 
+     * @param {Vector4[]} verticesA 
+     * @param {Vector4[]} verticesB 
+     */
+    static #findPolygonContactPoints(verticesA, verticesB) {
+
     }
 
     /**
@@ -325,5 +349,39 @@ export class Collisions {
         }
 
         return closestPoint;
+    }
+
+    /**
+     * 
+     * @param {Vector2} p 
+     * @param {Vector2} a 
+     * @param {Vector2} b 
+     */
+    static #pointLineSegmentDistance(p, a, b) {
+        const ab = Vector2.zero;
+        
+        ab.set(b);
+        ab.sub(a);
+        
+        const ap = Vector2.zero;
+
+        ap.set(p);
+        ap.sub(a);
+
+        const d = ap.dot(ab) / ab.lengthSquared;
+
+        if (d <= 0) {
+            ap.set(a);
+        } else if (d >= 1) {
+            ap.set(b);
+        } else {
+            ap.set(ab);
+            ap.mul(d);
+            ap.add(a);
+        }
+
+        const distanceSquared = p.distanceSquared(ap);
+
+        return { distanceSquared, contact: ap };
     }
 }

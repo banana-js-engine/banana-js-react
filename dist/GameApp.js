@@ -17,6 +17,13 @@ var _Script = _interopRequireDefault(require("./components/Script"));
 var _PerspectiveCamera = _interopRequireDefault(require("./components/PerspectiveCamera"));
 var _Body2D = _interopRequireDefault(require("./components/Body2D"));
 var _Types = require("./core/Types");
+var _Cube = _interopRequireDefault(require("./components/Cube"));
+var _Circle = _interopRequireDefault(require("./components/Circle"));
+var _Color = require("./renderer/Color");
+var _Icosphere = _interopRequireDefault(require("./components/Icosphere"));
+var _Sphere = _interopRequireDefault(require("./components/Sphere"));
+var _Cylinder = _interopRequireDefault(require("./components/Cylinder"));
+var _Torus = _interopRequireDefault(require("./components/Torus"));
 var _jsxRuntime = require("react/jsx-runtime");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
@@ -38,13 +45,7 @@ function App() {
         name: "Square",
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.default, {
           position: [0, 3, 0]
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.default, {
-          src: "defaultShapes/circle.png"
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Body2D.default, {
-          shape: _Types.ShapeType.Circle,
-          isStatic: false,
-          gravityScale: 0
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.default, {
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Cube.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.default, {
           children: `
                             function ready() {
                                 console.log('Hello, world!');
