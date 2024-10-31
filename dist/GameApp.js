@@ -45,26 +45,13 @@ function App() {
         name: "Square",
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.default, {
           position: [0, 3, 0]
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Cube.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.default, {
-          children: `
-                            function ready() {
-                                console.log('Hello, world!');
-                            }
-                        `
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Body2D.default, {
+          shape: _Types.ShapeType.Box,
+          isStatic: false,
+          gravityScale: 0
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.default, {
-        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Animator.default, {
-          startAnim: "DinoIdle",
-          children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_Animation.default, {
-            name: "DinoIdle",
-            src: "Dino.png",
-            firstFrame: 0,
-            frames: 4,
-            length: 0.5,
-            cellWidth: 24,
-            cellHeight: 24
-          })
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Body2D.default, {
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Body2D.default, {
           shape: _Types.ShapeType.Box,
           isStatic: false,
           gravityScale: 0

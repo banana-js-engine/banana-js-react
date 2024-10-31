@@ -4,6 +4,7 @@ import { ComponentType } from './Types';
 export class Debug {
 
     static showCollisionShapes = false;
+    static showContactPoints = false;
 
     /**
      * take a snapshot of the given scene.

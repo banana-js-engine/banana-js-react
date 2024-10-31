@@ -11,6 +11,7 @@ var _World2D = require("../physics/World2D");
 var _Debug = require("./Debug");
 var _SceneManager = require("../ecs/SceneManager");
 var _Color = require("../renderer/Color");
+var _Vector = require("../math/Vector");
 /**
  * The class that controls the game-loop
  */
@@ -133,6 +134,13 @@ class Engine {
               this.#rendererRef.drawLine(vertices[j], vertices[(j + 1) % vertices.length], _Color.Color.green);
             }
           }
+        }
+      }
+      if (_Debug.Debug.showContactPoints) {
+        for (let i = 0; i < this.#world2d.contactPoints.length; i++) {
+          const point = _Vector.Vector3.zero;
+          point.set(this.#world2d.contactPoints[i]);
+          this.#rendererRef.drawRect(point, _Vector.Vector2.one.mul(0.2), _Color.Color.orange);
         }
       }
       this.#rendererRef.endScene();

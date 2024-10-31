@@ -754,7 +754,7 @@ export class Body2DComponent extends Component {
 
     #toAdd
 
-    constructor(id, ecs, shapeType, density, mass, inertia, area, isStatic, radius, width, height, gravityScale) {
+    constructor(id, ecs, shapeType, density, mass, inertia, area, isStatic, radius, width, height, gravityScale, restitution) {
         super(id, ecs);
 
         this.#transform = this.getComponent(ComponentType.Transform);
@@ -767,6 +767,7 @@ export class Body2DComponent extends Component {
         this.#angularVelocity = 0;
         this.#force = Vector2.zero;
         this.#gravityScale = gravityScale;
+        this.#restitution = restitution;
 
         this.#density = density
         this.#mass = mass;
@@ -795,7 +796,7 @@ export class Body2DComponent extends Component {
 
         restitution = BananaMath.clamp01(restitution);
 
-        return new Body2DComponent(id, ecs, ShapeType.Box, density, mass, inertia, area, isStatic, 0, width, height, gravityScale);
+        return new Body2DComponent(id, ecs, ShapeType.Box, density, mass, inertia, area, isStatic, 0, width, height, gravityScale, restitution);
     }
 
     static createCircleBody2D(id, ecs, radius, density, isStatic, restitution, gravityScale) {
@@ -805,7 +806,7 @@ export class Body2DComponent extends Component {
 
         restitution = BananaMath.clamp01(restitution);
 
-        return new Body2DComponent(id, ecs, ShapeType.Circle, density, mass, inertia, area, isStatic, radius, 0, 0, gravityScale);
+        return new Body2DComponent(id, ecs, ShapeType.Circle, density, mass, inertia, area, isStatic, radius, 0, 0, gravityScale, restitution);
     }
 
     get type() {
@@ -825,6 +826,14 @@ export class Body2DComponent extends Component {
         return this.#shapeType;
     }
 
+    get linearVelocity() {
+        return this.#linearVelocity;
+    }
+
+    get restitution() {
+        return this.#restitution;
+    }
+
     get isStatic() {
         return this.#isStatic;
     }
@@ -837,9 +846,8 @@ export class Body2DComponent extends Component {
         if (!this.#isStatic) {
             return 1 / this.#mass;
         }
-        else {
-            return 0;
-        }
+
+        return 0;
     }
 
     get vertices() {

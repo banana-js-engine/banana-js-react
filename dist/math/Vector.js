@@ -137,6 +137,14 @@ class Vector2 {
     return this.x * other.x + this.y * other.y;
   }
 
+  /**
+   * 
+   * @param {Vector2} other 
+   */
+  equals(other) {
+    return this.x == other.x && this.y == other.y;
+  }
+
   // ready Vector2s
   static get zero() {
     return new Vector2(0, 0);

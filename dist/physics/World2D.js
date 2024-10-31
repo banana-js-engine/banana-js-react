@@ -18,11 +18,19 @@ class World2D {
    * @type {Body2DComponent[]} #bodies
    */
   #bodies;
+
+  /**
+   * @type {Vector2[]} 
+   */
+  contactPoints; // debug purposes
+
   constructor() {
     this.#gravity = new _Vector.Vector2(0, 9.81);
     this.#bodies = [];
+    this.contactPoints = [];
   }
   step(dt) {
+    this.contactPoints = [];
     for (let i = 0; i < this.#bodies.length; i++) {
       this.#bodies[i].update(dt, this.#gravity);
     }
@@ -66,6 +74,15 @@ class World2D {
           moveAmount.mul(-1);
           bodyA.transform.moveBy(moveAmount);
         }
+        _Collisions.Collisions.collInfo.bodyA = bodyA;
+        _Collisions.Collisions.collInfo.bodyB = bodyB;
+        if (_Collisions.Collisions.collInfo.contactCount > 1) {
+          this.contactPoints.push(_Collisions.Collisions.collInfo.contact1);
+          this.contactPoints.push(_Collisions.Collisions.collInfo.contact2);
+        } else if (_Collisions.Collisions.collInfo.contactCount > 0) {
+          this.contactPoints.push(_Collisions.Collisions.collInfo.contact1);
+        }
+        this.#resolveCollision();
       }
     }
   }
@@ -80,6 +97,27 @@ class World2D {
     while (this.#bodies.length > 0) {
       this.#bodies.splice(0, 1);
     }
+  }
+  #resolveCollision() {
+    const bodyA = _Collisions.Collisions.collInfo.bodyA;
+    const bodyB = _Collisions.Collisions.collInfo.bodyB;
+    const relativeVelocity = _Vector.Vector2.zero;
+    relativeVelocity.set(bodyB.linearVelocity);
+    relativeVelocity.sub(bodyA.linearVelocity);
+    const rDotN = relativeVelocity.dot(_Collisions.Collisions.collInfo.normal);
+    if (rDotN > 0) {
+      return;
+    }
+    const e = Math.min(bodyA.restitution, bodyB.restitution);
+    let j = (-1 - e) * rDotN;
+    j /= bodyA.inverseMass + bodyB.inverseMass;
+    console.log(rDotN);
+    _Collisions.Collisions.collInfo.normal.mul(j);
+    relativeVelocity.set(_Collisions.Collisions.collInfo.normal);
+    _Collisions.Collisions.collInfo.normal.mul(bodyA.inverseMass);
+    bodyA.linearVelocity.sub(_Collisions.Collisions.collInfo.normal);
+    relativeVelocity.mul(bodyB.inverseMass);
+    bodyB.linearVelocity.add(relativeVelocity);
   }
 }
 exports.World2D = World2D;

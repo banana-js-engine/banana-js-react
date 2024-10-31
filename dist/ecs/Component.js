@@ -679,7 +679,7 @@ class Body2DComponent extends Component {
    */
   #vertices;
   #toAdd;
-  constructor(id, ecs, shapeType, density, mass, inertia, area, isStatic, radius, width, height, gravityScale) {
+  constructor(id, ecs, shapeType, density, mass, inertia, area, isStatic, radius, width, height, gravityScale, restitution) {
     super(id, ecs);
     this.#transform = this.getComponent(_Types.ComponentType.Transform);
     this.#AABB = new _AABB.AABB();
@@ -688,6 +688,7 @@ class Body2DComponent extends Component {
     this.#angularVelocity = 0;
     this.#force = _Vector.Vector2.zero;
     this.#gravityScale = gravityScale;
+    this.#restitution = restitution;
     this.#density = density;
     this.#mass = mass;
     this.#inertia = inertia;
@@ -710,14 +711,14 @@ class Body2DComponent extends Component {
     const mass = area * density;
     const inertia = 1.0 / 12.0 * mass * (width * width + height * height);
     restitution = _BananaMath.BananaMath.clamp01(restitution);
-    return new Body2DComponent(id, ecs, _Types.ShapeType.Box, density, mass, inertia, area, isStatic, 0, width, height, gravityScale);
+    return new Body2DComponent(id, ecs, _Types.ShapeType.Box, density, mass, inertia, area, isStatic, 0, width, height, gravityScale, restitution);
   }
   static createCircleBody2D(id, ecs, radius, density, isStatic, restitution, gravityScale) {
     const area = Math.PI * radius * radius;
     const mass = area * density;
     const inertia = 0.5 * mass * radius * radius;
     restitution = _BananaMath.BananaMath.clamp01(restitution);
-    return new Body2DComponent(id, ecs, _Types.ShapeType.Circle, density, mass, inertia, area, isStatic, radius, 0, 0, gravityScale);
+    return new Body2DComponent(id, ecs, _Types.ShapeType.Circle, density, mass, inertia, area, isStatic, radius, 0, 0, gravityScale, restitution);
   }
   get type() {
     return _Types.ComponentType.Body2D;
@@ -732,6 +733,12 @@ class Body2DComponent extends Component {
   get shapeType() {
     return this.#shapeType;
   }
+  get linearVelocity() {
+    return this.#linearVelocity;
+  }
+  get restitution() {
+    return this.#restitution;
+  }
   get isStatic() {
     return this.#isStatic;
   }
@@ -741,9 +748,8 @@ class Body2DComponent extends Component {
   get inverseMass() {
     if (!this.#isStatic) {
       return 1 / this.#mass;
-    } else {
-      return 0;
     }
+    return 0;
   }
   get vertices() {
     const transformedVertices = [];

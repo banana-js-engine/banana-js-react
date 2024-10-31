@@ -26,12 +26,12 @@ export class CollisionInfo {
     /**
      * @type {Vector2}
      */
-    contact1 = Vector2.zero;
+    contact1;
 
     /**
      * @type {Vector2}
      */
-    contact2 = Vector2.zero;
+    contact2;
 
     contactCount;
 
@@ -39,12 +39,16 @@ export class CollisionInfo {
         this.colliding = false;
         this.normal = Vector2.zero;
         this.depth = 0;
+        this.contact1 = Vector2.zero;
+        this.contact2 = Vector2.zero;
     }
 
     resetInfo() {
         this.colliding = false;
         this.normal.set(0, 0);
         this.depth = 0;
+        this.contact1.set(0, 0);
+        this.contact2.set(0, 0);
     }
 }
 
@@ -181,6 +185,8 @@ export class Collisions {
         if (centerB.dot(this.collInfo.normal) < 0) {
             this.collInfo.normal.mul(-1);
         }
+
+        this.#findPolygonContactPoints(verticesA, verticesB);
     }
 
     /**
@@ -189,7 +195,47 @@ export class Collisions {
      * @param {Vector4[]} verticesB 
      */
     static #findPolygonContactPoints(verticesA, verticesB) {
+        const origin = Vector2.zero;
+        const terminus = Vector2.zero;
 
+        let minDistanceSquared = Number.MAX_SAFE_INTEGER;
+        for (let i = 0; i < verticesA.length; i++) {
+            for (let j = 0; j < verticesB.length; j++) {
+                origin.set(verticesB[j]);
+                terminus.set(verticesB[(j + 1) % verticesB.length]);
+
+                const point = this.#pointLineSegmentDistance(verticesA[i], origin, terminus);
+                if (point.distanceSquared == minDistanceSquared
+                    && this.collInfo.contact1.equals(point.contact)) {
+                    this.collInfo.contact2.set(point.contact);
+                    this.collInfo.contactCount = 2;
+                } else if (point.distanceSquared < minDistanceSquared) {
+                    minDistanceSquared = point.distanceSquared;
+
+                    this.collInfo.contact1.set(point.contact);
+                    this.collInfo.contactCount = 1;
+                }
+            }
+        }
+
+        for (let i = 0; i < verticesB.length; i++) {
+            for (let j = 0; j < verticesA.length; j++) {
+                origin.set(verticesA[j]);
+                terminus.set(verticesA[(j + 1) % verticesA.length]);
+
+                const point = this.#pointLineSegmentDistance(verticesB[i], origin, terminus);
+                if (point.distanceSquared == minDistanceSquared
+                    && !this.collInfo.contact1.equals(point.contact)) {
+                    this.collInfo.contact2.set(point.contact);
+                    this.collInfo.contactCount = 2;
+                } else if (point.distanceSquared < minDistanceSquared) {
+                    minDistanceSquared = point.distanceSquared;
+
+                    this.collInfo.contact1.set(point.contact);
+                    this.collInfo.contactCount = 1;
+                }
+            }
+        }
     }
 
     /**
@@ -255,6 +301,34 @@ export class Collisions {
         if (polygonCenter.dot(this.collInfo.normal) < 0) {
             this.collInfo.normal.mul(-1);
         }
+
+        this.#findCirclePolygonContactPoints(center, vertices);
+    }
+
+    /**
+     * 
+     * @param {Vector2} center 
+     * @param {Vector4[]} vertices 
+     */
+    static #findCirclePolygonContactPoints(center, vertices) {
+        const origin = Vector2.zero;
+        const terminus = Vector2.zero;
+
+        let minDistanceSquared = Number.MAX_SAFE_INTEGER;
+        for (let i = 0; i < vertices.length; i++) {
+            origin.set(vertices[i]);
+            terminus.set(vertices[(i + 1) % vertices.length]);
+
+            const point = this.#pointLineSegmentDistance(center, origin, terminus);
+
+            if (point.distanceSquared < minDistanceSquared) {
+                minDistanceSquared = point.distanceSquared;
+
+                this.collInfo.contact1.set(point.contact);
+            }
+        }
+
+        this.collInfo.contactCount = 1;
     }
 
     /**
@@ -352,10 +426,10 @@ export class Collisions {
     }
 
     /**
-     * 
-     * @param {Vector2} p 
-     * @param {Vector2} a 
-     * @param {Vector2} b 
+     * Finds the distance between a point and a line segment
+     * @param {Vector2} p is the point
+     * @param {Vector2} a beginning point of the line segment
+     * @param {Vector2} b ending point of the line segment
      */
     static #pointLineSegmentDistance(p, a, b) {
         const ab = Vector2.zero;

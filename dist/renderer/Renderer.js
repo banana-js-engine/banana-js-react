@@ -144,7 +144,7 @@ class Renderer {
     this.#gl.blendEquation(this.#gl.FUNC_ADD);
     this.#gl.blendFunc(this.#gl.SRC_ALPHA, this.#gl.ONE_MINUS_SRC_ALPHA);
     this.#gl.disable(this.#gl.CULL_FACE);
-    this.#gl.enable(this.#gl.DEPTH_TEST);
+    this.#gl.disable(this.#gl.DEPTH_TEST);
     this.#renderData.maxTextureSlotCount = this.#gl.getParameter(this.#gl.MAX_TEXTURE_IMAGE_UNITS);
     this.#renderData.whiteTexture = new _Texture.Texture(this.#gl); // without src, we'll get the default 1x1 white texture
 

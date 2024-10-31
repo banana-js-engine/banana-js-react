@@ -30,22 +30,12 @@ export default function App() {
                 </GameObject>
                 <GameObject name="Square">
                     <Transform position={[0, 3, 0]}/>
-                    <Cube />
-
-                    <Script>
-                        {`
-                            function ready() {
-                                console.log('Hello, world!');
-                            }
-                        `}
-                    </Script>
+                    <Sprite/>
+                    <Body2D shape={ShapeType.Box} isStatic={false} gravityScale={0}/>
                 </GameObject>
                 <GameObject>
                     <Transform/>
                     <Sprite/>
-                    <Animator startAnim="DinoIdle">
-                        <Animation name="DinoIdle" src="Dino.png" firstFrame={0} frames={4} length={0.5} cellWidth={24} cellHeight={24}/>
-                    </Animator>
                     <Body2D shape={ShapeType.Box} isStatic={false} gravityScale={0}/>
                     <Script import={import('./scripts/MovementScript')}/>
                 </GameObject>

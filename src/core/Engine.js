@@ -5,6 +5,7 @@ import { World2D } from "../physics/World2D";
 import { Debug } from "./Debug";
 import { SceneManager } from "../ecs/SceneManager";
 import { Color } from "../renderer/Color";
+import { Vector2, Vector3 } from "../math/Vector";
 
 /**
  * The class that controls the game-loop
@@ -178,6 +179,14 @@ export class Engine {
                             this.#rendererRef.drawLine(vertices[j], vertices[(j + 1) % vertices.length], Color.green);
                         }
                     }
+                }
+            }
+
+            if (Debug.showContactPoints) {
+                for (let i = 0; i < this.#world2d.contactPoints.length; i++) {
+                    const point = Vector3.zero;
+                    point.set(this.#world2d.contactPoints[i]);
+                    this.#rendererRef.drawRect(point, Vector2.one.mul(0.2), Color.orange);   
                 }
             }
             
