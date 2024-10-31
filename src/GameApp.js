@@ -11,6 +11,13 @@ import Script from "./components/Script";
 import PerspectiveCamera from "./components/PerspectiveCamera"
 import Body2D from "./components/Body2D";
 import { ShapeType } from "./core/Types";
+import Cube from "./components/Cube";
+import Circle from "./components/Circle";
+import { Color } from "./renderer/Color";
+import Icosphere from "./components/Icosphere";
+import Sphere from "./components/Sphere";
+import Cylinder from "./components/Cylinder";
+import Torus from "./components/Torus";
 
 export default function App() {
     return (
@@ -23,8 +30,7 @@ export default function App() {
                 </GameObject>
                 <GameObject name="Square">
                     <Transform position={[0, 3, 0]}/>
-                    <Sprite src="defaultShapes/circle.png"/>
-                    <Body2D shape={ShapeType.Circle} isStatic={false} gravityScale={0}/>
+                    <Cube />
 
                     <Script>
                         {`
