@@ -33,6 +33,12 @@ Object.defineProperty(exports, "Body2D", {
     return _Body2D.default;
   }
 });
+Object.defineProperty(exports, "Circle", {
+  enumerable: true,
+  get: function () {
+    return _Circle.default;
+  }
+});
 Object.defineProperty(exports, "Color", {
   enumerable: true,
   get: function () {
@@ -45,10 +51,22 @@ Object.defineProperty(exports, "ComponentType", {
     return _Types.ComponentType;
   }
 });
+Object.defineProperty(exports, "Cube", {
+  enumerable: true,
+  get: function () {
+    return _Cube.default;
+  }
+});
 Object.defineProperty(exports, "Cursor", {
   enumerable: true,
   get: function () {
     return _Cursor.default;
+  }
+});
+Object.defineProperty(exports, "Cylinder", {
+  enumerable: true,
+  get: function () {
+    return _Cylinder.default;
   }
 });
 Object.defineProperty(exports, "Game", {
@@ -61,6 +79,12 @@ Object.defineProperty(exports, "GameObject", {
   enumerable: true,
   get: function () {
     return _GameObject.default;
+  }
+});
+Object.defineProperty(exports, "Icosphere", {
+  enumerable: true,
+  get: function () {
+    return _Icosphere.default;
   }
 });
 Object.defineProperty(exports, "Input", {
@@ -123,10 +147,22 @@ Object.defineProperty(exports, "ShapeType", {
     return _Types.ShapeType;
   }
 });
+Object.defineProperty(exports, "Sphere", {
+  enumerable: true,
+  get: function () {
+    return _Sphere.default;
+  }
+});
 Object.defineProperty(exports, "Sprite", {
   enumerable: true,
   get: function () {
     return _Sprite.default;
+  }
+});
+Object.defineProperty(exports, "Torus", {
+  enumerable: true,
+  get: function () {
+    return _Torus.default;
   }
 });
 Object.defineProperty(exports, "Transform", {
@@ -157,15 +193,21 @@ var _Animation = _interopRequireDefault(require("./components/Animation"));
 var _Animator = _interopRequireDefault(require("./components/Animator"));
 var _Audio = _interopRequireDefault(require("./components/Audio"));
 var _Body2D = _interopRequireDefault(require("./components/Body2D"));
+var _Circle = _interopRequireDefault(require("./components/Circle"));
+var _Cube = _interopRequireDefault(require("./components/Cube"));
 var _Cursor = _interopRequireDefault(require("./components/Cursor"));
+var _Cylinder = _interopRequireDefault(require("./components/Cylinder"));
 var _Game = _interopRequireDefault(require("./components/Game"));
 var _GameObject = _interopRequireDefault(require("./components/GameObject"));
+var _Icosphere = _interopRequireDefault(require("./components/Icosphere"));
 var _Mesh = _interopRequireDefault(require("./components/Mesh"));
 var _OrthographicCamera = _interopRequireDefault(require("./components/OrthographicCamera"));
 var _PerspectiveCamera = _interopRequireDefault(require("./components/PerspectiveCamera"));
 var _Scene = _interopRequireDefault(require("./components/Scene"));
 var _Script = _interopRequireDefault(require("./components/Script"));
+var _Sphere = _interopRequireDefault(require("./components/Sphere"));
 var _Sprite = _interopRequireDefault(require("./components/Sprite"));
+var _Torus = _interopRequireDefault(require("./components/Torus"));
 var _Transform = _interopRequireDefault(require("./components/Transform"));
 var _Input = require("./core/Input");
 var _Types = require("./core/Types");
