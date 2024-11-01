@@ -7,6 +7,7 @@ import { SceneManager } from "../ecs/SceneManager";
 import { Color } from "../renderer/Color";
 import { Vector2, Vector3 } from "../math/Vector";
 import { Renderer } from "../renderer/Renderer";
+import { TextRenderer } from "../renderer/TextRenderer";
 
 /**
  * The class that controls the game-loop
@@ -17,7 +18,7 @@ export class Engine {
     #previousFrameTime;
 
     #renderer;
-    #ctx2d;
+    #textRenderer;
 
     #world2d;
 
@@ -33,14 +34,14 @@ export class Engine {
     /**
      * 
      * @param {Renderer} renderer 
-     * @param {CanvasRenderingContext2D} ctx2d 
+     * @param {TextRenderer} textRenderer 
      */
-    constructor(renderer, ctx2d) {
+    constructor(renderer, textRenderer) {
         this.#running = true;
         this.#previousFrameTime = 0;
 
         this.#renderer = renderer;
-        this.#ctx2d = ctx2d;
+        this.#textRenderer = textRenderer;
 
         this.#world2d = new World2D();
 
@@ -157,7 +158,7 @@ export class Engine {
             
             this.#renderer.beginScene(cameraTransform, cameraComponent);
 
-            this.#renderer.clear(1);
+            this.#renderer.clear();
             
             const goSprites = activeScene.getAllWithEntity(ComponentType.Sprite);
 
@@ -200,6 +201,13 @@ export class Engine {
             
             this.#renderer.endScene();
 
+            this.#textRenderer.clear();
+
+            const goTexts = activeScene.getAll(ComponentType.Text);
+
+            for (let i = 0; i < goTexts.length; i++) {
+                this.#textRenderer.drawText(goTexts[i]);
+            }
 
             // Debug
             if (Input.getKey('control') && Input.getKey('alt') && Input.getKeyDown('s')) {
@@ -208,7 +216,5 @@ export class Engine {
         }
 
         Input.mouseDelta.set(0, 0);
-
-        this.#ctx2d.clearRect(0, 0, this.#ctx2d.canvas.width, this.#ctx2d.canvas.height);
     }   
 }

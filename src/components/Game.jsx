@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Renderer } from '../renderer/Renderer';
 import { Engine } from '../core/Engine';
+import { TextRenderer } from '../renderer/TextRenderer';
 
 // gl context
 const GLContext = createContext(null);
@@ -49,15 +50,18 @@ export default function Game(props) {
         // initialize webgl
         context.viewport(0, 0, props.width, props.height);
 
-        // initialize renderer(s)
-        const renderer = new Renderer(context);
+        // 2d context
         const textCanvas = document.getElementById('banana-text');
         textCanvas.width = props.width;
         textCanvas.height = props.height;
         const ctx = textCanvas.getContext('2d');
 
+        // initialize renderer(s)
+        const renderer = new Renderer(context);
+        const textRenderer = new TextRenderer(ctx);
+
         // initialize engine
-        engineRef.current = new Engine(renderer, ctx);
+        engineRef.current = new Engine(renderer, textRenderer);
         audioRef.current = new AudioContext();
 
         // Set initialized to true

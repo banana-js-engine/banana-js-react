@@ -334,6 +334,18 @@ class Vector4 extends Vector3 {
   get lengthSquared() {
     return super.lengthSquared + this.w * this.w;
   }
+  get hex() {
+    let hexRepresentation = '#';
+    for (let i = 0; i < 3; i++) {
+      const digit = Math.round(this.data[i] * 255).toString(16);
+      if (digit == '0') {
+        hexRepresentation += '00';
+      } else {
+        hexRepresentation += digit;
+      }
+    }
+    return hexRepresentation;
+  }
 
   // ready Vector4s
   static get zero() {

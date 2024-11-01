@@ -8,6 +8,7 @@ var _Matrix = require("../math/Matrix");
 var _Vector = require("../math/Vector");
 var _AABB = require("../physics/AABB");
 var _Texture = require("../renderer/Texture");
+var _Color = require("../renderer/Color");
 var _Types = require("../core/Types");
 var _BananaMath = require("../math/BananaMath");
 var _ECS = require("./ECS");
@@ -28,6 +29,17 @@ class Component {
   }
   get type() {
     return _Types.ComponentType.None;
+  }
+
+  /**
+   * @returns {CameraComponent}
+   */
+  get mainCamera() {
+    const cameras = this.getComponents(_Types.ComponentType.Camera);
+    if (cameras.length == 0) {
+      return null;
+    }
+    return cameras[0];
   }
 
   // component related functions
@@ -466,6 +478,15 @@ class CameraComponent extends Component {
   screenToWorldSpace(vector) {
     return new _Vector.Vector3((vector.x - this.#canvas.clientWidth / 2) / (this.#canvas.clientHeight / this.#size), (vector.y - this.#canvas.clientHeight / 2) / (this.#canvas.clientHeight / this.#size), 0);
   }
+
+  /**
+   * 
+   * @param {Vector3} vector 
+   * @returns {Vector2}
+   */
+  worldToScreenSpace(vector) {
+    return new _Vector.Vector2(vector.x * this.#canvas.clientHeight / this.#size + this.#canvas.clientWidth / 2, vector.y * this.#canvas.clientHeight / this.#size + this.#canvas.clientHeight / 2);
+  }
 }
 exports.CameraComponent = CameraComponent;
 class ScriptComponent extends Component {
@@ -479,17 +500,6 @@ class ScriptComponent extends Component {
   }
   get type() {
     return _Types.ComponentType.Script;
-  }
-
-  /**
-   * @returns {CameraComponent}
-   */
-  get mainCamera() {
-    const cameras = this.getComponents(_Types.ComponentType.Camera);
-    if (cameras.length == 0) {
-      return null;
-    }
-    return cameras[0];
   }
 
   // this function is called once when the game starts
@@ -914,14 +924,35 @@ class MeshComponent extends Component {
 exports.MeshComponent = MeshComponent;
 class TextComponent extends Component {
   #text;
-  constructor(text) {
+  #color;
+  #fontFamily;
+  #fontSize;
+  #transform;
+  constructor(id, ecs, text, color, fontFamily, fontSize) {
+    super(id, ecs);
     this.#text = text;
+    this.#color = color ? color : _Color.Color.black;
+    this.#fontFamily = fontFamily ? fontFamily : 'sans-serif';
+    this.#fontSize = fontSize ? fontSize : 10;
+    this.#transform = this.getComponent(_Types.ComponentType.Transform);
   }
   get type() {
     return _Types.ComponentType.Text;
   }
   get text() {
     return this.#text;
+  }
+  get color() {
+    return this.#color;
+  }
+  get fontFamily() {
+    return this.#fontFamily;
+  }
+  get fontSize() {
+    return this.#fontSize;
+  }
+  get position() {
+    return this.mainCamera.worldToScreenSpace(this.#transform.position);
   }
 }
 exports.TextComponent = TextComponent;

@@ -13,6 +13,7 @@ var _SceneManager = require("../ecs/SceneManager");
 var _Color = require("../renderer/Color");
 var _Vector = require("../math/Vector");
 var _Renderer = require("../renderer/Renderer");
+var _TextRenderer = require("../renderer/TextRenderer");
 /**
  * The class that controls the game-loop
  */
@@ -20,7 +21,7 @@ class Engine {
   #running;
   #previousFrameTime;
   #renderer;
-  #ctx2d;
+  #textRenderer;
   #world2d;
   #firstUpdate;
   #iteration;
@@ -34,13 +35,13 @@ class Engine {
   /**
    * 
    * @param {Renderer} renderer 
-   * @param {CanvasRenderingContext2D} ctx2d 
+   * @param {TextRenderer} textRenderer 
    */
-  constructor(renderer, ctx2d) {
+  constructor(renderer, textRenderer) {
     this.#running = true;
     this.#previousFrameTime = 0;
     this.#renderer = renderer;
-    this.#ctx2d = ctx2d;
+    this.#textRenderer = textRenderer;
     this.#world2d = new _World2D.World2D();
     this.#firstUpdate = true;
     this.#iteration = 0;
@@ -123,7 +124,7 @@ class Engine {
         goAnimators[i].step(dt);
       }
       this.#renderer.beginScene(cameraTransform, cameraComponent);
-      this.#renderer.clear(1);
+      this.#renderer.clear();
       const goSprites = activeScene.getAllWithEntity(_Types.ComponentType.Sprite);
       for (const id in goSprites) {
         const transform = activeScene.get(id, _Types.ComponentType.Transform);
@@ -153,6 +154,11 @@ class Engine {
         }
       }
       this.#renderer.endScene();
+      this.#textRenderer.clear();
+      const goTexts = activeScene.getAll(_Types.ComponentType.Text);
+      for (let i = 0; i < goTexts.length; i++) {
+        this.#textRenderer.drawText(goTexts[i]);
+      }
 
       // Debug
       if (_Input.Input.getKey('control') && _Input.Input.getKey('alt') && _Input.Input.getKeyDown('s')) {
@@ -160,7 +166,6 @@ class Engine {
       }
     }
     _Input.Input.mouseDelta.set(0, 0);
-    this.#ctx2d.clearRect(0, 0, this.#ctx2d.canvas.width, this.#ctx2d.canvas.height);
   }
 }
 exports.Engine = Engine;

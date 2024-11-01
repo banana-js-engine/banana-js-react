@@ -189,7 +189,6 @@ Object.defineProperty(exports, "Vector4", {
     return _Vector.Vector4;
   }
 });
-var _jsxRuntime = require("react/jsx-runtime");
 var _Animation = _interopRequireDefault(require("./components/Animation"));
 var _Animator = _interopRequireDefault(require("./components/Animator"));
 var _Audio = _interopRequireDefault(require("./components/Audio"));
@@ -219,5 +218,3 @@ var _Matrix = require("./math/Matrix");
 var _Vector = require("./math/Vector");
 var _Color = require("./renderer/Color");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-const App = require('./GameApp');
-require('react-dom/client').createRoot(document.getElementById('root')).render(/*#__PURE__*/(0, _jsxRuntime.jsx)(App.default, {}));

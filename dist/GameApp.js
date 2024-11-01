@@ -14,6 +14,7 @@ var _Transform = _interopRequireDefault(require("./components/Transform"));
 var _Animator = _interopRequireDefault(require("./components/Animator"));
 var _Animation = _interopRequireDefault(require("./components/Animation"));
 var _Script = _interopRequireDefault(require("./components/Script"));
+var _Text = _interopRequireDefault(require("./components/Text"));
 var _PerspectiveCamera = _interopRequireDefault(require("./components/PerspectiveCamera"));
 var _Body2D = _interopRequireDefault(require("./components/Body2D"));
 var _Types = require("./core/Types");
@@ -40,6 +41,8 @@ function App() {
           position: [0, 0, 0]
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_OrthographicCamera.default, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.default, {
           import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/OrthographicCameraController')))
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Text.default, {
+          children: "HELLO, WORLD"
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.default, {
         name: "Square",
@@ -57,6 +60,9 @@ function App() {
           gravityScale: 0
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.default, {
           import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/MovementScript')))
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Text.default, {
+          color: _Color.Color.red,
+          children: "IM GAY"
         })]
       })]
     })

@@ -8,6 +8,7 @@ import Transform from "./components/Transform";
 import Animator from "./components/Animator";
 import Animation from "./components/Animation";
 import Script from "./components/Script";
+import Text from "./components/Text";
 import PerspectiveCamera from "./components/PerspectiveCamera"
 import Body2D from "./components/Body2D";
 import { ShapeType } from "./core/Types";
@@ -27,6 +28,7 @@ export default function App() {
                     <Transform position={[0, 0, 0]}/>
                     <OrthographicCamera/>   
                     <Script import={import('./scripts/OrthographicCameraController')}/>
+                    <Text>HELLO, WORLD</Text>
                 </GameObject>
                 <GameObject name="Square">
                     <Transform position={[0, 3, 0]}/>
@@ -38,6 +40,7 @@ export default function App() {
                     <Sprite/>
                     <Body2D shape={ShapeType.Box} isStatic={false} gravityScale={0}/>
                     <Script import={import('./scripts/MovementScript')}/>
+                    <Text color={Color.red}>IM MOVING</Text>
                 </GameObject>
             </Scene>
         </Game>

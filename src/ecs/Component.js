@@ -2,6 +2,7 @@ import { Matrix4 } from "../math/Matrix";
 import { Vector2, Vector3, Vector4 } from "../math/Vector";
 import { AABB } from "../physics/AABB";
 import { Texture } from "../renderer/Texture";
+import { Color } from "../renderer/Color";
 import { ComponentType, ShapeType } from "../core/Types";
 import { BananaMath } from "../math/BananaMath";
 import { ECS } from "./ECS";
@@ -26,6 +27,19 @@ class Component {
 
     get type() {
         return ComponentType.None;
+    }
+
+    /**
+     * @returns {CameraComponent}
+     */
+    get mainCamera() {
+        const cameras = this.getComponents(ComponentType.Camera);
+
+        if (cameras.length == 0) {
+            return null;
+        }
+
+        return cameras[0];
     }
 
     // component related functions
@@ -526,6 +540,18 @@ export class CameraComponent extends Component {
             0
         );
     }
+    
+    /**
+     * 
+     * @param {Vector3} vector 
+     * @returns {Vector2}
+     */
+    worldToScreenSpace(vector) {
+        return new Vector2(
+            (vector.x * this.#canvas.clientHeight / this.#size) + this.#canvas.clientWidth / 2, 
+            (vector.y * this.#canvas.clientHeight / this.#size) + this.#canvas.clientHeight / 2 
+        );
+    }
 }
 
 export class ScriptComponent extends Component {
@@ -541,19 +567,6 @@ export class ScriptComponent extends Component {
 
     get type() {
         return ComponentType.Script;
-    }
-
-    /**
-     * @returns {CameraComponent}
-     */
-    get mainCamera() {
-        const cameras = this.getComponents(ComponentType.Camera);
-
-        if (cameras.length == 0) {
-            return null;
-        }
-
-        return cameras[0];
     }
 
     // this function is called once when the game starts
@@ -1044,9 +1057,22 @@ export class MeshComponent extends Component {
 export class TextComponent extends Component {
 
     #text;
+    #color;
+    #fontFamily;
+    #fontSize;
 
-    constructor(text) {
+    #transform;
+
+    constructor(id, ecs, text, color, fontFamily, fontSize) {
+        super(id, ecs);
+
         this.#text = text;
+        
+        this.#color = color ? color : Color.black;
+        this.#fontFamily = fontFamily ? fontFamily : 'sans-serif';
+        this.#fontSize = fontSize ? fontSize : 10;
+
+        this.#transform = this.getComponent(ComponentType.Transform);
     }
 
     get type() {
@@ -1055,5 +1081,21 @@ export class TextComponent extends Component {
 
     get text() {
         return this.#text;
+    }
+
+    get color() {
+        return this.#color;
+    }
+
+    get fontFamily() {
+        return this.#fontFamily;
+    }
+
+    get fontSize() {
+        return this.#fontSize;
+    }
+
+    get position() {
+        return this.mainCamera.worldToScreenSpace(this.#transform.position);
     }
 }
