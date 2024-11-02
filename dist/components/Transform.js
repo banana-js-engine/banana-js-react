@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Transform;
+exports.Transform = Transform;
 var _react = require("react");
 var _ECS = require("../ecs/ECS");
 var _Scene = require("./Scene");
@@ -25,5 +25,4 @@ function Transform(props) {
   (0, _react.useEffect)(() => {
     ecs.emplace(gameObjectId, new _Component.TransformComponent(gameObjectId, ecs, props.position, props.rotation, props.scale));
   }, []);
-  return null;
 }

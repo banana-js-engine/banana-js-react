@@ -12,7 +12,7 @@ import { useGL } from "./Game";
  *           flipX: boolean, flipY: boolean }} props 
  * @returns 
  */
-export default function Sprite(props) {
+export function Sprite(props) {
 
     /**
      * @type {ECS} entity-component system
@@ -34,6 +34,4 @@ export default function Sprite(props) {
             props.flipY
         ));
     }, []);
-
-    return null;
 }

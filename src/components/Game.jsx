@@ -24,7 +24,7 @@ export function useAudioContext() {
     return useContext(AudioContextContext);
 }
 
-export default function Game(props) {
+export function Game(props) {
     // Refs
     const engineRef = useRef();
     const audioRef = useRef();

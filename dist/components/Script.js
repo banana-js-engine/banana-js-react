@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Script;
+exports.Script = Script;
 var _react = require("react");
 var _Scene = require("./Scene");
 var _GameObject = require("./GameObject");
@@ -38,5 +38,4 @@ function Script(props) {
       ecs.emplace(gameObjectId, scriptComponent);
     }
   }, []);
-  return null;
 }

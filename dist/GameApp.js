@@ -62,7 +62,7 @@ function App() {
           import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/MovementScript')))
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Text.default, {
           color: _Color.Color.red,
-          children: "IM GAY"
+          children: "IM MOVING"
         })]
       })]
     })

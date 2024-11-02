@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Mesh;
+exports.Mesh = Mesh;
 var _react = require("react");
 var _GameObject = require("./GameObject");
 var _Scene = require("./Scene");

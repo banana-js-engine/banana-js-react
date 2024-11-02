@@ -12,7 +12,7 @@ export function useGameObject() {
 /**
  * @param {{ name: string }} props 
  */
-export default function GameObject(props) {
+export function GameObject(props) {
 
     const gameObjectRef = useRef();
 

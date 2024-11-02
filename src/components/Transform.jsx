@@ -11,7 +11,7 @@ import { TransformComponent } from "../ecs/Component";
  *           scale: [number, number, number] }} props 
  * @returns 
  */
-export default function Transform(props) {
+export function Transform(props) {
 
     /**
      * @type {ECS} entity-component system
@@ -28,6 +28,4 @@ export default function Transform(props) {
             props.scale
         ));
     }, []);
-
-    return null;
 }

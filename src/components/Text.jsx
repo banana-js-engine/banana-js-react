@@ -10,7 +10,7 @@ import { TextComponent } from "../ecs/Component";
  *           fontFamily: string,
  *           fontSize: number }} props 
  */
-export default function Text(props) {
+export function Text(props) {
 
     const ecs = useScene();
     const id = useGameObject();

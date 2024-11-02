@@ -10,7 +10,7 @@ import { AnimationClip } from "../renderer/AnimationClip";
 import { WavefrontParser } from "../renderer/WavefrontParser";
 
 
-class Component {
+export class Component {
 
     ecs;
     gameObject;
@@ -574,6 +574,11 @@ export class ScriptComponent extends Component {
 
     // this function is called every frame
     step(dt) {}
+
+    // camera related functions
+    onEnterViewport() {}
+
+    onExitViewport() {}
 
     // game object related functions
     create(name = 'GameObject') {

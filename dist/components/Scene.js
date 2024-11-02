@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Scene;
+exports.Scene = Scene;
 exports.useScene = useScene;
 var _react = _interopRequireWildcard(require("react"));
 var _ECS = require("../ecs/ECS");

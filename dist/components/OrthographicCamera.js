@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = OrthographicCamera;
+exports.OrthographicCamera = OrthographicCamera;
 var _react = require("react");
 var _Scene = require("./Scene");
 var _GameObject = require("./GameObject");
@@ -28,5 +28,4 @@ function OrthographicCamera(props) {
   (0, _react.useEffect)(() => {
     ecs.emplace(gameObjectId, new _Component.CameraComponent(gameObjectId, ecs, true, props.bgColor, props.size, props.near, props.far));
   }, []);
-  return null;
 }

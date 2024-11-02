@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Sprite;
+exports.Sprite = Sprite;
 var _react = require("react");
 var _ECS = require("../ecs/ECS");
 var _Scene = require("./Scene");
@@ -27,5 +27,4 @@ function Sprite(props) {
   (0, _react.useEffect)(() => {
     ecs.emplace(gameObjectId, new _Component.SpriteComponent(gameObjectId, ecs, gl, props.color, props.src, props.flipX, props.flipY));
   }, []);
-  return null;
 }

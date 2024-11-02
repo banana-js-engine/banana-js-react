@@ -5,7 +5,7 @@ import { useEffect } from "react";
  * @param {{ src: string }} props 
 * @returns 
 */
-export default function Cursor(props) {
+export function Cursor(props) {
 
     const canvas = document.getElementById('banana-canvas');
 

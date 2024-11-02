@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = PerspectiveCamera;
+exports.PerspectiveCamera = PerspectiveCamera;
 var _react = require("react");
 var _Scene = require("./Scene");
 var _GameObject = require("./GameObject");
@@ -28,5 +28,4 @@ function PerspectiveCamera(props) {
   (0, _react.useEffect)(() => {
     ecs.emplace(gameObjectId, new _Component.CameraComponent(gameObjectId, ecs, false, props.bgColor, props.size, props.near, props.far));
   }, []);
-  return null;
 }

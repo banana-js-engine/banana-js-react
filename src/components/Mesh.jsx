@@ -7,7 +7,7 @@ import { MeshComponent } from "../ecs/Component";
  * 
  * @param {{ objSrc: string, mtlSrc: string }} props 
  */
-export default function Mesh(props) {
+export function Mesh(props) {
     
     const ecs = useScene();
     const id = useGameObject();

@@ -8,7 +8,7 @@ import { ComponentType, ShapeType } from "../core/Types";
  * 
  * @param {{ shape: number, isStatic: boolean, gravityScale: number }} props 
  */
-export default function Body2D(props) {
+export function Body2D(props) {
 
     const ecs = useScene();
     const gameObjectId = useGameObject();

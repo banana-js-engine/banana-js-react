@@ -8,7 +8,7 @@ import { useAudioContext } from "./Game";
  * 
  * @param {{ src: string, volume: number, playOnStart: boolean, loop: boolean }} props 
  */
-export default function Audio(props) {
+export function Audio(props) {
 
     const ecs = useScene();
     const gameObjectId = useGameObject();

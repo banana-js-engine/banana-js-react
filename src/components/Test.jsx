@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useGL } from './Game';
 
-export default function Test() {
+export function Test() {
 
     /**
      * @type {WebGL2RenderingContext} the WebGL context

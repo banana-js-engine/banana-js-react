@@ -14,7 +14,7 @@ import { CameraComponent } from '../ecs/Component';
  *           far: number }} props 
  * @returns 
  */
-export default function PerspectiveCamera(props) {
+export function PerspectiveCamera(props) {
 
    /**
     * @type {ECS} entity-component system
@@ -33,6 +33,4 @@ export default function PerspectiveCamera(props) {
         props.far
     ));
    }, []);
-   
-   return null;
 }

@@ -14,7 +14,7 @@ export function useScene() {
  * @param props 
  * @returns 
  */
-export default function Scene(props) {
+export function Scene(props) {
 
     const ecsRef = useRef(); 
 

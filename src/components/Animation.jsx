@@ -6,7 +6,7 @@ import { AnimationClip } from "../renderer/AnimationClip";
  * 
  * @param {{ src: string, name: string, frames: number, firstFrame: number, length: number, cellWidth: number, cellHeight: number }} props 
  */
-export default function Animation(props) {
+export function Animation(props) {
 
     const animator = useAnimator();
     const gl = useGL();

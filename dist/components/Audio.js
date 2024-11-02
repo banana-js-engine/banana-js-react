@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Audio;
+exports.Audio = Audio;
 var _react = require("react");
 var _GameObject = require("./GameObject");
 var _Scene = require("./Scene");

@@ -13,7 +13,7 @@ export function useAnimator() {
  * 
  * @param {{ startAnim: string }} props 
  */
-export default function Animator(props) {
+export function Animator(props) {
 
 
     const ecs = useScene();

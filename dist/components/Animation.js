@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Animation;
+exports.Animation = Animation;
 var _Animator = require("./Animator");
 var _Game = require("./Game");
 var _AnimationClip = require("../renderer/AnimationClip");

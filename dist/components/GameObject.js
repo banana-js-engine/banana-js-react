@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = GameObject;
+exports.GameObject = GameObject;
 exports.useGameObject = useGameObject;
 var _react = require("react");
 var _Scene = require("./Scene");

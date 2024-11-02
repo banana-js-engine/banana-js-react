@@ -8,7 +8,7 @@ import { ScriptComponent } from "../ecs/Component";
  * @param {{ import: Promise }} props 
  * @returns 
  */
-export default function Script(props) {
+export function Script(props) {
 
     /**
      * @type {ECS} entity-component system
@@ -43,6 +43,4 @@ export default function Script(props) {
             ecs.emplace(gameObjectId, scriptComponent);
         }
     }, []);
-
-    return null;
 }

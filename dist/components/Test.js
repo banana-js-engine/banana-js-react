@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Test;
+exports.Test = Test;
 var _react = require("react");
 var _Game = require("./Game");
 function Test() {

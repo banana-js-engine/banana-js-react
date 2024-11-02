@@ -1,5 +1,5 @@
-import Mesh from "./Mesh";
+import { Mesh } from "./Mesh";
 
-export default function Cylinder(props) {
+export function Cylinder(props) {
     return <Mesh objSrc="defaultModels/Cylinder.obj" mtlSrc="defaultModels/Cylinder.mtl"/>
 }

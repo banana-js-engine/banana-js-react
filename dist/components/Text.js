@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Text;
+exports.Text = Text;
 var _react = require("react");
 var _Color = require("../renderer/Color");
 var _GameObject = require("./GameObject");

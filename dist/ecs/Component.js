@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.NameComponent = exports.MeshComponent = exports.CameraComponent = exports.Body2DComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
+exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.NameComponent = exports.MeshComponent = exports.Component = exports.CameraComponent = exports.Body2DComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
 var _Matrix = require("../math/Matrix");
 var _Vector = require("../math/Vector");
 var _AABB = require("../physics/AABB");
@@ -50,6 +50,7 @@ class Component {
     return this.ecs.getAll(type);
   }
 }
+exports.Component = Component;
 class NameComponent extends Component {
   #name;
   constructor(id, ecs, name) {
@@ -507,6 +508,10 @@ class ScriptComponent extends Component {
 
   // this function is called every frame
   step(dt) {}
+
+  // camera related functions
+  onEnterViewport() {}
+  onExitViewport() {}
 
   // game object related functions
   create() {

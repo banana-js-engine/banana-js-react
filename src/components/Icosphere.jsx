@@ -1,5 +1,5 @@
-import Mesh from "./Mesh";
+import { Mesh } from "./Mesh";
 
-export default function Icosphere(props) {
+export function Icosphere(props) {
     return <Mesh objSrc="defaultModels/Icosphere.obj" mtlSrc="defaultModels/Icosphere.mtl"/>
 }

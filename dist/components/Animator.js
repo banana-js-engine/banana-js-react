@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Animator;
+exports.Animator = Animator;
 exports.useAnimator = useAnimator;
 var _react = require("react");
 var _GameObject = require("./GameObject");

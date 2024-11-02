@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = Game;
+exports.Game = Game;
 exports.useAudioContext = useAudioContext;
 exports.useEngine = useEngine;
 exports.useGL = useGL;
