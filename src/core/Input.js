@@ -77,7 +77,13 @@ export class Input {
         });
     }    
 
+    /**
+     * 
+     * @param {string} key 
+     * @returns if a key is being held down
+     */
     static getKey(key) {
+        key = key.toLowerCase();
         if (!this.#keyStates[key]) {
             return false;
         }
@@ -85,7 +91,13 @@ export class Input {
         return this.#keyStates[key];
     }
 
+    /**
+     * 
+     * @param {string} key 
+     * @returns if a key is just pressed
+     */
     static getKeyDown(key) {
+        key = key.toLowerCase();
         if (!this.#keyStates[key]) {
             return false;
         }

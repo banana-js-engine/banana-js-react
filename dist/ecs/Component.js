@@ -393,6 +393,11 @@ class CameraComponent extends Component {
   #near;
   #far;
   #isOrtho;
+
+  /**
+   * @type {AABB} AABB
+   */
+  #AABB;
   constructor(id, ecs, isOrtho, clearColor, size, near, far) {
     super(id, ecs);
     this.#projectionMatrix = _Matrix.Matrix4.zero;
@@ -412,13 +417,16 @@ class CameraComponent extends Component {
     if (near) {
       this.#near = near;
     }
-    if (far) this.#far = far;
+    if (far) {
+      this.#far = far;
+    }
+    this.#isOrtho = isOrtho;
+    this.#AABB = new _AABB.AABB();
     if (isOrtho) {
       this.setOrthographic();
     } else {
       this.setPerspective();
     }
-    this.#isOrtho = isOrtho;
   }
   get type() {
     return _Types.ComponentType.Camera;
@@ -457,11 +465,15 @@ class CameraComponent extends Component {
   get isOrtho() {
     return this.#isOrtho;
   }
+  get AABB() {
+    return this.#AABB;
+  }
   setOrthographic() {
     const left = -this.#size * this.#aspectRatio * 0.5;
     const right = this.#size * this.#aspectRatio * 0.5;
     const bottom = this.#size * 0.5;
     const top = -this.#size * 0.5;
+    this.#AABB.set(left, top, right, bottom);
     this.#projectionMatrix.setOrtho(left, right, bottom, top, this.#near, this.#far);
   }
   setPerspective() {
@@ -491,6 +503,8 @@ class CameraComponent extends Component {
 }
 exports.CameraComponent = CameraComponent;
 class ScriptComponent extends Component {
+  #outOfViewport;
+
   /**
    * 
    * @param {string} id 
@@ -501,6 +515,12 @@ class ScriptComponent extends Component {
   }
   get type() {
     return _Types.ComponentType.Script;
+  }
+  get outOfViewport() {
+    return this.#outOfViewport;
+  }
+  set outOfViewport(newValue) {
+    this.#outOfViewport = newValue;
   }
 
   // this function is called once when the game starts
@@ -758,7 +778,13 @@ class Body2DComponent extends Component {
     return this.#isStatic;
   }
   get radius() {
-    return this.#radius;
+    const x = this.#transform.scale.x;
+    const y = this.#transform.scale.y;
+    if (x != y) {
+      console.error('elliptic shapes are not supported yet!');
+      return Math.max(x, y) * this.#radius;
+    }
+    return x * this.#radius;
   }
   get inverseMass() {
     if (!this.#isStatic) {

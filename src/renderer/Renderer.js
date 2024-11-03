@@ -2,7 +2,6 @@ import { CameraComponent, MeshComponent, SpriteComponent, TransformComponent } f
 import { Matrix4 } from "../math/Matrix";
 import { Vector2, Vector3, Vector4 } from "../math/Vector";
 import { IndexBuffer, VertexBuffer } from "./Buffer";
-import { Color } from "./Color";
 import { Shader } from "./Shader";
 import { Texture } from "./Texture";
 
@@ -473,14 +472,12 @@ export class Renderer {
     
             this.#renderData.quadIB.bind();
             this.#renderData.quadVB.bind();
-            this.#renderData.quadVB.linkAttributes();
             this.#renderData.quadShader.bind();
             this.#renderData.quadShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
             this.#gl.drawElements(this.#gl.TRIANGLES, this.#renderData.quadIndexCount, this.#gl.UNSIGNED_SHORT, 0);
         }
         if (this.#renderData.lineVertexCount > 0) {
             this.#renderData.lineVB.bind();
-            this.#renderData.lineVB.linkAttributes();
             this.#renderData.lineShader.bind();
             this.#renderData.lineShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
             this.#gl.drawArrays(this.#gl.LINES, 0, this.#renderData.lineVertexCount);
@@ -491,7 +488,6 @@ export class Renderer {
             }
     
             this.#renderData.cubeVB.bind();
-            this.#renderData.cubeVB.linkAttributes();
             this.#renderData.cubeShader.bind();
             this.#renderData.cubeShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
             this.#renderData.cubeShader.setUniform3fv('u_CameraPosition', this.#sceneData.cameraPos.data);

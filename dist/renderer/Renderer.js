@@ -8,7 +8,6 @@ var _Component = require("../ecs/Component");
 var _Matrix = require("../math/Matrix");
 var _Vector = require("../math/Vector");
 var _Buffer = require("./Buffer");
-var _Color = require("./Color");
 var _Shader = require("./Shader");
 var _Texture = require("./Texture");
 class QuadVertex {
@@ -349,14 +348,12 @@ class Renderer {
       }
       this.#renderData.quadIB.bind();
       this.#renderData.quadVB.bind();
-      this.#renderData.quadVB.linkAttributes();
       this.#renderData.quadShader.bind();
       this.#renderData.quadShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
       this.#gl.drawElements(this.#gl.TRIANGLES, this.#renderData.quadIndexCount, this.#gl.UNSIGNED_SHORT, 0);
     }
     if (this.#renderData.lineVertexCount > 0) {
       this.#renderData.lineVB.bind();
-      this.#renderData.lineVB.linkAttributes();
       this.#renderData.lineShader.bind();
       this.#renderData.lineShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
       this.#gl.drawArrays(this.#gl.LINES, 0, this.#renderData.lineVertexCount);
@@ -366,7 +363,6 @@ class Renderer {
         this.#renderData.textureSlots[i].bind(i);
       }
       this.#renderData.cubeVB.bind();
-      this.#renderData.cubeVB.linkAttributes();
       this.#renderData.cubeShader.bind();
       this.#renderData.cubeShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
       this.#renderData.cubeShader.setUniform3fv('u_CameraPosition', this.#sceneData.cameraPos.data);

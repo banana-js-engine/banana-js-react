@@ -18,12 +18,20 @@ function Script(props) {
    * @type {ECS} entity-component system
    */
   const ecs = (0, _Scene.useScene)();
-  const gameObjectId = (0, _GameObject.useGameObject)();
+  const id = (0, _GameObject.useGameObject)();
+  const properties = Object.entries(props).filter(_ref => {
+    let [key, value] = _ref;
+    return value;
+  });
   (0, _react.useEffect)(() => {
     if (props.import) {
       props.import.then(module => {
         const scriptComponent = Object.values(module)[0];
-        ecs.emplace(gameObjectId, new scriptComponent(gameObjectId, ecs));
+        const scriptComponentIns = new scriptComponent(id, ecs);
+        for (let i = 0; i < properties.length; i++) {
+          scriptComponentIns[properties[i][0]] = properties[i][1];
+        }
+        ecs.emplace(id, scriptComponentIns);
       }).catch(e => {
         console.log(e);
       });
@@ -31,7 +39,7 @@ function Script(props) {
     if (props.children) {
       let script = `return ${props.children.replace(/\n/g, '')}`;
       const functions = new Function(script);
-      const scriptComponent = new _Component.ScriptComponent(gameObjectId, ecs);
+      const scriptComponent = new _Component.ScriptComponent(id, ecs);
       scriptComponent.ready = () => {
         functions()();
       };

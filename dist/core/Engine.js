@@ -14,6 +14,7 @@ var _Color = require("../renderer/Color");
 var _Vector = require("../math/Vector");
 var _Renderer = require("../renderer/Renderer");
 var _TextRenderer = require("../renderer/TextRenderer");
+var _Collisions = require("../physics/Collisions");
 /**
  * The class that controls the game-loop
  */
@@ -74,7 +75,6 @@ class Engine {
         return;
       }
       if (this.#firstUpdate) {
-        this.#firstUpdate = false;
         const goBodies = activeScene.getAll(_Types.ComponentType.Body2D);
         for (let i = 0; i < goBodies.length; i++) {
           this.#world2d.addBody(goBodies[i]);
@@ -114,6 +114,24 @@ class Engine {
         this.#renderer.setClearColor(cc.x, cc.y, cc.z, cc.w);
       }
       this.#world2d.step(dt);
+      const scriptBodyGroup = activeScene.group(_Types.ComponentType.Script, _Types.ComponentType.Body2D);
+      for (let i = 0; i < scriptBodyGroup.length; i++) {
+        if (this.#firstUpdate) {
+          if (_Collisions.Collisions.checkAABBCollision(scriptBodyGroup[i][1].AABB, cameraComponent.AABB)) {
+            scriptBodyGroup[i][0].outOfViewport = false;
+          } else {
+            scriptBodyGroup[i][0].outOfViewport = true;
+          }
+        } else {
+          if (_Collisions.Collisions.checkAABBCollision(scriptBodyGroup[i][1].AABB, cameraComponent.AABB) && scriptBodyGroup[i][0].outOfViewport) {
+            scriptBodyGroup[i][0].outOfViewport = false;
+            scriptBodyGroup[i][0].onEnterViewport();
+          } else if (!_Collisions.Collisions.checkAABBCollision(scriptBodyGroup[i][1].AABB, cameraComponent.AABB) && !scriptBodyGroup[i][0].outOfViewport) {
+            scriptBodyGroup[i][0].outOfViewport = true;
+            scriptBodyGroup[i][0].onExitViewport();
+          }
+        }
+      }
 
       // no camera, no rendering
       if (!cameraComponent) {
@@ -128,7 +146,14 @@ class Engine {
       const goSprites = activeScene.getAllWithEntity(_Types.ComponentType.Sprite);
       for (const id in goSprites) {
         const transform = activeScene.get(id, _Types.ComponentType.Transform);
-        this.#renderer.drawQuad(transform, goSprites[id]);
+        if (activeScene.has(id, _Types.ComponentType.Body2D)) {
+          const body = activeScene.get(id, _Types.ComponentType.Body2D);
+          if (_Collisions.Collisions.checkAABBCollision(body.AABB, cameraComponent.AABB)) {
+            this.#renderer.drawQuad(transform, goSprites[id]);
+          }
+        } else {
+          this.#renderer.drawQuad(transform, goSprites[id]);
+        }
       }
       const goMeshes = activeScene.getAllWithEntity(_Types.ComponentType.Mesh);
       for (const id in goMeshes) {
@@ -159,11 +184,7 @@ class Engine {
       for (let i = 0; i < goTexts.length; i++) {
         this.#textRenderer.drawText(goTexts[i]);
       }
-
-      // Debug
-      if (_Input.Input.getKey('control') && _Input.Input.getKey('alt') && _Input.Input.getKeyDown('s')) {
-        console.log(_Debug.Debug.snapshot(activeScene));
-      }
+      this.#firstUpdate = false;
     }
     _Input.Input.mouseDelta.set(0, 0);
   }

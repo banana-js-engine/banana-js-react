@@ -87,7 +87,7 @@ export class ECS {
     }
 
     has(entity, componentType) {
-        if (typeof this.#component[componentType]) {
+        if (!this.#component[componentType]) {
             this.#component[componentType] = {};
         }
 
@@ -119,10 +119,23 @@ export class ECS {
     }
 
     group(...componentType) {
-        return this.#list.filter(entity =>
+        const entities = this.#list.filter(entity =>
             componentType.every(componentType =>
                 this.#component[componentType] && this.#component[componentType][entity]
             )
         );
+
+        const groupedComponents = [];
+
+        for (let i = 0; i < entities.length; i++) {
+            groupedComponents.push([]);
+
+            for (let j = 0; j < componentType.length; j++) {
+                const component = this.get(entities[i], componentType[j]);
+                groupedComponents[i].push(component);
+            }
+        }
+
+        return groupedComponents;
     }
 }

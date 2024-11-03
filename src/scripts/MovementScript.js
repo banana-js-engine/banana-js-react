@@ -11,23 +11,25 @@ export class MovementScript extends ScriptComponent {
     }
 
     step(dt) {
-        const s = this.speed * dt;
-
         if (Input.getKey('w')) {
             this.body.addForce(Vector2.down.mul(this.speed));
-            // this.transform.moveBy(0, -s, 0);
         }
         if (Input.getKey('a')) {
             this.body.addForce(Vector2.left.mul(this.speed));
-            // this.transform.moveBy(-s, 0, 0);
         } 
         if (Input.getKey('s')) {
             this.body.addForce(Vector2.up.mul(this.speed));
-            // this.transform.moveBy(0, s, 0);
         } 
         if (Input.getKey('d')) {
             this.body.addForce(Vector2.right.mul(this.speed));
-            // this.transform.moveBy(s, 0, 0);
         }
+    }
+
+    onExitViewport() {
+        console.log('exit');
+    }
+    
+    onEnterViewport() {
+        console.log('enter');
     }
 }

@@ -29,9 +29,25 @@ declare module "@mfkucuk/banana-js" {
         gravityScale: number
     }): void;
 
+    export function Body2D(props: {
+        shape: ShapeType,
+        isStatic: boolean,
+        gravityScale: number
+    }): void;
+
+    export function BoxBody2D(props: {
+        isStatic: boolean,
+        gravityScale: number
+    }): void;
+
     export function Circle(props: {
         color: [number, number, number, number] | Color
     }): React.JSX.Element;
+
+    export function CircleBody2D(props: {
+        isStatic: boolean,
+        gravityScale: number
+    }): void;
 
     export function Cube(props: { }): React.JSX.Element;
 
