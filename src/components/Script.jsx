@@ -14,7 +14,9 @@ export function Script(props) {
      * @type {ECS} entity-component system
      */
     const ecs = useScene();
-    const gameObjectId = useGameObject();
+    const id = useGameObject();
+
+    const properties = Object.entries(props).filter(([key, value]) => value)
 
     useEffect(() => {
 
@@ -22,7 +24,13 @@ export function Script(props) {
             props.import.then(module => {
                 const scriptComponent = Object.values(module)[0];
 
-                ecs.emplace(gameObjectId, new scriptComponent(gameObjectId, ecs));
+                const scriptComponentIns = new scriptComponent(id, ecs);
+
+                for (let i = 0; i < properties.length; i++) {
+                    scriptComponentIns[properties[i][0]] = properties[i][1];
+                } 
+
+                ecs.emplace(id, scriptComponentIns);
             })
             .catch((e) => {
                 console.log(e);
@@ -34,7 +42,7 @@ export function Script(props) {
 
             const functions = new Function(script);            
 
-            const scriptComponent = new ScriptComponent(gameObjectId, ecs);
+            const scriptComponent = new ScriptComponent(id, ecs);
 
             scriptComponent.ready = () => {
                 (functions())();

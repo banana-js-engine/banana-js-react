@@ -6,7 +6,6 @@ import { Vector2 } from "../math/Vector";
 export class MovementScript extends ScriptComponent {
 
     ready() {
-        this.speed = 0.1;
         this.transform = this.getComponent(ComponentType.Transform);
         this.body = this.getComponent(ComponentType.Body2D);
     }
