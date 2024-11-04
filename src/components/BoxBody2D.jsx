@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useGameObject } from "./GameObject";
 import { useScene } from "./Scene";
 import { Body2DComponent } from "../ecs/Component";
@@ -6,7 +5,8 @@ import { ComponentType } from "../core/Types";
 
 /**
  * 
- * @param {{ isStatic: boolean, gravityScale: number }} props 
+ * @param {{ isStatic: boolean, gravityScale: number, width: number, height: number
+ *          density: number, restitution }} props 
  */
 export function BoxBody2D(props) {
     
@@ -17,11 +17,11 @@ export function BoxBody2D(props) {
         ecs.emplace(id, Body2DComponent.createBoxBody2D(
             id,
             ecs,
-            1,
-            1,
-            0.2,
+            props.width,
+            props.height,
+            props.density,
             props.isStatic,
-            0.6,
+            props.restitution,
             props.gravityScale
         ));
     }

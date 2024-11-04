@@ -831,6 +831,15 @@ export class Body2DComponent extends Component {
     }
 
     static createBoxBody2D(id, ecs, width, height, density, isStatic, restitution, gravityScale) {
+
+        // undefined parameter check
+        if (!width && width != 0) { width = 1; }
+        if (!height && height != 0) { height = 1; }
+        if (!density && density != 0) { density = 0.2; }
+        if (!isStatic) { isStatic = false; }
+        if (!restitution && restitution != 0) { restitution = 0.2; }
+        if (!gravityScale && gravityScale != 0) { gravityScale = 1; }
+
         const area = width * height;
         const mass = area * density;
         const inertia = (1.0 / 12.0) * mass * (width * width + height * height);
@@ -841,6 +850,14 @@ export class Body2DComponent extends Component {
     }
 
     static createCircleBody2D(id, ecs, radius, density, isStatic, restitution, gravityScale) {
+
+        // undefined parameter check
+        if (!radius && radius != 0) { radius = 0.5; }
+        if (!density && density != 0) { density = 0.2; }
+        if (!isStatic) { isStatic = false; }
+        if (!restitution && restitution != 0) { restitution = 0.2; }
+        if (!gravityScale && gravityScale != 0) { gravityScale = 1; }
+
         const area = Math.PI * radius * radius;
         const mass = area * density;
         const inertia = 0.5 * mass * radius * radius;

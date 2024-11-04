@@ -6,7 +6,7 @@ import { ComponentType } from "../core/Types";
 
 /**
  * 
- * @param {{ isStatic: boolean, gravityScale: number }} props 
+ * @param {{ isStatic: boolean, gravityScale: number, radius: number, density: number, restitution: number }} props 
  */
 export function CircleBody2D(props) {
     
@@ -17,10 +17,10 @@ export function CircleBody2D(props) {
         ecs.emplace(id, Body2DComponent.createCircleBody2D(
             id,
             ecs,
-            0.5,
-            0.2,
+            props.radius,
+            props.density,
             props.isStatic,
-            0.6,
+            props.restitution,
             props.gravityScale
         ));
     }

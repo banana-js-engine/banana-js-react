@@ -23,15 +23,13 @@ declare module "@mfkucuk/banana-js" {
         loop: boolean
     }): void;
 
-    export function Body2D(props: {
-        shape: ShapeType,
-        isStatic: boolean,
-        gravityScale: number
-    }): void;
-
     export function BoxBody2D(props: {
         isStatic: boolean,
-        gravityScale: number
+        gravityScale: number,
+        width: number,
+        height: number,
+        density: number,
+        restitution: number,
     }): void;
 
     export function Circle(props: {
@@ -40,7 +38,10 @@ declare module "@mfkucuk/banana-js" {
 
     export function CircleBody2D(props: {
         isStatic: boolean,
-        gravityScale: number
+        gravityScale: number,
+        radius: number,
+        density: number,
+        restitution: number,
     }): void;
 
     export function Cube(props: { }): React.JSX.Element;
