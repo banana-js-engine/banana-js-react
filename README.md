@@ -1,11 +1,19 @@
-# banana-js
-## Installation
+# 🍌 banana-js 🍌
+## ⬇️ Installation
 Download the npm package using: ```npm install -g @mfkucuk/banana-js``` <br />
-or, <br />
-you can find the dist directory in the [github](https://github.com/banana-js-engine/banana-js-react) repo 
 
-## Project Creation
-After downloading the package, you can initialize a new banana-js project using: <br /> ```create-bananajs-app <project_name>```. <br />
-This will create a simple boilerplate project. You can redirect into the directory. If you look at the ```package.json``` file, you will see it's exactly the same file you would get with ```create-react-app```. You can run ```npm start``` to run the application which will greet you with this:
+## 🚀 Project Creation
+```
+create-bananajs-app <project_name>
+cd <project_name>
+npm start
+```
 
+This will create and start the template project, and will be greeted by this screen:
 ![alt text](ReadmeAssets/init.png)
+
+## 📝 Template
+- `index.js` is the entry point of your project which renders the < $${\color{lightblue}GameApp}$$ > component.<br/>
+- `GameApp.js` contains the component that represent your game. You will mainly work with this component to define the structure of your game.
+- `public/` directory contains assets like a React project, also use it for storing game assets (texture, audio, model, material). This folder will be the root folder for locating these type of files.
+- `script/` directory contains your banana-js scripts. These are special JavaScript files whose lifetimes are handled by the engine. 
