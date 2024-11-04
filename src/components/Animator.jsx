@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef } from "react";
 import { useGameObject } from "./GameObject";
 import { useScene } from "./Scene";
 import { AnimatorComponent } from "../ecs/Component";
+import { ComponentType } from "../core/Types";
 
 const AnimatorContext = createContext(null);
 
@@ -21,12 +22,11 @@ export function Animator(props) {
 
     const animatorRef = useRef();
 
-    animatorRef.current = new AnimatorComponent(id, ecs, props.startAnim);
-    
-    useEffect(() => {
+    if (!ecs.has(id, ComponentType.Animator)) {
+        animatorRef.current = new AnimatorComponent(id, ecs, props.startAnim);
         ecs.emplace(id, animatorRef.current);
-    }, []);
-
+    }
+    
     return (
         <AnimatorContext.Provider value={animatorRef.current}>
             { animatorRef.current && props.children }

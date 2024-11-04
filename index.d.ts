@@ -29,12 +29,6 @@ declare module "@mfkucuk/banana-js" {
         gravityScale: number
     }): void;
 
-    export function Body2D(props: {
-        shape: ShapeType,
-        isStatic: boolean,
-        gravityScale: number
-    }): void;
-
     export function BoxBody2D(props: {
         isStatic: boolean,
         gravityScale: number

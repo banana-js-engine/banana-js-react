@@ -22,9 +22,7 @@ function Sprite(props) {
    * @type {ECS} entity-component system
    */
   const ecs = (0, _Scene.useScene)();
-  const gameObjectId = (0, _GameObject.useGameObject)();
+  const id = (0, _GameObject.useGameObject)();
   const gl = (0, _Game.useGL)();
-  (0, _react.useEffect)(() => {
-    ecs.emplace(gameObjectId, new _Component.SpriteComponent(gameObjectId, ecs, gl, props.color, props.src, props.flipX, props.flipY));
-  }, []);
+  if (!ecs.has(id, _Types.ComponentType.Sprite)) ecs.emplace(id, new _Component.SpriteComponent(id, ecs, gl, props.color, props.src, props.flipX, props.flipY));
 }

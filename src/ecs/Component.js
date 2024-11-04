@@ -1118,6 +1118,10 @@ export class TextComponent extends Component {
         return this.#text;
     }
 
+    set text(newText) {
+        this.#text = newText;
+    }
+
     get color() {
         return this.#color;
     }

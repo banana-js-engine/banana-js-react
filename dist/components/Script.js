@@ -8,6 +8,7 @@ var _react = require("react");
 var _Scene = require("./Scene");
 var _GameObject = require("./GameObject");
 var _Component = require("../ecs/Component");
+var _Types = require("../core/Types");
 /**
  * 
  * @param {{ import: Promise }} props 
@@ -23,7 +24,7 @@ function Script(props) {
     let [key, value] = _ref;
     return value;
   });
-  (0, _react.useEffect)(() => {
+  if (!ecs.has(id, _Types.ComponentType.Script)) {
     if (props.import) {
       props.import.then(module => {
         const scriptComponent = Object.values(module)[0];
@@ -45,5 +46,5 @@ function Script(props) {
       };
       ecs.emplace(gameObjectId, scriptComponent);
     }
-  }, []);
+  }
 }

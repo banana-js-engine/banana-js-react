@@ -24,8 +24,10 @@ function useScene() {
  */
 function Scene(props) {
   const ecsRef = (0, _react.useRef)();
-  ecsRef.current = new _ECS.ECS();
-  _SceneManager.SceneManager.addScene(ecsRef.current);
+  if (!ecsRef.current) {
+    ecsRef.current = new _ECS.ECS();
+    _SceneManager.SceneManager.addScene(ecsRef.current);
+  }
   return /*#__PURE__*/(0, _jsxRuntime.jsx)(SceneContext.Provider, {
     value: ecsRef.current,
     children: ecsRef.current && props.children

@@ -973,6 +973,9 @@ class TextComponent extends Component {
   get text() {
     return this.#text;
   }
+  set text(newText) {
+    this.#text = newText;
+  }
   get color() {
     return this.#color;
   }

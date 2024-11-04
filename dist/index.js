@@ -27,12 +27,6 @@ Object.defineProperty(exports, "BananaMath", {
     return _BananaMath.BananaMath;
   }
 });
-Object.defineProperty(exports, "Body2D", {
-  enumerable: true,
-  get: function () {
-    return _Body2D.Body2D;
-  }
-});
 Object.defineProperty(exports, "BoxBody2D", {
   enumerable: true,
   get: function () {
@@ -210,7 +204,6 @@ Object.defineProperty(exports, "Vector4", {
 var _Animation = require("./components/Animation");
 var _Animator = require("./components/Animator");
 var _Audio = require("./components/Audio");
-var _Body2D = require("./components/Body2D");
 var _BoxBody2D = require("./components/BoxBody2D");
 var _Circle = require("./components/Circle");
 var _CircleBody2D = require("./components/CircleBody2D");

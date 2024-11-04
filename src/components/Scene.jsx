@@ -18,9 +18,10 @@ export function Scene(props) {
 
     const ecsRef = useRef(); 
 
-    ecsRef.current = new ECS();
-
-    SceneManager.addScene(ecsRef.current);
+    if (!ecsRef.current) {
+        ecsRef.current = new ECS();
+        SceneManager.addScene(ecsRef.current);
+    }
 
     return (
         <SceneContext.Provider value={ecsRef.current}>

@@ -3,6 +3,7 @@ import { useScene } from './Scene';
 import { useGameObject } from './GameObject';
 import { ECS } from '../ecs/ECS';
 import { CameraComponent } from '../ecs/Component';
+import { ComponentType } from '../core/Types';
 
 /**
  * React component camera (perspective):
@@ -20,17 +21,17 @@ export function PerspectiveCamera(props) {
     * @type {ECS} entity-component system
     */
    const ecs = useScene();
-   const gameObjectId = useGameObject();
-   
-   useEffect(() => {
-       ecs.emplace(gameObjectId, new CameraComponent(
-        gameObjectId,
-        ecs, 
-        false, 
-        props.bgColor, 
-        props.size, 
-        props.near, 
-        props.far
-    ));
-   }, []);
+   const id = useGameObject();
+
+    if (ecs.has(id, ComponentType.Camera)) {
+        ecs.emplace(id, new CameraComponent(
+            id,
+            ecs, 
+            false, 
+            props.bgColor, 
+            props.size, 
+            props.near, 
+            props.far
+        ));
+    }
 }

@@ -8,6 +8,7 @@ export class MovementScript extends ScriptComponent {
     ready() {
         this.transform = this.getComponent(ComponentType.Transform);
         this.body = this.getComponent(ComponentType.Body2D);
+        this.text = this.getComponent(ComponentType.Text);
     }
 
     step(dt) {
@@ -23,10 +24,15 @@ export class MovementScript extends ScriptComponent {
         if (Input.getKey('d')) {
             this.body.addForce(Vector2.right.mul(this.speed));
         }
+
+        if (Input.getKeyDown('c')) {
+            console.log(this.text);
+        }
     }
 
     onExitViewport() {
         console.log('exit');
+        this.test();
     }
     
     onEnterViewport() {

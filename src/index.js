@@ -1,7 +1,6 @@
 export { Animation }  from './components/Animation';
 export { Animator }  from './components/Animator';
 export { Audio }  from './components/Audio';
-export { Body2D }  from './components/Body2D';
 export { BoxBody2D }  from './components/BoxBody2D';
 export { Circle }  from './components/Circle';
 export { CircleBody2D }  from './components/CircleBody2D';

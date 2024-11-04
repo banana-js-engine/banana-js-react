@@ -1,8 +1,8 @@
-import { useEffect } from "react";
 import { ECS } from "../ecs/ECS";
 import { useScene } from "./Scene";
 import { useGameObject } from "./GameObject";
 import { TransformComponent } from "../ecs/Component";
+import { ComponentType } from "../core/Types";
 
 /**
  * 
@@ -17,15 +17,15 @@ export function Transform(props) {
      * @type {ECS} entity-component system
      */
     const ecs = useScene();
-    const gameObjectId = useGameObject();
+    const id = useGameObject();
 
-    useEffect(() => {
-        ecs.emplace(gameObjectId, new TransformComponent(
-            gameObjectId,
+    if (!ecs.has(id, ComponentType.Transform)) {
+        ecs.emplace(id, new TransformComponent(
+            id,
             ecs, 
             props.position, 
             props.rotation, 
             props.scale
         ));
-    }, []);
+    }
 }

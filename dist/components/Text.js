@@ -9,6 +9,7 @@ var _Color = require("../renderer/Color");
 var _GameObject = require("./GameObject");
 var _Scene = require("./Scene");
 var _Component = require("../ecs/Component");
+var _Types = require("../core/Types");
 /**
  * 
  * @param {{ color: [number, number, number, number] | Color
@@ -18,7 +19,11 @@ var _Component = require("../ecs/Component");
 function Text(props) {
   const ecs = (0, _Scene.useScene)();
   const id = (0, _GameObject.useGameObject)();
+  if (!ecs.has(id, _Types.ComponentType.Text)) {
+    const textComponent = new _Component.TextComponent(id, ecs, props.children, props.color, props.fontFamily, props.fontSize);
+    ecs.emplace(id, textComponent);
+  }
   (0, _react.useEffect)(() => {
-    ecs.emplace(id, new _Component.TextComponent(id, ecs, props.children, props.color, props.fontFamily, props.fontSize));
-  });
+    ecs.get(id, _Types.ComponentType.Text).text = props.children;
+  }, [props.children]);
 }

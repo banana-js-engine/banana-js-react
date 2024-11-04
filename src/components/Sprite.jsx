@@ -19,19 +19,18 @@ export function Sprite(props) {
      */
     const ecs = useScene();
 
-    const gameObjectId = useGameObject();
+    const id = useGameObject();
 
     const gl = useGL();
 
-    useEffect(() => {
-        ecs.emplace(gameObjectId, new SpriteComponent(
-            gameObjectId,
-            ecs, 
-            gl, 
-            props.color, 
-            props.src, 
-            props.flipX, 
-            props.flipY
-        ));
-    }, []);
+    if (!ecs.has(id, ComponentType.Sprite))
+    ecs.emplace(id, new SpriteComponent(
+        id,
+        ecs, 
+        gl, 
+        props.color, 
+        props.src, 
+        props.flipX, 
+        props.flipY
+    ));
 }

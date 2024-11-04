@@ -3,6 +3,7 @@ import { useGameObject } from "./GameObject";
 import { useScene } from "./Scene";
 import { AudioComponent } from "../ecs/Component";
 import { useAudioContext } from "./Game";
+import { ComponentType } from "../core/Types";
 
 /**
  * 
@@ -11,20 +12,20 @@ import { useAudioContext } from "./Game";
 export function Audio(props) {
 
     const ecs = useScene();
-    const gameObjectId = useGameObject();
+    const id = useGameObject();
 
     /**
      * @type {AudioContext}
      */
     const audioContext = useAudioContext();
 
-    useEffect(() => {
+    if (!ecs.has(id, ComponentType.Audio)) {
         fetch(props.src)
             .then(response => response.arrayBuffer())
             .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
             .then(buffer => {
-                ecs.emplace(gameObjectId, new AudioComponent(
-                    gameObjectId,
+                ecs.emplace(id, new AudioComponent(
+                    id,
                     ecs, 
                     audioContext, 
                     buffer, 
@@ -33,6 +34,5 @@ export function Audio(props) {
                     props.loop
                 ));
             });
-    }, []);
-
+    }
 }

@@ -54,6 +54,10 @@ export function Game(props) {
         const textCanvas = document.getElementById('banana-text');
         textCanvas.width = props.width;
         textCanvas.height = props.height;
+        textCanvas.addEventListener('contextmenu', event => {
+            event.preventDefault();
+        });
+
         const ctx = textCanvas.getContext('2d');
 
         // initialize renderer(s)

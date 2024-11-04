@@ -12,6 +12,7 @@ class MovementScript extends _Component.ScriptComponent {
   ready() {
     this.transform = this.getComponent(_Types.ComponentType.Transform);
     this.body = this.getComponent(_Types.ComponentType.Body2D);
+    this.text = this.getComponent(_Types.ComponentType.Text);
   }
   step(dt) {
     if (_Input.Input.getKey('w')) {
@@ -26,9 +27,13 @@ class MovementScript extends _Component.ScriptComponent {
     if (_Input.Input.getKey('d')) {
       this.body.addForce(_Vector.Vector2.right.mul(this.speed));
     }
+    if (_Input.Input.getKeyDown('c')) {
+      console.log(this.text);
+    }
   }
   onExitViewport() {
     console.log('exit');
+    this.test();
   }
   onEnterViewport() {
     console.log('enter');

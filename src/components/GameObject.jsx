@@ -16,13 +16,15 @@ export function GameObject(props) {
 
     const gameObjectRef = useRef();
 
-    /**
-     * @type {ECS} entity-component system
-     */
-    const ecs = useScene();
-
-    gameObjectRef.current = ecs.create();
-    ecs.emplace(gameObjectRef.current, new NameComponent(gameObjectRef.current, ecs, props.name));
+    // Only initialize once
+    if (!gameObjectRef.current) {
+        /**
+         * @type {ECS} entity-component system
+         */
+        const ecs = useScene();
+        gameObjectRef.current = ecs.create();
+        ecs.emplace(gameObjectRef.current, new NameComponent(gameObjectRef.current, ecs, props.name));
+    }
 
     return (
         <GameObjectContext.Provider value={gameObjectRef.current}>

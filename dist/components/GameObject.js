@@ -21,12 +21,15 @@ function useGameObject() {
 function GameObject(props) {
   const gameObjectRef = (0, _react.useRef)();
 
-  /**
-   * @type {ECS} entity-component system
-   */
-  const ecs = (0, _Scene.useScene)();
-  gameObjectRef.current = ecs.create();
-  ecs.emplace(gameObjectRef.current, new _Component.NameComponent(gameObjectRef.current, ecs, props.name));
+  // Only initialize once
+  if (!gameObjectRef.current) {
+    /**
+     * @type {ECS} entity-component system
+     */
+    const ecs = (0, _Scene.useScene)();
+    gameObjectRef.current = ecs.create();
+    ecs.emplace(gameObjectRef.current, new _Component.NameComponent(gameObjectRef.current, ecs, props.name));
+  }
   return /*#__PURE__*/(0, _jsxRuntime.jsx)(GameObjectContext.Provider, {
     value: gameObjectRef.current,
     children: props.children
