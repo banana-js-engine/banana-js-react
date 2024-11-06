@@ -3,6 +3,40 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var _exportNames = {
+  Animation: true,
+  Animator: true,
+  Audio: true,
+  BoxBody2D: true,
+  Circle: true,
+  CircleBody2D: true,
+  Cube: true,
+  Cursor: true,
+  Cylinder: true,
+  Game: true,
+  GameObject: true,
+  Icosphere: true,
+  Mesh: true,
+  OrthographicCamera: true,
+  PerspectiveCamera: true,
+  Scene: true,
+  Script: true,
+  Sphere: true,
+  Sprite: true,
+  Text: true,
+  Torus: true,
+  Transform: true,
+  Input: true,
+  ComponentType: true,
+  ShapeType: true,
+  ScriptComponent: true,
+  SceneManager: true,
+  Matrix4: true,
+  Vector2: true,
+  Vector3: true,
+  Vector4: true,
+  Color: true
+};
 Object.defineProperty(exports, "Animation", {
   enumerable: true,
   get: function () {
@@ -19,12 +53,6 @@ Object.defineProperty(exports, "Audio", {
   enumerable: true,
   get: function () {
     return _Audio.Audio;
-  }
-});
-Object.defineProperty(exports, "BananaMath", {
-  enumerable: true,
-  get: function () {
-    return _BananaMath.BananaMath;
   }
 });
 Object.defineProperty(exports, "BoxBody2D", {
@@ -201,7 +229,6 @@ Object.defineProperty(exports, "Vector4", {
     return _Vector.Vector4;
   }
 });
-var _jsxRuntime = require("react/jsx-runtime");
 var _Animation = require("./components/Animation");
 var _Animator = require("./components/Animator");
 var _Audio = require("./components/Audio");
@@ -228,9 +255,18 @@ var _Input = require("./core/Input");
 var _Types = require("./core/Types");
 var _Component = require("./ecs/Component");
 var _SceneManager = require("./ecs/SceneManager");
-var _BananaMath = require("./math/BananaMath");
+var _bananaMath = require("./math/bananaMath");
+Object.keys(_bananaMath).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _bananaMath[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _bananaMath[key];
+    }
+  });
+});
 var _Matrix = require("./math/Matrix");
 var _Vector = require("./math/Vector");
 var _Color = require("./renderer/Color");
-const App = require('./GameApp');
-require('react-dom/client').createRoot(document.getElementById('root')).render(/*#__PURE__*/(0, _jsxRuntime.jsx)(App.default, {}));

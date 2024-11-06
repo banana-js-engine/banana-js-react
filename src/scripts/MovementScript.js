@@ -26,9 +26,9 @@ export class MovementScript extends ScriptComponent {
         }
 
         if (Input.getKeyDown('c')) {
-            const transform = this.create('TEST');
-            transform.addComponent(ComponentType.Sprite);
-            transform.addComponent(ComponentType.Body2D);
+            const gameObject = this.createGameObject('TEST');
+            gameObject.addEmptyComponent(ComponentType.Sprite);
+            gameObject.addEmptyComponent(ComponentType.Body2D);
         }
     }
 

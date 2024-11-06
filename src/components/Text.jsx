@@ -1,10 +1,8 @@
 import { useEffect } from "react";
 import { Color } from "../renderer/Color";
 import { useGameObject } from "./GameObject";
-import { useScene } from "./Scene";
 import { TextComponent } from "../ecs/Component";
 import { ComponentType } from "../core/Types";
-import { useGL } from "./Game";
 
 /**
  * 
@@ -14,26 +12,22 @@ import { useGL } from "./Game";
  */
 export function Text(props) {
 
-    const ecs = useScene();
-    const id = useGameObject();
-    const gl = useGL();
+    const gameObject = useGameObject();
 
-    if (!ecs.has(id, ComponentType.Text)) {
+    if (!gameObject.hasComponent(ComponentType.Text)) {
         const textComponent = new TextComponent(
-            id,
-            ecs,
-            gl,
+            gameObject,
             props.children,
             props.color,
             props.fontFamily,
             props.fontSize
         ) 
     
-        ecs.emplace(id, textComponent);
+        gameObject.addComponent(textComponent);
     } 
 
     useEffect(() => {
-        ecs.get(id, ComponentType.Text).text = props.children;
+        gameObject.getComponent(ComponentType.Text).text = props.children;
     }, [props.children]);
 
 

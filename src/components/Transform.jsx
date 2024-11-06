@@ -1,9 +1,6 @@
-import { ECS } from "../ecs/ECS";
-import { useScene } from "./Scene";
 import { useGameObject } from "./GameObject";
 import { TransformComponent } from "../ecs/Component";
 import { ComponentType } from "../core/Types";
-import { useGL } from "./Game";
 
 /**
  * 
@@ -14,18 +11,11 @@ import { useGL } from "./Game";
  */
 export function Transform(props) {
 
-    /**
-     * @type {ECS} entity-component system
-     */
-    const ecs = useScene();
-    const id = useGameObject();
-    const gl = useGL();
+    const gameObject = useGameObject();
 
-    if (!ecs.has(id, ComponentType.Transform)) {
-        ecs.emplace(id, new TransformComponent(
-            id,
-            ecs, 
-            gl,
+    if (!gameObject.hasComponent(ComponentType.Transform)) {
+        gameObject.addComponent(new TransformComponent(
+            gameObject,
             props.position, 
             props.rotation, 
             props.scale

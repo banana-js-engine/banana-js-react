@@ -27,11 +27,11 @@ export default function App() {
                     <OrthographicCamera/>   
                     <Script import={import('./scripts/OrthographicCameraController')}/>
                 </GameObject>
-                {/* <GameObject name="Square">
+                <GameObject name="Square" active={false}>
                     <Transform position={[0, 3, 0]} scale={[0.5, 0.5, 1]}/>
                     <Circle/>
                     <CircleBody2D isStatic gravityScale={0}/>
-                </GameObject> */}
+                </GameObject>
                 <GameObject>
                     <Transform/>
                     <Sprite/>

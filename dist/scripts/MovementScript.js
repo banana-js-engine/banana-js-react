@@ -28,9 +28,9 @@ class MovementScript extends _Component.ScriptComponent {
       this.body.addForce(_Vector.Vector2.right.mul(this.speed));
     }
     if (_Input.Input.getKeyDown('c')) {
-      const transform = this.create('TEST');
-      transform.addComponent(_Types.ComponentType.Sprite);
-      transform.addComponent(_Types.ComponentType.Body2D);
+      const gameObject = this.createGameObject('TEST');
+      gameObject.addEmptyComponent(_Types.ComponentType.Sprite);
+      gameObject.addEmptyComponent(_Types.ComponentType.Body2D);
     }
   }
   onExitViewport() {

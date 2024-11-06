@@ -1,16 +1,21 @@
-import { createContext, useContext, useEffect, useRef } from "react";
+import { createContext, useContext, useRef } from "react";
 import { useScene } from "./Scene";
 import { ECS } from "../ecs/ECS";
+import { GO } from "../ecs/GO";
+import { useGL } from "./Game";
 import { NameComponent } from "../ecs/Component";
 
 const GameObjectContext = createContext(null);
 
+/**
+ * @returns {GO}
+ */
 export function useGameObject() {
     return useContext(GameObjectContext);
 }
 
 /**
- * @param {{ name: string }} props 
+ * @param {{ name: string, active: boolean }} props 
  */
 export function GameObject(props) {
 
@@ -18,12 +23,17 @@ export function GameObject(props) {
 
     // Only initialize once
     if (!gameObjectRef.current) {
+
         /**
          * @type {ECS} entity-component system
          */
-        const ecs = useScene();
-        gameObjectRef.current = ecs.create();
-        ecs.emplace(gameObjectRef.current, new NameComponent(gameObjectRef.current, ecs, props.name));
+        const scene = useScene();
+        const handle = scene.create();
+        const gl = useGL();
+
+        
+        gameObjectRef.current = new GO(scene, handle, gl, props.active);
+        gameObjectRef.current.addComponent(new NameComponent(gameObjectRef.current, props.name));
     }
 
     return (

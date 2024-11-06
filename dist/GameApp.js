@@ -38,6 +38,16 @@ function App() {
           import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/OrthographicCameraController')))
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
+        name: "Square",
+        active: false,
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
+          position: [0, 3, 0],
+          scale: [0.5, 0.5, 1]
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Circle.Circle, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_CircleBody2D.CircleBody2D, {
+          isStatic: true,
+          gravityScale: 0
+        })]
+      }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.Sprite, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_BoxBody2D.BoxBody2D, {
           isStatic: false,
           gravityScale: 0

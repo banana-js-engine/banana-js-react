@@ -3,41 +3,38 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.NameComponent = exports.MeshComponent = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
+exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.NameComponent = exports.MeshComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
 var _Matrix = require("../math/Matrix");
 var _Vector = require("../math/Vector");
 var _AABB = require("../physics/AABB");
 var _Texture = require("../renderer/Texture");
 var _Color = require("../renderer/Color");
 var _Types = require("../core/Types");
-var _BananaMath = require("../math/BananaMath");
-var _ECS = require("./ECS");
+var _bananaMath = require("../math/bananaMath");
 var _AnimationClip = require("../renderer/AnimationClip");
 var _WavefrontParser = require("../renderer/WavefrontParser");
+var _GO = require("./GO");
 class BaseComponent {
-  ecs;
   gameObject;
-  gl;
 
   /**
-   * 
-   * @param {string} id 
-   * @param {ECS} ecs 
+   * @param {GO} gameObject 
    */
-  constructor(id, ecs, gl) {
-    this.ecs = ecs;
-    this.gameObject = id;
-    this.gl = gl;
+  constructor(gameObject) {
+    this.gameObject = gameObject;
   }
   get type() {
     return _Types.ComponentType.None;
+  }
+  get active() {
+    return this.gameObject.active;
   }
 
   /**
    * @returns {CameraComponent}
    */
   get mainCamera() {
-    const cameras = this.getComponents(_Types.ComponentType.Camera);
+    const cameras = this.gameObject.getComponents(_Types.ComponentType.Camera);
     if (cameras.length == 0) {
       return null;
     }
@@ -46,24 +43,20 @@ class BaseComponent {
 
   // component related functions
   getComponent(type) {
-    return this.ecs.get(this.gameObject, type);
+    return this.gameObject.getComponent(type);
   }
-  getComponents(type) {
-    return this.ecs.getAll(type);
+  hasComponent(type) {
+    return this.gameObject.hasComponent(type);
   }
   addComponent(type) {
-    if (type == _Types.ComponentType.Body2D) {
-      return this.ecs.emplace(this.gameObject, ComponentMap[type](this.gameObject, this.ecs, this.gl));
-    } else {
-      return this.ecs.emplace(this.gameObject, new ComponentMap[type](this.gameObject, this.ecs, this.gl));
-    }
+    return this.gameObject.addComponent(type);
   }
 }
 exports.BaseComponent = BaseComponent;
 class NameComponent extends BaseComponent {
   #name;
-  constructor(id, ecs, gl, name) {
-    super(id, ecs, gl);
+  constructor(gameObject, name) {
+    super(gameObject);
     if (name) {
       this.#name = name;
     } else {
@@ -75,6 +68,9 @@ class NameComponent extends BaseComponent {
   }
   get name() {
     return this.#name;
+  }
+  set name(newName) {
+    this.#name = newName;
   }
 }
 
@@ -92,8 +88,8 @@ class TransformComponent extends BaseComponent {
   #rotation;
   #scale;
   #transform;
-  constructor(id, ecs, gl, position, rotation, scale) {
-    super(id, ecs, gl);
+  constructor(gameObject, position, rotation, scale) {
+    super(gameObject);
     this.#positionMat = _Matrix.Matrix4.zero;
     this.#rotationXMat = _Matrix.Matrix4.zero;
     this.#rotationYMat = _Matrix.Matrix4.zero;
@@ -284,15 +280,15 @@ class SpriteComponent extends BaseComponent {
    * @type {TransformComponent} transform 
    */
   #transform;
-  constructor(id, ecs, gl, color, textureSrc, flipX, flipY) {
-    super(id, ecs, gl);
+  constructor(gameObject, color, textureSrc, flipX, flipY) {
+    super(gameObject);
     this.#color = _Vector.Vector4.one;
     if (color) {
       const c = this.#processParameterType(color);
       this.setColor(c.r, c.g, c.b, c.a);
     }
     if (textureSrc) {
-      this.#texture = new _Texture.Texture(gl, textureSrc);
+      this.#texture = new _Texture.Texture(this.gameObject.gl, textureSrc);
       this.#originalTexture = this.#texture;
     }
     this.#texCoords = [_Vector.Vector2.zero, _Vector.Vector2.right, _Vector.Vector2.up, _Vector.Vector2.one];
@@ -407,8 +403,8 @@ class CameraComponent extends BaseComponent {
    * @type {AABB} AABB
    */
   #AABB;
-  constructor(id, ecs, gl, isOrtho, clearColor, size, near, far) {
-    super(id, ecs, gl);
+  constructor(gameObject, isOrtho, clearColor, size, near, far) {
+    super(gameObject);
     this.#projectionMatrix = _Matrix.Matrix4.zero;
     this.#clearColor = new _Vector.Vector4(0.345, 0.588, 0.809, 1);
     if (clearColor) {
@@ -513,15 +509,6 @@ class CameraComponent extends BaseComponent {
 exports.CameraComponent = CameraComponent;
 class ScriptComponent extends BaseComponent {
   #outOfViewport;
-
-  /**
-   * 
-   * @param {string} id 
-   * @param {ECS} ecs 
-   */
-  constructor(id, ecs, gl) {
-    super(id, ecs, gl);
-  }
   get type() {
     return _Types.ComponentType.Script;
   }
@@ -543,25 +530,15 @@ class ScriptComponent extends BaseComponent {
   onExitViewport() {}
 
   // game object related functions
-  create() {
-    let name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'GameObject';
-    const newGO = this.ecs.create();
-    this.ecs.emplace(newGO, new NameComponent(newGO, this.ecs, this.gl, name));
-    const transform = this.ecs.emplace(newGO, new TransformComponent(newGO, this.ecs, this.gl));
-    return transform;
+  createGameObject(name) {
+    return this.gameObject.createGameObject(name);
   }
 
   /**
-   * 
-   * @param {BaseComponent | string} gameObject 
+   * @param {GO} gameObject 
    */
-  destroy(component) {
-    if (component instanceof BaseComponent) {
-      this.ecs.release(component.gameObject);
-      return;
-    } else if (typeof component == 'string') {
-      this.ecs.release(component);
-    }
+  destroyGameObject(gameObject) {
+    this.gameObject.destroyGameObject(gameObject);
   }
 }
 exports.ScriptComponent = ScriptComponent;
@@ -593,11 +570,11 @@ class AudioComponent extends BaseComponent {
    * @param {boolean} playOnStart 
    * @param {boolean} loop 
    */
-  constructor(id, ecs, gl, audioContext, buffer) {
-    let volume = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0.5;
-    let playOnStart = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : false;
-    let loop = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : false;
-    super(id, ecs, gl);
+  constructor(gameObject, audioContext, buffer) {
+    let volume = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0.5;
+    let playOnStart = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    let loop = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
+    super(gameObject);
     this.#audioContext = audioContext;
     this.#buffer = buffer;
     this.#volume = volume;
@@ -723,8 +700,8 @@ class Body2DComponent extends BaseComponent {
    */
   #vertices;
   #toAdd;
-  constructor(id, ecs, gl, shapeType, density, mass, inertia, area, isStatic, radius, width, height, gravityScale, restitution) {
-    super(id, ecs, gl);
+  constructor(gameObject, shapeType, density, mass, inertia, area, isStatic, radius, width, height, gravityScale, restitution) {
+    super(gameObject);
     this.#AABB = new _AABB.AABB();
     this.#transform = this.getComponent(_Types.ComponentType.Transform);
     this.#shapeType = shapeType;
@@ -750,7 +727,7 @@ class Body2DComponent extends BaseComponent {
     }
     this.#toAdd = _Vector.Vector2.zero;
   }
-  static createBoxBody2D(id, ecs, gl, width, height, density, isStatic, restitution, gravityScale) {
+  static createBoxBody2D(gameObject, width, height, density, isStatic, restitution, gravityScale) {
     // undefined parameter check
     if (!width && width != 0) {
       width = 1;
@@ -773,10 +750,10 @@ class Body2DComponent extends BaseComponent {
     const area = width * height;
     const mass = area * density;
     const inertia = 1.0 / 12.0 * mass * (width * width + height * height);
-    restitution = _BananaMath.BananaMath.clamp01(restitution);
-    return new Body2DComponent(id, ecs, gl, _Types.ShapeType.Box, density, mass, inertia, area, isStatic, 0, width, height, gravityScale, restitution);
+    restitution = (0, _bananaMath.clamp01)(restitution);
+    return new Body2DComponent(gameObject, _Types.ShapeType.Box, density, mass, inertia, area, isStatic, 0, width, height, gravityScale, restitution);
   }
-  static createCircleBody2D(id, ecs, gl, radius, density, isStatic, restitution, gravityScale) {
+  static createCircleBody2D(gameObject, radius, density, isStatic, restitution, gravityScale) {
     // undefined parameter check
     if (!radius && radius != 0) {
       radius = 0.5;
@@ -796,8 +773,8 @@ class Body2DComponent extends BaseComponent {
     const area = Math.PI * radius * radius;
     const mass = area * density;
     const inertia = 0.5 * mass * radius * radius;
-    restitution = _BananaMath.BananaMath.clamp01(restitution);
-    return new Body2DComponent(id, ecs, gl, _Types.ShapeType.Circle, density, mass, inertia, area, isStatic, radius, 0, 0, gravityScale, restitution);
+    restitution = (0, _bananaMath.clamp01)(restitution);
+    return new Body2DComponent(gameObject, _Types.ShapeType.Circle, density, mass, inertia, area, isStatic, radius, 0, 0, gravityScale, restitution);
   }
   get type() {
     return _Types.ComponentType.Body2D;
@@ -853,7 +830,7 @@ class Body2DComponent extends BaseComponent {
     this.#linearVelocity.add(this.#toAdd);
     this.#linearVelocity.add(this.#force);
     this.#transform.moveBy(this.#linearVelocity.x * dt, this.#linearVelocity.y * dt, 0);
-    this.#transform.rotateBy(0, 0, _BananaMath.BananaMath.toDegrees(this.#angularVelocity) * dt);
+    this.#transform.rotateBy(0, 0, (0, _bananaMath.toDegrees)(this.#angularVelocity) * dt);
     this.#force.set(0, 0);
   }
   addForce(amount) {
@@ -909,8 +886,8 @@ class AnimatorComponent extends BaseComponent {
    * @type {SpriteComponent}
    */
   #spriteRenderer;
-  constructor(id, ecs, gl, startAnim) {
-    super(id, ecs, gl);
+  constructor(gameObject, startAnim) {
+    super(gameObject);
     this.#animations = {};
     this.#startAnim = startAnim;
   }
@@ -977,8 +954,8 @@ exports.AnimatorComponent = AnimatorComponent;
 class MeshComponent extends BaseComponent {
   #vertices;
   #material;
-  constructor(id, ecs, gl, objSrc, mtlSrc) {
-    super(id, ecs, gl);
+  constructor(gameObject, objSrc, mtlSrc) {
+    super(gameObject);
     objSrc = objSrc ? objSrc : 'defaultModels/Cube.obj';
     mtlSrc = mtlSrc ? mtlSrc : 'defaultModels/Cube.mtl';
     _WavefrontParser.WavefrontParser.parseObj(objSrc).then(vertices => {
@@ -1005,8 +982,8 @@ class TextComponent extends BaseComponent {
   #fontFamily;
   #fontSize;
   #transform;
-  constructor(id, ecs, gl, text, color, fontFamily, fontSize) {
-    super(id, ecs, gl);
+  constructor(gameObject, text, color, fontFamily, fontSize) {
+    super(gameObject);
     this.#text = text ? text : '';
     this.#color = color ? color : _Color.Color.black;
     this.#fontFamily = fontFamily ? fontFamily : 'sans-serif';
@@ -1036,7 +1013,7 @@ class TextComponent extends BaseComponent {
   }
 }
 exports.TextComponent = TextComponent;
-const ComponentMap = {};
+const ComponentMap = exports.ComponentMap = {};
 ComponentMap[_Types.ComponentType.Name] = NameComponent;
 ComponentMap[_Types.ComponentType.Transform] = TransformComponent;
 ComponentMap[_Types.ComponentType.Sprite] = SpriteComponent;

@@ -27,12 +27,12 @@ export { ComponentType, ShapeType } from './core/Types';
 export { ScriptComponent } from './ecs/Component';
 export { SceneManager } from './ecs/SceneManager';
 
-export { BananaMath } from './math/BananaMath';
+export * from './math/bananaMath';
 export { Matrix4 } from './math/Matrix';
 export { Vector2, Vector3, Vector4 } from './math/Vector';
 
 export { Color } from './renderer/Color';
 
 
-const App = require('./GameApp');
-require('react-dom/client').createRoot(document.getElementById('root')).render(<App.default/>);
+// const App = require('./GameApp');
+// require('react-dom/client').createRoot(document.getElementById('root')).render(<App.default/>);

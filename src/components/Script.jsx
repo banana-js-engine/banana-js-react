@@ -1,9 +1,6 @@
-import { useEffect } from "react";
-import { useScene } from "./Scene";
 import { useGameObject } from "./GameObject";
 import { ScriptComponent } from "../ecs/Component";
 import { ComponentType } from "../core/Types";
-import { useGL } from "./Game";
 
 /**
  * 
@@ -12,27 +9,22 @@ import { useGL } from "./Game";
  */
 export function Script(props) {
 
-    /**
-     * @type {ECS} entity-component system
-     */
-    const ecs = useScene();
-    const id = useGameObject();
-    const gl = useGL();
+    const gameObject = useGameObject();
 
     const properties = Object.entries(props).filter(([key, value]) => value)
 
-    if (!ecs.has(id, ComponentType.Script)) {
+    if (!gameObject.hasComponent(ComponentType.Script)) {
         if (props.import) {
             props.import.then(module => {
                 const scriptComponent = Object.values(module)[0];
     
-                const scriptComponentIns = new scriptComponent(id, ecs, gl);
+                const scriptComponentIns = new scriptComponent(gameObject);
     
                 for (let i = 0; i < properties.length; i++) {
                     scriptComponentIns[properties[i][0]] = properties[i][1];
                 } 
     
-                ecs.emplace(id, scriptComponentIns);
+                gameObject.addComponent(scriptComponentIns);
             })
             .catch((e) => {
                 console.log(e);
@@ -44,13 +36,13 @@ export function Script(props) {
     
             const functions = new Function(script);            
     
-            const scriptComponent = new ScriptComponent(id, ecs, gl);
+            const scriptComponent = new ScriptComponent(gameObject);
     
             scriptComponent.ready = () => {
                 (functions())();
             }
     
-            ecs.emplace(gameObjectId, scriptComponent);
+            gameObject.addComponent(scriptComponent);
         }
     }
 }

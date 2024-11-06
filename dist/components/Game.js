@@ -77,7 +77,8 @@ function Game(props) {
     // Set initialized to true
     setInitialized(true);
   }, []);
-  const onClick = function () {
+  const onMouseDown = function (event) {
+    event.preventDefault();
     document.getElementById('banana-canvas').focus();
   };
   return /*#__PURE__*/(0, _jsxRuntime.jsx)(EngineContext.Provider, {
@@ -94,17 +95,8 @@ function Game(props) {
             width: props.width,
             height: props.height
           },
-          onClick: onClick,
+          onMouseDown: onMouseDown,
           children: [/*#__PURE__*/(0, _jsxRuntime.jsx)("canvas", {
-            id: "banana-text",
-            style: {
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              outlineStyle: 'none'
-            },
-            tabIndex: -1
-          }), /*#__PURE__*/(0, _jsxRuntime.jsx)("canvas", {
             id: "banana-canvas",
             style: {
               userSelect: 'none',
@@ -113,6 +105,16 @@ function Game(props) {
             },
             tabIndex: 1,
             children: initialized && props.children
+          }), /*#__PURE__*/(0, _jsxRuntime.jsx)("canvas", {
+            id: "banana-text",
+            style: {
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              outlineStyle: 'none',
+              pointerEvents: 'none'
+            },
+            tabIndex: -1
           })]
         })
       })

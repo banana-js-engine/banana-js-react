@@ -1,4 +1,4 @@
-import { BananaMath } from "./BananaMath";
+import { toRadians } from "./bananaMath";
 import { Vector3, Vector4 } from "./Vector";
 
 /**
@@ -203,7 +203,7 @@ export class Matrix4 {
     setRotationX(ang) {
         this.identity();
     
-        ang = BananaMath.toRadians(ang);
+        ang = toRadians(ang);
     
         const cos = Math.cos(ang);
         const sin = Math.sin(ang);
@@ -219,7 +219,7 @@ export class Matrix4 {
     setRotationY(ang) {
         this.identity();
     
-        ang = BananaMath.toRadians(ang);
+        ang = toRadians(ang);
     
         const cos = Math.cos(ang);
         const sin = Math.sin(ang);
@@ -236,7 +236,7 @@ export class Matrix4 {
     setRotationZ(ang) {
         this.identity();
 
-        ang = BananaMath.toRadians(ang);
+        ang = toRadians(ang);
 
         const cos = Math.cos(ang);
         const sin = Math.sin(ang);

@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.Matrix4 = void 0;
-var _BananaMath = require("./BananaMath");
+var _bananaMath = require("./bananaMath");
 var _Vector = require("./Vector");
 /**
  * 4x4 Matrix row-wise representation 
@@ -188,7 +188,7 @@ class Matrix4 {
   }
   setRotationX(ang) {
     this.identity();
-    ang = _BananaMath.BananaMath.toRadians(ang);
+    ang = (0, _bananaMath.toRadians)(ang);
     const cos = Math.cos(ang);
     const sin = Math.sin(ang);
     this.#data[5] = cos;
@@ -199,7 +199,7 @@ class Matrix4 {
   }
   setRotationY(ang) {
     this.identity();
-    ang = _BananaMath.BananaMath.toRadians(ang);
+    ang = (0, _bananaMath.toRadians)(ang);
     const cos = Math.cos(ang);
     const sin = Math.sin(ang);
     this.#data[0] = cos;
@@ -210,7 +210,7 @@ class Matrix4 {
   }
   setRotationZ(ang) {
     this.identity();
-    ang = _BananaMath.BananaMath.toRadians(ang);
+    ang = (0, _bananaMath.toRadians)(ang);
     const cos = Math.cos(ang);
     const sin = Math.sin(ang);
     this.#data[0] = cos;

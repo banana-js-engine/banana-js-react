@@ -1,10 +1,7 @@
-import { useEffect } from "react";
 import { useGameObject } from "./GameObject";
-import { useScene } from "./Scene";
 import { AudioComponent } from "../ecs/Component";
 import { useAudioContext } from "./Game";
 import { ComponentType } from "../core/Types";
-import { useGL } from "./Game";
 
 /**
  * 
@@ -12,24 +9,20 @@ import { useGL } from "./Game";
  */
 export function Audio(props) {
 
-    const ecs = useScene();
-    const id = useGameObject();
-    const gl = useGL();
+    const gameObject = useGameObject();
 
     /**
      * @type {AudioContext}
      */
     const audioContext = useAudioContext();
 
-    if (!ecs.has(id, ComponentType.Audio)) {
+    if (!gameObject.hasComponent(ComponentType.Audio)) {
         fetch(props.src)
             .then(response => response.arrayBuffer())
             .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
             .then(buffer => {
-                ecs.emplace(id, new AudioComponent(
-                    id,
-                    ecs, 
-                    gl,
+                gameObject.addComponent(new AudioComponent(
+                    gameObject,
                     audioContext, 
                     buffer, 
                     props.volume, 

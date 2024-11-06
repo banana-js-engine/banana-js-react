@@ -73,7 +73,8 @@ export function Game(props) {
 
     }, []);
 
-    const onClick = function() {
+    const onMouseDown = function(event) {
+        event.preventDefault();
         document.getElementById('banana-canvas').focus();
     } 
 
@@ -82,18 +83,17 @@ export function Game(props) {
             <GLContext.Provider value={gl}>
                 <AudioContextContext.Provider value={audioRef.current}>
                     <div style={{ position: 'absolute', top: 0, left: 0, width: props.width, height: props.height }}
-                        onClick={onClick}>
-                        
-                        <canvas 
-                            id='banana-text'
-                            style={{ position: 'absolute', top: 0, left: 0, outlineStyle: 'none' }}
-                            tabIndex={-1}>
-                        </canvas>
+                        onMouseDown={onMouseDown}>
                         <canvas
                             id='banana-canvas'
                             style={{ userSelect: 'none', WebkitUserSelect: 'none', outlineStyle: 'none' }}
                             tabIndex={1}>
                             {initialized && props.children}
+                        </canvas>
+                        <canvas 
+                            id='banana-text'
+                            style={{ position: 'absolute', top: 0, left: 0, outlineStyle: 'none', pointerEvents: 'none' }}
+                            tabIndex={-1}>
                         </canvas>
                     </div>
                 </AudioContextContext.Provider>

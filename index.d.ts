@@ -59,7 +59,8 @@ declare module "@mfkucuk/banana-js" {
     }): React.JSX.Element;
 
     export function GameObject(props: {
-        name: string
+        name: string,
+        active: boolean
     }): React.JSX.Element;
 
     export function Icosphere(props: { }): React.JSX.Element;
@@ -164,6 +165,18 @@ declare module "@mfkucuk/banana-js" {
         destroy(component: BaseComponent | string): void;
     }
 
+    export class GO {
+        active: boolean;
+
+        createGameObject(name: string): GO;
+        destroyGameObject(GameObject: GO): void;
+        getComponent<T extends BaseComponent>(type: ComponentType): T;
+        getComponents<T extends BaseComponent>(type: ComponentType): T[];
+        hasComponent(type: ComponentType): boolean;
+        addComponent<T extends BaseComponent>(component: T): T;
+        addEmptyComponent<T extends BaseComponent>(type: ComponentType): T; 
+    }
+
     export class SceneManager {
         static get activeScene(): ECS;
 
@@ -171,12 +184,10 @@ declare module "@mfkucuk/banana-js" {
         static setActiveScene(index: number): void;
     }
 
-    export class BananaMath {
-        static toRadians(deg: number): number;
-        static toDegrees(rad: number): number;
-        static clamp(value: number, min: number, max: number): number;
-        static clamp01(value: number): number;
-    }
+    export function toRadians(deg: number): number;
+    export function toDegrees(rad: number): number;
+    export function clamp(value: number, min: number, max: number): number;
+    export function clamp01(value: number): number;
 
     export class Matrix4 {
         static get zero(): Matrix4;

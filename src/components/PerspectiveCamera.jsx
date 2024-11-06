@@ -1,10 +1,6 @@
-import { useEffect } from 'react';
-import { useScene } from './Scene';
 import { useGameObject } from './GameObject';
-import { ECS } from '../ecs/ECS';
 import { CameraComponent } from '../ecs/Component';
 import { ComponentType } from '../core/Types';
-import { useGL } from "./Game";
 
 /**
  * React component camera (perspective):
@@ -18,18 +14,11 @@ import { useGL } from "./Game";
  */
 export function PerspectiveCamera(props) {
 
-   /**
-    * @type {ECS} entity-component system
-    */
-   const ecs = useScene();
-   const id = useGameObject();
-   const gl = useGL();
+    const gameObject = useGameObject();
 
-    if (ecs.has(id, ComponentType.Camera)) {
-        ecs.emplace(id, new CameraComponent(
-            id,
-            ecs, 
-            gl,
+    if (!gameObject.hasComponent(ComponentType.Camera)) {
+        gameObject.addComponent(new CameraComponent(
+            gameObject,
             false, 
             props.bgColor, 
             props.size, 

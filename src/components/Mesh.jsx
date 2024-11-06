@@ -1,9 +1,6 @@
-import { useEffect } from "react";
 import { useGameObject } from "./GameObject";
-import { useScene } from "./Scene";
 import { MeshComponent } from "../ecs/Component";
 import { ComponentType } from "../core/Types";
-import { useGL } from "./Game";
 
 /**
  * 
@@ -11,11 +8,9 @@ import { useGL } from "./Game";
  */
 export function Mesh(props) {
     
-    const ecs = useScene();
-    const id = useGameObject();
-    const gl = useGL();
+    const gameObject = useGameObject();
 
-    if (!ecs.has(id, ComponentType.Mesh)) {
-        ecs.emplace(id, new MeshComponent(id, ecs, gl, props.objSrc, props.mtlSrc));
+    if (!gameObject.hasComponent(ComponentType.Mesh)) {
+        gameObject.addComponent(new MeshComponent(gameObject, props.objSrc, props.mtlSrc));
     }
 }

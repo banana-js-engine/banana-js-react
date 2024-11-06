@@ -1,8 +1,6 @@
 import { useGameObject } from "./GameObject";
-import { useScene } from "./Scene";
 import { Body2DComponent } from "../ecs/Component";
 import { ComponentType } from "../core/Types";
-import { useGL } from "./Game";
 
 /**
  * 
@@ -11,15 +9,11 @@ import { useGL } from "./Game";
  */
 export function BoxBody2D(props) {
     
-    const ecs = useScene();
-    const id = useGameObject();
-    const gl = useGL();
+    const gameObject = useGameObject();
 
-    if (!ecs.has(id, ComponentType.Body2D)) {
-        ecs.emplace(id, Body2DComponent.createBoxBody2D(
-            id,
-            ecs,
-            gl,
+    if (!gameObject.hasComponent(ComponentType.Body2D)) {
+        gameObject.addComponent(Body2DComponent.createBoxBody2D(
+            gameObject,
             props.width,
             props.height,
             props.density,
