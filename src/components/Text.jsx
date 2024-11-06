@@ -4,6 +4,7 @@ import { useGameObject } from "./GameObject";
 import { useScene } from "./Scene";
 import { TextComponent } from "../ecs/Component";
 import { ComponentType } from "../core/Types";
+import { useGL } from "./Game";
 
 /**
  * 
@@ -15,11 +16,13 @@ export function Text(props) {
 
     const ecs = useScene();
     const id = useGameObject();
+    const gl = useGL();
 
     if (!ecs.has(id, ComponentType.Text)) {
         const textComponent = new TextComponent(
             id,
             ecs,
+            gl,
             props.children,
             props.color,
             props.fontFamily,

@@ -90,6 +90,10 @@ class Engine {
           goScripts[i].ready();
         }
       }
+      const goBodies = activeScene.getAll(_Types.ComponentType.Body2D);
+      for (let i = 0; i < goBodies.length; i++) {
+        this.#world2d.tryAddBody(goBodies[i]);
+      }
       const goScripts = activeScene.getAll(_Types.ComponentType.Script);
       for (let i = 0; i < goScripts.length; i++) {
         goScripts[i].step(dt);

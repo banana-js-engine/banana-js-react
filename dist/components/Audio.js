@@ -17,6 +17,7 @@ var _Types = require("../core/Types");
 function Audio(props) {
   const ecs = (0, _Scene.useScene)();
   const id = (0, _GameObject.useGameObject)();
+  const gl = (0, _Game.useGL)();
 
   /**
    * @type {AudioContext}
@@ -24,7 +25,7 @@ function Audio(props) {
   const audioContext = (0, _Game.useAudioContext)();
   if (!ecs.has(id, _Types.ComponentType.Audio)) {
     fetch(props.src).then(response => response.arrayBuffer()).then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer)).then(buffer => {
-      ecs.emplace(id, new _Component.AudioComponent(id, ecs, audioContext, buffer, props.volume, props.playOnStart, props.loop));
+      ecs.emplace(id, new _Component.AudioComponent(id, ecs, gl, audioContext, buffer, props.volume, props.playOnStart, props.loop));
     });
   }
 }

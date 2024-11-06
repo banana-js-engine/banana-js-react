@@ -26,7 +26,9 @@ export class MovementScript extends ScriptComponent {
         }
 
         if (Input.getKeyDown('c')) {
-            console.log(this.text);
+            const transform = this.create('TEST');
+            transform.addComponent(ComponentType.Sprite);
+            transform.addComponent(ComponentType.Body2D);
         }
     }
 

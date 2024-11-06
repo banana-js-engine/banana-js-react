@@ -1,5 +1,5 @@
 import React from "react"
-import { Component } from "./src/ecs/Component"
+import { BaseComponent } from "./src/ecs/Component"
 import { ECS } from "./src/ecs/ECS"
 
 declare module "@mfkucuk/banana-js" {
@@ -147,7 +147,7 @@ declare module "@mfkucuk/banana-js" {
         Circle = 1,
     }
 
-    export class ScriptComponent extends Component {
+    export class ScriptComponent extends BaseComponent {
         constructor(id: string, ecs: ECS);
 
         readonly type: ComponentType.Script;
@@ -161,7 +161,7 @@ declare module "@mfkucuk/banana-js" {
 
         create(name?: string): string;
 
-        destroy(component: Component | string): void;
+        destroy(component: BaseComponent | string): void;
     }
 
     export class SceneManager {

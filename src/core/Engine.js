@@ -112,6 +112,13 @@ export class Engine {
                 }
             }
 
+            const goBodies = activeScene.getAll(ComponentType.Body2D);
+
+            for (let i = 0; i < goBodies.length; i++) {
+                this.#world2d.tryAddBody(goBodies[i]);
+            }
+
+
             const goScripts = activeScene.getAll(ComponentType.Script);
 
             for (let i = 0; i < goScripts.length; i++) {

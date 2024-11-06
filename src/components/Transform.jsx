@@ -3,6 +3,7 @@ import { useScene } from "./Scene";
 import { useGameObject } from "./GameObject";
 import { TransformComponent } from "../ecs/Component";
 import { ComponentType } from "../core/Types";
+import { useGL } from "./Game";
 
 /**
  * 
@@ -18,11 +19,13 @@ export function Transform(props) {
      */
     const ecs = useScene();
     const id = useGameObject();
+    const gl = useGL();
 
     if (!ecs.has(id, ComponentType.Transform)) {
         ecs.emplace(id, new TransformComponent(
             id,
             ecs, 
+            gl,
             props.position, 
             props.rotation, 
             props.scale

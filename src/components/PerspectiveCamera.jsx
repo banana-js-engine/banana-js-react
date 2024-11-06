@@ -4,6 +4,7 @@ import { useGameObject } from './GameObject';
 import { ECS } from '../ecs/ECS';
 import { CameraComponent } from '../ecs/Component';
 import { ComponentType } from '../core/Types';
+import { useGL } from "./Game";
 
 /**
  * React component camera (perspective):
@@ -22,11 +23,13 @@ export function PerspectiveCamera(props) {
     */
    const ecs = useScene();
    const id = useGameObject();
+   const gl = useGL();
 
     if (ecs.has(id, ComponentType.Camera)) {
         ecs.emplace(id, new CameraComponent(
             id,
             ecs, 
+            gl,
             false, 
             props.bgColor, 
             props.size, 

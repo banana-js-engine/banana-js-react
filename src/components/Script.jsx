@@ -3,6 +3,7 @@ import { useScene } from "./Scene";
 import { useGameObject } from "./GameObject";
 import { ScriptComponent } from "../ecs/Component";
 import { ComponentType } from "../core/Types";
+import { useGL } from "./Game";
 
 /**
  * 
@@ -16,6 +17,7 @@ export function Script(props) {
      */
     const ecs = useScene();
     const id = useGameObject();
+    const gl = useGL();
 
     const properties = Object.entries(props).filter(([key, value]) => value)
 
@@ -24,7 +26,7 @@ export function Script(props) {
             props.import.then(module => {
                 const scriptComponent = Object.values(module)[0];
     
-                const scriptComponentIns = new scriptComponent(id, ecs);
+                const scriptComponentIns = new scriptComponent(id, ecs, gl);
     
                 for (let i = 0; i < properties.length; i++) {
                     scriptComponentIns[properties[i][0]] = properties[i][1];
@@ -42,7 +44,7 @@ export function Script(props) {
     
             const functions = new Function(script);            
     
-            const scriptComponent = new ScriptComponent(id, ecs);
+            const scriptComponent = new ScriptComponent(id, ecs, gl);
     
             scriptComponent.ready = () => {
                 (functions())();

@@ -118,6 +118,21 @@ export class World2D {
         this.#bodies.push(body);
     }
 
+    tryAddBody(body) {
+        let exists = false;
+
+        for (let i = 0; i < this.#bodies.length; i++) {
+            if (this.#bodies[i].gameObject == body.gameObject) {
+                exists = true;
+                break;    
+            }
+        }
+
+        if (!exists) {
+            this.#bodies.push(body);
+        }
+    }
+
     removeBody(body) {
         const index = this.#bodies.indexOf(body);
         this.#bodies.splice(index, 1);

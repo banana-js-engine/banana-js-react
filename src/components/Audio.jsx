@@ -4,6 +4,7 @@ import { useScene } from "./Scene";
 import { AudioComponent } from "../ecs/Component";
 import { useAudioContext } from "./Game";
 import { ComponentType } from "../core/Types";
+import { useGL } from "./Game";
 
 /**
  * 
@@ -13,6 +14,7 @@ export function Audio(props) {
 
     const ecs = useScene();
     const id = useGameObject();
+    const gl = useGL();
 
     /**
      * @type {AudioContext}
@@ -27,6 +29,7 @@ export function Audio(props) {
                 ecs.emplace(id, new AudioComponent(
                     id,
                     ecs, 
+                    gl,
                     audioContext, 
                     buffer, 
                     props.volume, 
