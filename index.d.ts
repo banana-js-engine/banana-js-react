@@ -177,6 +177,21 @@ declare module "@mfkucuk/banana-js" {
         addEmptyComponent<T extends BaseComponent>(type: ComponentType): T; 
     }
 
+    export class SceneECS {
+        prefabs: React.ReactFragment[];
+    
+        createPrefab(prefab: React.ReactNode): void;
+        createGameObject(): string;
+        destroyGameObject(gameObject: GO): void;
+        addComponent(handle: string, component: Component): Component | undefined;
+        addEmptyComponent(go: GO, type: ComponentType): Component | undefined;
+        getComponent(handle: string, type: ComponentType): Component | null;
+        getComponents(type: ComponentType): Component[];
+        hasComponent(handle: string, type: ComponentType): boolean;
+        getComponentsWithIds(type: ComponentType): Record<string, Component>;
+        groupComponents(...types: ComponentType[]): Component[][];
+    }
+
     export class SceneManager {
         static get activeScene(): ECS;
 
