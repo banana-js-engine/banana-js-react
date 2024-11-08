@@ -8,9 +8,10 @@ var _Input = require("../core/Input");
 var _Types = require("../core/Types");
 var _Component = require("../ecs/Component");
 var _Vector = require("../math/Vector");
+var _Test = require("../prefabs/Test");
+var _jsxRuntime = require("react/jsx-runtime");
 class MovementScript extends _Component.ScriptComponent {
   ready() {
-    this.transform = this.getComponent(_Types.ComponentType.Transform);
     this.body = this.getComponent(_Types.ComponentType.Body2D);
     this.text = this.getComponent(_Types.ComponentType.Text);
   }
@@ -28,9 +29,11 @@ class MovementScript extends _Component.ScriptComponent {
       this.body.addForce(_Vector.Vector2.right.mul(this.speed));
     }
     if (_Input.Input.getKeyDown('c')) {
-      const gameObject = this.createGameObject('TEST');
-      gameObject.addEmptyComponent(_Types.ComponentType.Sprite);
-      gameObject.addEmptyComponent(_Types.ComponentType.Body2D);
+      // const gameObject = this.createGameObject('TEST');
+      // gameObject.addEmptyComponent(ComponentType.Sprite);
+      // gameObject.addEmptyComponent(ComponentType.Body2D);
+
+      this.createPrefab(/*#__PURE__*/(0, _jsxRuntime.jsx)(_Test.Test, {}));
     }
   }
   onExitViewport() {

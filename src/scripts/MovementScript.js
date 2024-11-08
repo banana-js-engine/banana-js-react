@@ -2,11 +2,11 @@ import { Input } from "../core/Input";
 import { ComponentType } from "../core/Types";
 import { ScriptComponent } from "../ecs/Component";
 import { Vector2 } from "../math/Vector";
+import { Test } from "../prefabs/Test";
 
 export class MovementScript extends ScriptComponent {
 
     ready() {
-        this.transform = this.getComponent(ComponentType.Transform);
         this.body = this.getComponent(ComponentType.Body2D);
         this.text = this.getComponent(ComponentType.Text);
     }
@@ -26,9 +26,11 @@ export class MovementScript extends ScriptComponent {
         }
 
         if (Input.getKeyDown('c')) {
-            const gameObject = this.createGameObject('TEST');
-            gameObject.addEmptyComponent(ComponentType.Sprite);
-            gameObject.addEmptyComponent(ComponentType.Body2D);
+            // const gameObject = this.createGameObject('TEST');
+            // gameObject.addEmptyComponent(ComponentType.Sprite);
+            // gameObject.addEmptyComponent(ComponentType.Body2D);
+
+            this.createPrefab(<Test/>);
         }
     }
 

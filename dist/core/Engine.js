@@ -15,6 +15,7 @@ var _Vector = require("../math/Vector");
 var _Renderer = require("../renderer/Renderer");
 var _TextRenderer = require("../renderer/TextRenderer");
 var _Collisions = require("../physics/Collisions");
+var _SceneECS = require("../ecs/SceneECS");
 /**
  * The class that controls the game-loop
  */
@@ -68,6 +69,9 @@ class Engine {
     this.#update(deltaTimeS);
   };
   #update(dt) {
+    /**
+     * @type {SceneECS} activeScene
+     */
     const activeScene = _SceneManager.SceneManager.activeScene;
     if (!activeScene) {
       return;
@@ -77,38 +81,38 @@ class Engine {
       return;
     }
     if (this.#firstUpdate) {
-      const goBodies = activeScene.getAll(_Types.ComponentType.Body2D);
+      const goBodies = activeScene.getComponents(_Types.ComponentType.Body2D);
       for (let i = 0; i < goBodies.length; i++) {
         if (goBodies[i].active) {
           this.#world2d.addBody(goBodies[i]);
         }
       }
-      const goAnimators = activeScene.getAll(_Types.ComponentType.Animator);
+      const goAnimators = activeScene.getComponents(_Types.ComponentType.Animator);
       for (let i = 0; i < goAnimators.length; i++) {
         if (goAnimators[i].startAnim) {
           goAnimators[i].playAnimation(goAnimators[i].startAnim);
         }
       }
-      const goScripts = activeScene.getAll(_Types.ComponentType.Script);
+      const goScripts = activeScene.getComponents(_Types.ComponentType.Script);
       for (let i = 0; i < goScripts.length; i++) {
         if (goScripts[i].active) {
           goScripts[i].ready();
         }
       }
     }
-    const goScripts = activeScene.getAll(_Types.ComponentType.Script);
+    const goScripts = activeScene.getComponents(_Types.ComponentType.Script);
     for (let i = 0; i < goScripts.length; i++) {
       if (goScripts[i].active) {
         goScripts[i].step(dt);
       }
     }
-    const goBodies = activeScene.getAll(_Types.ComponentType.Body2D);
+    const goBodies = activeScene.getComponents(_Types.ComponentType.Body2D);
     for (let i = 0; i < goBodies.length; i++) {
       if (goBodies[i].active) {
         this.#world2d.tryAddBody(goBodies[i]);
       }
     }
-    const goCameras = activeScene.getAllWithEntity(_Types.ComponentType.Camera);
+    const goCameras = activeScene.getComponentsWithIds(_Types.ComponentType.Camera);
     const size = Object.keys(goCameras).length;
     let cameraTransform;
     let cameraComponent;
@@ -122,13 +126,13 @@ class Engine {
     }
     if (size === 1) {
       const id = Object.keys(goCameras)[0];
-      cameraTransform = activeScene.get(id, _Types.ComponentType.Transform);
+      cameraTransform = goCameras[id].getComponent(_Types.ComponentType.Transform);
       cameraComponent = goCameras[id];
       const cc = cameraComponent.clearColor;
       this.#renderer.setClearColor(cc.x, cc.y, cc.z, cc.w);
     }
     this.#world2d.step(dt);
-    const scriptBodyGroup = activeScene.group(_Types.ComponentType.Script, _Types.ComponentType.Body2D);
+    const scriptBodyGroup = activeScene.groupComponents(_Types.ComponentType.Script, _Types.ComponentType.Body2D);
     for (let i = 0; i < scriptBodyGroup.length; i++) {
       if (this.#firstUpdate) {
         if (_Collisions.Collisions.checkAABBCollision(scriptBodyGroup[i][1].AABB, cameraComponent.AABB)) {
@@ -154,7 +158,7 @@ class Engine {
     if (!cameraComponent) {
       return;
     }
-    const goAnimators = activeScene.getAll(_Types.ComponentType.Animator);
+    const goAnimators = activeScene.getComponents(_Types.ComponentType.Animator);
     for (let i = 0; i < goAnimators.length; i++) {
       if (goAnimators[i].active) {
         goAnimators[i].step(dt);
@@ -162,14 +166,14 @@ class Engine {
     }
     this.#renderer.beginScene(cameraTransform, cameraComponent);
     this.#renderer.clear();
-    const goSprites = activeScene.getAllWithEntity(_Types.ComponentType.Sprite);
+    const goSprites = activeScene.getComponentsWithIds(_Types.ComponentType.Sprite);
     for (const id in goSprites) {
       if (!goSprites[id].active) {
         continue;
       }
-      const transform = activeScene.get(id, _Types.ComponentType.Transform);
-      if (activeScene.has(id, _Types.ComponentType.Body2D)) {
-        const body = activeScene.get(id, _Types.ComponentType.Body2D);
+      const transform = goSprites[id].getComponent(_Types.ComponentType.Transform);
+      if (goSprites[id].hasComponent(_Types.ComponentType.Body2D)) {
+        const body = goSprites[id].getComponent(_Types.ComponentType.Body2D);
         if (_Collisions.Collisions.checkAABBCollision(body.AABB, cameraComponent.AABB)) {
           this.#renderer.drawQuad(transform, goSprites[id]);
         }
@@ -177,12 +181,12 @@ class Engine {
         this.#renderer.drawQuad(transform, goSprites[id]);
       }
     }
-    const goMeshes = activeScene.getAllWithEntity(_Types.ComponentType.Mesh);
+    const goMeshes = activeScene.getComponentsWithIds(_Types.ComponentType.Mesh);
     for (const id in goMeshes) {
       if (!goMeshes[id].active) {
         continue;
       }
-      const transform = activeScene.get(id, _Types.ComponentType.Transform);
+      const transform = goMeshes[id].getComponent(_Types.ComponentType.Transform);
       this.#renderer.drawMesh(transform, goMeshes[id]);
     }
     if (_Debug.Debug.showCollisionShapes) {
@@ -205,7 +209,7 @@ class Engine {
     }
     this.#renderer.endScene();
     this.#textRenderer.clear();
-    const goTexts = activeScene.getAll(_Types.ComponentType.Text);
+    const goTexts = activeScene.getComponents(_Types.ComponentType.Text);
     for (let i = 0; i < goTexts.length; i++) {
       if (goTexts[i].active) {
         this.#textRenderer.drawText(goTexts[i]);

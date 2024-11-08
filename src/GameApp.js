@@ -11,6 +11,7 @@ import { BoxBody2D } from "./components/BoxBody2D";
 import { CircleBody2D } from "./components/CircleBody2D";
 import { Color } from "./renderer/Color";
 import { useState } from "react";
+import { Cube } from "./components/Cube";
 
 export default function App() {
     const [count, setCount] = useState(0);
@@ -27,10 +28,11 @@ export default function App() {
                     <OrthographicCamera/>   
                     <Script import={import('./scripts/OrthographicCameraController')}/>
                 </GameObject>
-                <GameObject name="Square" active={false}>
+                <GameObject name="Square">
                     <Transform position={[0, 3, 0]} scale={[0.5, 0.5, 1]}/>
-                    <Circle/>
+                    <Cube/>
                     <CircleBody2D isStatic gravityScale={0}/>
+                    <Script import={import('./scripts/RotateScript')}/>
                 </GameObject>
                 <GameObject>
                     <Transform/>

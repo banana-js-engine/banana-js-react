@@ -1,6 +1,6 @@
 import { ComponentType } from "../core/Types";
-import { ComponentMap } from "./Component";
-import { ECS } from "./ECS";
+import { ComponentMap, TransformComponent } from "./Component";
+import { SceneECS } from "./SceneECS";
 
 export class GO {
 
@@ -8,11 +8,12 @@ export class GO {
     #handle;
     #gl
 
+    #transform;
     active;
     
     /**
      * 
-     * @param {ECS} scene 
+     * @param {SceneECS} scene 
      * @param {string} handle 
      * @param {WebGL2RenderingContext} gl 
      */
@@ -39,8 +40,24 @@ export class GO {
         return this.#gl;
     }
 
+    /**
+     * @returns {TransformComponent}
+     */
+    get transform() {
+        if (this.#transform) {
+            return this.#transform;
+        }
+
+        this.#transform = this.getComponent(ComponentType.Transform);
+        return this.#transform;
+    }
+
+    createPrefab(prefab) {
+        this.#scene.createPrefab(prefab);
+    }
+
     createGameObject(name) {
-        const newHandle = this.#scene.create();
+        const newHandle = this.#scene.createGameObject();
         const newGameObject = new GO(this.#scene, newHandle, this.#gl);
         
         const nameComponent = newGameObject.addEmptyComponent(ComponentType.Name);
@@ -61,30 +78,26 @@ export class GO {
             return;
         }
 
-        this.#scene.release(gameObject.handle);
+        this.#scene.destroyGameObject(gameObject.handle);
     }
 
     getComponent(type) {
-        return this.#scene.get(this.#handle, type);
+        return this.#scene.getComponent(this.#handle, type);
     }
 
     getComponents(type) {
-        return this.#scene.getAll(type);
+        return this.#scene.getComponents(type);
     }
 
     hasComponent(type) {
-        return this.#scene.has(this.#handle, type);
+        return this.#scene.hasComponent(this.#handle, type);
     }
 
     addComponent(component) {
-        return this.#scene.emplace(this.#handle, component);
+        return this.#scene.addComponent(this.#handle, component);
     }
 
     addEmptyComponent(type) {
-        if (type == ComponentType.Body2D) {
-            return this.#scene.emplace(this.#handle, (ComponentMap[type])(this));
-        }
-
-        return this.#scene.emplace(this.#handle, new (ComponentMap[type])(this));
+        return this.#scene.addEmptyComponent(this, type);
     }
 }

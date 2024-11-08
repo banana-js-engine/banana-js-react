@@ -29,6 +29,9 @@ class BaseComponent {
   get active() {
     return this.gameObject.active;
   }
+  get transform() {
+    return this.gameObject.transform;
+  }
 
   /**
    * @returns {CameraComponent}
@@ -528,6 +531,9 @@ class ScriptComponent extends BaseComponent {
   // camera related functions
   onEnterViewport() {}
   onExitViewport() {}
+  createPrefab(prefab) {
+    this.gameObject.createPrefab(prefab);
+  }
 
   // game object related functions
   createGameObject(name) {

@@ -7,10 +7,10 @@ exports.GameObject = GameObject;
 exports.useGameObject = useGameObject;
 var _react = require("react");
 var _Scene = require("./Scene");
-var _ECS = require("../ecs/ECS");
 var _GO = require("../ecs/GO");
 var _Game = require("./Game");
 var _Component = require("../ecs/Component");
+var _SceneECS = require("../ecs/SceneECS");
 var _jsxRuntime = require("react/jsx-runtime");
 const GameObjectContext = /*#__PURE__*/(0, _react.createContext)(null);
 
@@ -30,10 +30,10 @@ function GameObject(props) {
   // Only initialize once
   if (!gameObjectRef.current) {
     /**
-     * @type {ECS} entity-component system
+     * @type {SceneECS} entity-component system
      */
     const scene = (0, _Scene.useScene)();
-    const handle = scene.create();
+    const handle = scene.createGameObject();
     const gl = (0, _Game.useGL)();
     gameObjectRef.current = new _GO.GO(scene, handle, gl, props.active);
     gameObjectRef.current.addComponent(new _Component.NameComponent(gameObjectRef.current, props.name));

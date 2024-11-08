@@ -1,9 +1,9 @@
 import { createContext, useContext, useRef } from "react";
 import { useScene } from "./Scene";
-import { ECS } from "../ecs/ECS";
 import { GO } from "../ecs/GO";
 import { useGL } from "./Game";
-import { NameComponent } from "../ecs/Component";
+import { NameComponent, TransformComponent } from "../ecs/Component";
+import { SceneECS } from "../ecs/SceneECS";
 
 const GameObjectContext = createContext(null);
 
@@ -25,10 +25,10 @@ export function GameObject(props) {
     if (!gameObjectRef.current) {
 
         /**
-         * @type {ECS} entity-component system
+         * @type {SceneECS} entity-component system
          */
         const scene = useScene();
-        const handle = scene.create();
+        const handle = scene.createGameObject();
         const gl = useGL();
 
         

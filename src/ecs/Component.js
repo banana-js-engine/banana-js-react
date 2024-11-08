@@ -29,6 +29,10 @@ export class BaseComponent {
         return this.gameObject.active;
     }
 
+    get transform() {
+        return this.gameObject.transform;
+    }
+
     /**
      * @returns {CameraComponent}
      */
@@ -601,6 +605,10 @@ export class ScriptComponent extends BaseComponent {
     onEnterViewport() {}
 
     onExitViewport() {}
+
+    createPrefab(prefab) {
+        this.gameObject.createPrefab(prefab);
+    }
 
     // game object related functions
     createGameObject(name) {

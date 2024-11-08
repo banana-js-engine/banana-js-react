@@ -9,6 +9,7 @@ import { Vector2, Vector3 } from "../math/Vector";
 import { Renderer } from "../renderer/Renderer";
 import { TextRenderer } from "../renderer/TextRenderer";
 import { Collisions } from "../physics/Collisions";
+import { SceneECS } from "../ecs/SceneECS";
 
 /**
  * The class that controls the game-loop
@@ -80,6 +81,10 @@ export class Engine {
     }
 
     #update(dt) {
+
+        /**
+         * @type {SceneECS} activeScene
+         */
         const activeScene = SceneManager.activeScene;
 
         if (!activeScene) { 
@@ -93,7 +98,7 @@ export class Engine {
 
         if (this.#firstUpdate) {
 
-            const goBodies = activeScene.getAll(ComponentType.Body2D);
+            const goBodies = activeScene.getComponents(ComponentType.Body2D);
 
             for (let i = 0; i < goBodies.length; i++) {
                 if (goBodies[i].active) {
@@ -101,7 +106,7 @@ export class Engine {
                 }
             }
 
-            const goAnimators = activeScene.getAll(ComponentType.Animator);
+            const goAnimators = activeScene.getComponents(ComponentType.Animator);
 
             for (let i = 0; i < goAnimators.length; i++) {
                 if (goAnimators[i].startAnim) {
@@ -109,7 +114,7 @@ export class Engine {
                 }
             }
 
-            const goScripts = activeScene.getAll(ComponentType.Script);
+            const goScripts = activeScene.getComponents(ComponentType.Script);
 
             for (let i = 0; i < goScripts.length; i++) {
                 if (goScripts[i].active) {
@@ -118,7 +123,7 @@ export class Engine {
             }
         }
 
-        const goScripts = activeScene.getAll(ComponentType.Script);
+        const goScripts = activeScene.getComponents(ComponentType.Script);
 
         for (let i = 0; i < goScripts.length; i++) {
             if (goScripts[i].active) {
@@ -126,7 +131,7 @@ export class Engine {
             }
         }
 
-        const goBodies = activeScene.getAll(ComponentType.Body2D);
+        const goBodies = activeScene.getComponents(ComponentType.Body2D);
 
         for (let i = 0; i < goBodies.length; i++) {
             if (goBodies[i].active) {
@@ -134,7 +139,7 @@ export class Engine {
             }
         }
 
-        const goCameras = activeScene.getAllWithEntity(ComponentType.Camera);
+        const goCameras = activeScene.getComponentsWithIds(ComponentType.Camera);
         const size = Object.keys(goCameras).length;
         let cameraTransform; 
         let cameraComponent;
@@ -151,7 +156,7 @@ export class Engine {
         
         if (size === 1) {
             const id = Object.keys(goCameras)[0];
-            cameraTransform = activeScene.get(id, ComponentType.Transform);
+            cameraTransform = goCameras[id].getComponent(ComponentType.Transform);
             cameraComponent = goCameras[id];
 
             const cc = cameraComponent.clearColor;
@@ -161,7 +166,7 @@ export class Engine {
 
         this.#world2d.step(dt);
 
-        const scriptBodyGroup = activeScene.group(ComponentType.Script, ComponentType.Body2D);
+        const scriptBodyGroup = activeScene.groupComponents(ComponentType.Script, ComponentType.Body2D);
 
         for (let i = 0; i < scriptBodyGroup.length; i++) {
             if (this.#firstUpdate) {
@@ -192,7 +197,7 @@ export class Engine {
             return;
         }
 
-        const goAnimators = activeScene.getAll(ComponentType.Animator);
+        const goAnimators = activeScene.getComponents(ComponentType.Animator);
 
         for (let i = 0; i < goAnimators.length; i++) {
             if (goAnimators[i].active) {
@@ -204,17 +209,17 @@ export class Engine {
 
         this.#renderer.clear();
         
-        const goSprites = activeScene.getAllWithEntity(ComponentType.Sprite);
+        const goSprites = activeScene.getComponentsWithIds(ComponentType.Sprite);
 
         for (const id in goSprites) {
             if (!goSprites[id].active) {
                 continue;
             }
 
-            const transform = activeScene.get(id, ComponentType.Transform);
+            const transform = goSprites[id].getComponent(ComponentType.Transform);
             
-            if (activeScene.has(id, ComponentType.Body2D)) {
-                const body = activeScene.get(id, ComponentType.Body2D);
+            if (goSprites[id].hasComponent(ComponentType.Body2D)) {
+                const body = goSprites[id].getComponent(ComponentType.Body2D);
                 
                 if (Collisions.checkAABBCollision(body.AABB, cameraComponent.AABB)) {
                     this.#renderer.drawQuad(transform, goSprites[id]);
@@ -224,14 +229,14 @@ export class Engine {
             }
         }
 
-        const goMeshes = activeScene.getAllWithEntity(ComponentType.Mesh);
+        const goMeshes = activeScene.getComponentsWithIds(ComponentType.Mesh);
 
         for (const id in goMeshes) {
             if (!goMeshes[id].active) {
                 continue;
             }
 
-            const transform = activeScene.get(id, ComponentType.Transform);
+            const transform = goMeshes[id].getComponent(ComponentType.Transform)
 
             this.#renderer.drawMesh(transform, goMeshes[id]);
         }
@@ -263,7 +268,7 @@ export class Engine {
 
         this.#textRenderer.clear();
 
-        const goTexts = activeScene.getAll(ComponentType.Text);
+        const goTexts = activeScene.getComponents(ComponentType.Text);
 
         for (let i = 0; i < goTexts.length; i++) {
             if (goTexts[i].active) {

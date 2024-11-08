@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { ECS } from '../ecs/ECS';
 import { SceneManager } from '../ecs/SceneManager';
+import { SceneECS } from '../ecs/SceneECS';
 
 // gl context
 const SceneContext = createContext(null);
@@ -16,16 +17,24 @@ export function useScene() {
  */
 export function Scene(props) {
 
-    const ecsRef = useRef(); 
+    const [prefabs, setPrefabs] = useState([]);
 
-    if (!ecsRef.current) {
-        ecsRef.current = new ECS();
-        SceneManager.addScene(ecsRef.current);
+    const sceneRef = useRef(); 
+
+    if (!sceneRef.current) {
+
+        sceneRef.current = new SceneECS(new ECS());
+        sceneRef.current.onPrefabCreated = () => {
+            setPrefabs(sceneRef.current.prefabs)
+            console.log(sceneRef.current.prefabs);
+        }
+        SceneManager.addScene(sceneRef.current);
     }
 
     return (
-        <SceneContext.Provider value={ecsRef.current}>
-            { ecsRef.current && props.children }
+        <SceneContext.Provider value={sceneRef.current}>
+            { sceneRef.current && props.children }
+            { sceneRef.current && prefabs }
         </SceneContext.Provider>
     );
 }

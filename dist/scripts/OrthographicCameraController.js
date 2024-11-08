@@ -13,7 +13,6 @@ class OrthographicCameraController extends _Component.ScriptComponent {
   #previousMousePosition;
   #rotationSpeed;
   ready() {
-    this.transform = this.getComponent(_Types.ComponentType.Transform);
     this.camera = this.getComponent(_Types.ComponentType.Camera);
     this.#direction = _Vector.Vector3.zero;
     this.#previousMousePosition = _Vector.Vector3.zero;

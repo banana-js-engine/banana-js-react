@@ -10,7 +10,6 @@ export class OrthographicCameraController extends ScriptComponent {
     #rotationSpeed;
 
     ready() {
-        this.transform = this.getComponent(ComponentType.Transform);
         this.camera = this.getComponent(ComponentType.Camera);
 
         this.#direction = Vector3.zero;
