@@ -41,9 +41,6 @@ class World2D {
         if (bodyA.transform.position.z != bodyB.transform.position.z) {
           continue;
         }
-        if (bodyA.isStatic && bodyB.isStatic) {
-          continue;
-        }
         if (!_Collisions.Collisions.checkAABBCollision(bodyA.AABB, bodyB.AABB)) {
           continue;
         }
@@ -62,7 +59,21 @@ class World2D {
         }
         const moveAmount = _Vector.Vector2.zero;
         moveAmount.add(_Collisions.Collisions.collInfo.normal);
-        if (bodyA.isStatic) {
+        if (bodyA.isStatic && bodyB.isStatic) {
+          if (bodyA.transform.lastMovedTimestamp > bodyB.transform.lastMovedTimestamp) {
+            moveAmount.mul(-_Collisions.Collisions.collInfo.depth);
+            bodyA.transform.moveBy(moveAmount);
+          } else if (bodyA.transform.lastMovedTimestamp < bodyB.transform.lastMovedTimestamp) {
+            moveAmount.mul(_Collisions.Collisions.collInfo.depth / 2);
+            bodyB.transform.moveBy(moveAmount);
+          } else {
+            moveAmount.mul(_Collisions.Collisions.collInfo.depth / 2);
+            bodyB.transform.moveBy(moveAmount);
+            moveAmount.mul(-1);
+            bodyA.transform.moveBy(moveAmount);
+          }
+          continue;
+        } else if (bodyA.isStatic) {
           moveAmount.mul(_Collisions.Collisions.collInfo.depth);
           bodyB.transform.moveBy(moveAmount);
         } else if (bodyB.isStatic) {

@@ -66,6 +66,6 @@ export class SceneECS {
     }
 
     groupComponents(...types) {
-        return this.#ecs.group(types);
+        return this.#ecs.group(...types);
     }
 }

@@ -22,12 +22,12 @@ export function Scene(props) {
     const sceneRef = useRef(); 
 
     if (!sceneRef.current) {
-
         sceneRef.current = new SceneECS(new ECS());
+        
         sceneRef.current.onPrefabCreated = () => {
-            setPrefabs(sceneRef.current.prefabs)
-            console.log(sceneRef.current.prefabs);
-        }
+            setPrefabs([...sceneRef.current.prefabs]);
+        };
+        
         SceneManager.addScene(sceneRef.current);
     }
 

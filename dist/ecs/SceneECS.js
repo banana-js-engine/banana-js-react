@@ -62,10 +62,7 @@ class SceneECS {
     return this.#ecs.getAllWithEntity(type);
   }
   groupComponents() {
-    for (var _len = arguments.length, types = new Array(_len), _key = 0; _key < _len; _key++) {
-      types[_key] = arguments[_key];
-    }
-    return this.#ecs.group(types);
+    return this.#ecs.group(...arguments);
   }
 }
 exports.SceneECS = SceneECS;

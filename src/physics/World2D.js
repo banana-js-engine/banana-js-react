@@ -44,10 +44,6 @@ export class World2D {
                     continue;
                 }
 
-                if (bodyA.isStatic && bodyB.isStatic) {
-                    continue;
-                }
-
                 if (!Collisions.checkAABBCollision(bodyA.AABB, bodyB.AABB)) {
                     continue;
                 }
@@ -83,15 +79,29 @@ export class World2D {
 
                 const moveAmount = Vector2.zero;
                 moveAmount.add(Collisions.collInfo.normal);
-                if (bodyA.isStatic) {
+                if (bodyA.isStatic && bodyB.isStatic) {
+                    if (bodyA.transform.lastMovedTimestamp > bodyB.transform.lastMovedTimestamp) {
+                        moveAmount.mul(-Collisions.collInfo.depth);
+                        bodyA.transform.moveBy(moveAmount);
+                    } else if (bodyA.transform.lastMovedTimestamp < bodyB.transform.lastMovedTimestamp) {
+                        moveAmount.mul(Collisions.collInfo.depth / 2);
+                        bodyB.transform.moveBy(moveAmount);
+                    } else {
+                        moveAmount.mul(Collisions.collInfo.depth / 2);
+                        bodyB.transform.moveBy(moveAmount);
+
+                        moveAmount.mul(-1);
+                        bodyA.transform.moveBy(moveAmount);
+                    }
+                    
+                    continue;
+                } else if (bodyA.isStatic) {
                     moveAmount.mul(Collisions.collInfo.depth);
                     bodyB.transform.moveBy(moveAmount);
-                }
-                else if (bodyB.isStatic) {
+                } else if (bodyB.isStatic) {
                     moveAmount.mul(-Collisions.collInfo.depth);
                     bodyA.transform.moveBy(moveAmount);
-                }
-                else {
+                } else {
                     moveAmount.mul(Collisions.collInfo.depth / 2);
                     bodyB.transform.moveBy(moveAmount);
 

@@ -91,6 +91,7 @@ class TransformComponent extends BaseComponent {
   #rotation;
   #scale;
   #transform;
+  #lastMovedTimestamp;
   constructor(gameObject, position, rotation, scale) {
     super(gameObject);
     this.#positionMat = _Matrix.Matrix4.zero;
@@ -114,6 +115,7 @@ class TransformComponent extends BaseComponent {
       const sc = this.#processParameterType(scale);
       this.scaleTo(sc.x, sc.y, sc.z);
     }
+    this.#lastMovedTimestamp = 0;
   }
   get type() {
     return _Types.ComponentType.Transform;
@@ -140,6 +142,9 @@ class TransformComponent extends BaseComponent {
   }
   get scale() {
     return this.#scale;
+  }
+  get lastMovedTimestamp() {
+    return this.#lastMovedTimestamp;
   }
   #processParameterType(param) {
     if (typeof param[0] === 'number') {
@@ -180,6 +185,7 @@ class TransformComponent extends BaseComponent {
     this.#position.x = x;
     this.#position.y = y;
     this.#position.z = z;
+    this.#lastMovedTimestamp = performance.now();
   }
 
   /**
@@ -203,6 +209,7 @@ class TransformComponent extends BaseComponent {
     this.#position.x += x;
     this.#position.y += y;
     this.#position.z += z;
+    this.#lastMovedTimestamp = performance.now();
   }
 
   /**

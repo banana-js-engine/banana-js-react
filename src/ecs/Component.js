@@ -104,6 +104,8 @@ export class TransformComponent extends BaseComponent {
 
     #transform;
 
+    #lastMovedTimestamp
+
     constructor(gameObject, position, rotation, scale) {
         super(gameObject);
         this.#positionMat = Matrix4.zero;
@@ -131,6 +133,8 @@ export class TransformComponent extends BaseComponent {
             const sc = this.#processParameterType(scale);
             this.scaleTo(sc.x, sc.y, sc.z);
         }
+
+        this.#lastMovedTimestamp = 0;
     }
 
     get type() {
@@ -164,6 +168,10 @@ export class TransformComponent extends BaseComponent {
 
     get scale() {
         return this.#scale;
+    }
+
+    get lastMovedTimestamp() {
+        return this.#lastMovedTimestamp;
     }
 
     #processParameterType(param) {
@@ -201,6 +209,8 @@ export class TransformComponent extends BaseComponent {
         this.#position.x = x;
         this.#position.y = y;
         this.#position.z = z;
+
+        this.#lastMovedTimestamp = performance.now();
     }
 
     /**
@@ -227,6 +237,8 @@ export class TransformComponent extends BaseComponent {
         this.#position.x += x;
         this.#position.y += y;
         this.#position.z += z;
+
+        this.#lastMovedTimestamp = performance.now();
     }
 
     /**

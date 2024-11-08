@@ -29,8 +29,7 @@ function Scene(props) {
   if (!sceneRef.current) {
     sceneRef.current = new _SceneECS.SceneECS(new _ECS.ECS());
     sceneRef.current.onPrefabCreated = () => {
-      setPrefabs(sceneRef.current.prefabs);
-      console.log(sceneRef.current.prefabs);
+      setPrefabs([...sceneRef.current.prefabs]);
     };
     _SceneManager.SceneManager.addScene(sceneRef.current);
   }
