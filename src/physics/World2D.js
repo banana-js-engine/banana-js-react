@@ -45,6 +45,15 @@ export class World2D {
                 }
 
                 if (!Collisions.checkAABBCollision(bodyA.AABB, bodyB.AABB)) {
+                    if (bodyA.script && bodyA.collided) {
+                        bodyA.collided = false;
+                        bodyA.script.onCollisionExit2D(bodyB);
+                    }
+                    
+                    if (bodyB.script && bodyB.collided) {
+                        bodyB.collided = false;
+                        bodyB.script.onCollisionExit2D(bodyA);
+                    }
                     continue;
                 }
 
@@ -74,7 +83,27 @@ export class World2D {
                 }
 
                 if (!Collisions.collInfo.colliding) {
+                    if (bodyA.script && bodyA.collided) {
+                        bodyA.collided = false;
+                        bodyA.script.onCollisionExit2D(bodyB);
+                    }
+                    
+                    if (bodyB.script && bodyB.collided) {
+                        bodyB.collided = false;
+                        bodyB.script.onCollisionExit2D(bodyA);
+                    }
                     continue;
+                }
+
+                
+                if (bodyA.script && !bodyA.collided) {
+                    bodyA.collided = true;
+                    bodyA.script.onCollisionEnter2D(bodyB);
+                }
+                
+                if (bodyB.script && !bodyB.collided) {
+                    bodyB.collided = true;
+                    bodyB.script.onCollisionEnter2D(bodyA);
                 }
 
                 const moveAmount = Vector2.zero;

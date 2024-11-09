@@ -315,11 +315,6 @@ export class SpriteComponent extends BaseComponent {
      */
     #texCoords;
 
-    /**
-     * @type {TransformComponent} transform 
-     */
-    #transform;
-
     constructor(gameObject, color, textureSrc, flipX, flipY) {
         super(gameObject);
         this.#color = Vector4.one;
@@ -340,8 +335,6 @@ export class SpriteComponent extends BaseComponent {
             Vector2.up,
             Vector2.one,
         ];
-
-        this.#transform = this.getComponent(ComponentType.Transform);
 
         if (flipX) {
             this.flipX = flipX;
@@ -422,22 +415,22 @@ export class SpriteComponent extends BaseComponent {
     }
 
     get flipX() {
-        return this.#transform.scale.x < 0;
+        return this.transform.scale.x < 0;
     }
 
     get flipY() {
-        return this.#transform.scale.y < 0;
+        return this.transform.scale.y < 0;
     }
 
     set flipX(newValue) {
         if ((!newValue && this.flipX) || (newValue && !this.flipX)) {
-            this.#transform.scaleTo(-this.#transform.scale.x, this.#transform.scale.y, this.#transform.scale.z)
+            this.transform.scaleTo(-this.transform.scale.x, this.transform.scale.y, this.transform.scale.z)
         }
     }
 
     set flipY(newValue) {
         if ((!newValue && this.flipY) || (newValue && !this.flipY)) {
-            this.#transform.scaleTo(this.#transform.scale.x, -this.#transform.scale.y, this.#transform.scale.z)
+            this.transform.scaleTo(this.transform.scale.x, -this.transform.scale.y, this.transform.scale.z)
         }
     }
 }
@@ -594,6 +587,7 @@ export class CameraComponent extends BaseComponent {
 export class ScriptComponent extends BaseComponent {
 
     #outOfViewport;
+    readyCalled = false;
 
     get type() {
         return ComponentType.Script;
@@ -607,6 +601,7 @@ export class ScriptComponent extends BaseComponent {
         this.#outOfViewport = newValue;
     }
 
+    ///////////// EVENTS ////////////////////
     // this function is called once when the game starts
     ready() {}
 
@@ -617,6 +612,11 @@ export class ScriptComponent extends BaseComponent {
     onEnterViewport() {}
 
     onExitViewport() {}
+
+    // physics events
+    onCollisionEnter2D(other) {}
+    onCollisionExit2D(other) {}
+    ////////////////////////////////////////
 
     createPrefab(prefab) {
         this.gameObject.createPrefab(prefab);
@@ -770,11 +770,6 @@ export class AudioComponent extends BaseComponent {
 export class Body2DComponent extends BaseComponent {
 
     /**
-     * @type {TransformComponent}
-     */
-    #transform
-
-    /**
      * @type {AABB} transform 
      */
     #AABB;
@@ -802,15 +797,19 @@ export class Body2DComponent extends BaseComponent {
      */
     #vertices;
 
-    #toAdd
+    #toAdd;
+
+    /**
+     * @type {ScriptComponent}
+     */
+    #script;
+
+    collided;
 
     constructor(gameObject, shapeType, density, mass, inertia, area, isStatic, radius, width, height, gravityScale, restitution) {
         super(gameObject);
 
         this.#AABB = new AABB();
-
-        this.#transform = this.getComponent(ComponentType.Transform);
-
 
         this.#shapeType = shapeType;
 
@@ -838,6 +837,7 @@ export class Body2DComponent extends BaseComponent {
         }
 
         this.#toAdd = Vector2.zero;
+        this.collided = false;
     }
 
     static createBoxBody2D(gameObject, width, height, density, isStatic, restitution, gravityScale) {
@@ -881,10 +881,6 @@ export class Body2DComponent extends BaseComponent {
         return ComponentType.Body2D;
     }
 
-    get transform() {
-        return this.#transform;
-    }
-
     get AABB() {
         this.setAABB();
         return this.#AABB;
@@ -907,8 +903,8 @@ export class Body2DComponent extends BaseComponent {
     }
 
     get radius() {
-        const x = this.#transform.scale.x;
-        const y = this.#transform.scale.y;
+        const x = this.transform.scale.x;
+        const y = this.transform.scale.y;
         if (x != y) {
             console.error('elliptic shapes are not supported yet!');
             return Math.max(x, y) * this.#radius;
@@ -929,10 +925,18 @@ export class Body2DComponent extends BaseComponent {
         const transformedVertices = [];
 
         for (let i = 0; i < 4; i++) {
-            transformedVertices.push(this.#transform.transformMatrix.multiplyVector4(this.#vertices[i]));
+            transformedVertices.push(this.transform.transformMatrix.multiplyVector4(this.#vertices[i]));
         }
 
         return transformedVertices;
+    }
+
+    get script() {
+        if (!this.#script) {
+            this.#script = this.getComponent(ComponentType.Script);
+        }
+
+        return this.#script;
     }
 
     update(dt, gravity) {
@@ -947,8 +951,8 @@ export class Body2DComponent extends BaseComponent {
         this.#linearVelocity.add(this.#toAdd);
         this.#linearVelocity.add(this.#force);
 
-        this.#transform.moveBy(this.#linearVelocity.x * dt, this.#linearVelocity.y * dt, 0);
-        this.#transform.rotateBy(0, 0, toDegrees(this.#angularVelocity) * dt);
+        this.transform.moveBy(this.#linearVelocity.x * dt, this.#linearVelocity.y * dt, 0);
+        this.transform.rotateBy(0, 0, toDegrees(this.#angularVelocity) * dt);
 
         this.#force.set(0, 0);
     }
@@ -967,7 +971,7 @@ export class Body2DComponent extends BaseComponent {
         let maxY = Number.MIN_SAFE_INTEGER;
 
         if (this.#shapeType == ShapeType.Box) {
-            const matrix = this.#transform.transformMatrix;
+            const matrix = this.transform.transformMatrix;
 
             for (let i = 0; i < this.#vertices.length; i++) {
                 const vector = matrix.multiplyVector4(this.#vertices[i]);
@@ -978,7 +982,7 @@ export class Body2DComponent extends BaseComponent {
                 if (vector.y > maxY) { maxY = vector.y; }
             }
         } else if (this.#shapeType == ShapeType.Circle) {
-            const position = this.#transform.position;
+            const position = this.transform.position;
 
             minX = position.x - this.#radius;
             minY = position.y - this.#radius;
@@ -1125,8 +1129,6 @@ export class TextComponent extends BaseComponent {
     #fontFamily;
     #fontSize;
 
-    #transform;
-
     constructor(gameObject, text, color, fontFamily, fontSize) {
         super(gameObject);
 
@@ -1135,8 +1137,6 @@ export class TextComponent extends BaseComponent {
         this.#color = color ? color : Color.black;
         this.#fontFamily = fontFamily ? fontFamily : 'sans-serif';
         this.#fontSize = fontSize ? fontSize : 10;
-
-        this.#transform = this.getComponent(ComponentType.Transform);
     }
 
     get type() {
@@ -1164,7 +1164,7 @@ export class TextComponent extends BaseComponent {
     }
 
     get position() {
-        return this.mainCamera.worldToScreenSpace(this.#transform.position);
+        return this.mainCamera.worldToScreenSpace(this.transform.position);
     }
 }
 

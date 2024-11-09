@@ -78,7 +78,7 @@ export class GO {
             return;
         }
 
-        this.#scene.destroyGameObject(gameObject.handle);
+        this.#scene.destroyGameObject(gameObject);
     }
 
     getComponent(type) {

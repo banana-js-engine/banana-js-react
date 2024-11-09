@@ -97,15 +97,6 @@ export class Engine {
         }
 
         if (this.#firstUpdate) {
-
-            const goBodies = activeScene.getComponents(ComponentType.Body2D);
-
-            for (let i = 0; i < goBodies.length; i++) {
-                if (goBodies[i].active) {
-                    this.#world2d.addBody(goBodies[i]);
-                }
-            }
-
             const goAnimators = activeScene.getComponents(ComponentType.Animator);
 
             for (let i = 0; i < goAnimators.length; i++) {
@@ -127,17 +118,26 @@ export class Engine {
 
         for (let i = 0; i < goScripts.length; i++) {
             if (goScripts[i].active) {
+                if (!goScripts[i].readyCalled) {
+                    goScripts[i].readyCalled = true;
+                    goScripts[i].ready();
+                }
+
                 goScripts[i].step(dt);
             }
         }
 
         const goBodies = activeScene.getComponents(ComponentType.Body2D);
 
+        this.#world2d.clear();
+
         for (let i = 0; i < goBodies.length; i++) {
             if (goBodies[i].active) {
-                this.#world2d.tryAddBody(goBodies[i]);
+                this.#world2d.addBody(goBodies[i]);
             }
         }
+
+
 
         const goCameras = activeScene.getComponentsWithIds(ComponentType.Camera);
         const size = Object.keys(goCameras).length;
