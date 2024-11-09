@@ -42,6 +42,14 @@ class World2D {
           continue;
         }
         if (!_Collisions.Collisions.checkAABBCollision(bodyA.AABB, bodyB.AABB)) {
+          if (bodyA.script && bodyA.collided) {
+            bodyA.collided = false;
+            bodyA.script.onCollisionExit2D(bodyB);
+          }
+          if (bodyB.script && bodyB.collided) {
+            bodyB.collided = false;
+            bodyB.script.onCollisionExit2D(bodyA);
+          }
           continue;
         }
         if (bodyA.shapeType == _Types.ShapeType.Circle && bodyB.shapeType == _Types.ShapeType.Circle) {
@@ -55,7 +63,23 @@ class World2D {
           _Collisions.Collisions.collInfo.normal.mul(-1);
         }
         if (!_Collisions.Collisions.collInfo.colliding) {
+          if (bodyA.script && bodyA.collided) {
+            bodyA.collided = false;
+            bodyA.script.onCollisionExit2D(bodyB);
+          }
+          if (bodyB.script && bodyB.collided) {
+            bodyB.collided = false;
+            bodyB.script.onCollisionExit2D(bodyA);
+          }
           continue;
+        }
+        if (bodyA.script && !bodyA.collided) {
+          bodyA.collided = true;
+          bodyA.script.onCollisionEnter2D(bodyB);
+        }
+        if (bodyB.script && !bodyB.collided) {
+          bodyB.collided = true;
+          bodyB.script.onCollisionEnter2D(bodyA);
         }
         const moveAmount = _Vector.Vector2.zero;
         moveAmount.add(_Collisions.Collisions.collInfo.normal);

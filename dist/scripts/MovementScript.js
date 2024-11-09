@@ -43,5 +43,11 @@ class MovementScript extends _Component.ScriptComponent {
   onEnterViewport() {
     console.log('enter');
   }
+  onCollisionEnter2D(other) {
+    console.log('collision enter');
+  }
+  onCollisionExit2D(other) {
+    console.log('collision exit');
+  }
 }
 exports.MovementScript = MovementScript;

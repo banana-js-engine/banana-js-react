@@ -70,7 +70,7 @@ class GO {
       console.warn('provide the gameObject property of the component');
       return;
     }
-    this.#scene.destroyGameObject(gameObject.handle);
+    this.#scene.destroyGameObject(gameObject);
   }
   getComponent(type) {
     return this.#scene.getComponent(this.#handle, type);
