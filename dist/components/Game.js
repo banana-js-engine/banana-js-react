@@ -41,11 +41,18 @@ function Game(props) {
   const [initialized, setInitialized] = (0, _react.useState)(false);
   (0, _react.useEffect)(() => {
     document.title = props.name;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    if (width / height > props.width / props.height) {
+      width = height * (props.width / props.height);
+    } else {
+      height = width / (props.width / props.height);
+    }
 
     // set canvas size
     const canvas = document.getElementById('banana-canvas');
-    canvas.width = props.width;
-    canvas.height = props.height;
+    canvas.width = width;
+    canvas.height = height;
     canvas.addEventListener('contextmenu', event => {
       event.preventDefault();
     });
@@ -55,12 +62,12 @@ function Game(props) {
     setGL(context);
 
     // initialize webgl
-    context.viewport(0, 0, props.width, props.height);
+    context.viewport(0, 0, width, height);
 
     // 2d context
     const textCanvas = document.getElementById('banana-text');
-    textCanvas.width = props.width;
-    textCanvas.height = props.height;
+    textCanvas.width = width;
+    textCanvas.height = height;
     textCanvas.addEventListener('contextmenu', event => {
       event.preventDefault();
     });
@@ -81,6 +88,9 @@ function Game(props) {
     event.preventDefault();
     document.getElementById('banana-canvas').focus();
   };
+  const onTouchStart = function (event) {
+    document.getElementById('banana-canvas').focus();
+  };
   return /*#__PURE__*/(0, _jsxRuntime.jsx)(EngineContext.Provider, {
     value: engineRef.current,
     children: /*#__PURE__*/(0, _jsxRuntime.jsx)(GLContext.Provider, {
@@ -96,6 +106,7 @@ function Game(props) {
             height: props.height
           },
           onMouseDown: onMouseDown,
+          onTouchStart: onTouchStart,
           children: [/*#__PURE__*/(0, _jsxRuntime.jsx)("canvas", {
             id: "banana-canvas",
             style: {

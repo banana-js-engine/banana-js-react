@@ -36,10 +36,18 @@ export function Game(props) {
     useEffect(() => {
         document.title = props.name;
 
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        if (width / height > props.width / props.height) {
+            width = height * (props.width / props.height);
+        } else {
+            height = width / (props.width / props.height);
+        }
+
         // set canvas size
         const canvas = document.getElementById('banana-canvas');
-        canvas.width = props.width;
-        canvas.height = props.height;
+        canvas.width = width;
+        canvas.height = height;
         canvas.addEventListener('contextmenu', event => {
             event.preventDefault();
         });
@@ -48,12 +56,12 @@ export function Game(props) {
         setGL(context);
 
         // initialize webgl
-        context.viewport(0, 0, props.width, props.height);
+        context.viewport(0, 0, width, height);
 
         // 2d context
         const textCanvas = document.getElementById('banana-text');
-        textCanvas.width = props.width;
-        textCanvas.height = props.height;
+        textCanvas.width = width;
+        textCanvas.height = height;
         textCanvas.addEventListener('contextmenu', event => {
             event.preventDefault();
         });
@@ -78,12 +86,16 @@ export function Game(props) {
         document.getElementById('banana-canvas').focus();
     } 
 
+    const onTouchStart = function(event) {
+        document.getElementById('banana-canvas').focus();
+    }
+
     return (
         <EngineContext.Provider value={engineRef.current}>
             <GLContext.Provider value={gl}>
                 <AudioContextContext.Provider value={audioRef.current}>
                     <div style={{ position: 'absolute', top: 0, left: 0, width: props.width, height: props.height }}
-                        onMouseDown={onMouseDown}>
+                        onMouseDown={onMouseDown} onTouchStart={onTouchStart}>
                         <canvas
                             id='banana-canvas'
                             style={{ userSelect: 'none', WebkitUserSelect: 'none', outlineStyle: 'none' }}

@@ -31,14 +31,26 @@ class Input {
   static #buttonStates = {};
   static #isButtonDown = {};
 
+  // Touch
+  static #isTouching;
+  static #isTapping;
+  static #touchStartTime = (() => performance.now())();
+  static #touchStartPos = (() => _Vector.Vector2.zero)();
+  static #touchCurrentPos = (() => _Vector.Vector2.zero)();
+  static #isProperTap;
+  static TAP_MAX_DURATION = 200;
+  static TAP_MAX_MOVE = 10;
+
   // Gamepad
   static #numOfGamepads = 0;
   static init() {
     this.#canvas = document.getElementById('banana-canvas');
     this.#canvas.addEventListener('keydown', event => {
+      event.preventDefault();
       this.#keyStates[event.key.toLowerCase()] = true;
     });
     this.#canvas.addEventListener('keyup', event => {
+      event.preventDefault();
       this.#keyStates[event.key.toLowerCase()] = false;
       this.#isKeyDown[event.key.toLowerCase()] = false;
     });
@@ -54,7 +66,39 @@ class Input {
       this.mousePosition.y = event.y;
     });
     this.#canvas.addEventListener('wheel', event => {
+      event.preventDefault();
       this.mouseDelta.set(event.deltaX, event.deltaY);
+    });
+
+    // Touch events
+    this.#canvas.addEventListener('touchstart', event => {
+      event.preventDefault();
+      this.#isTouching = true;
+      const touch = event.touches[0];
+      this.#touchStartTime = performance.now();
+      this.#touchStartPos.set(touch.clientX, touch.clientY);
+      this.#isTapping = true;
+    });
+    this.#canvas.addEventListener('touchmove', event => {
+      event.preventDefault();
+      const touch = event.touches[0];
+      if (!this.#isTapping) {
+        this.mousePosition.x = touch.clientX;
+        this.mousePosition.y = touch.clientY;
+      }
+      this.#touchCurrentPos.set(touch.clientX, touch.clientY);
+      const moveDistance = this.#touchStartPos.distance(this.#touchCurrentPos);
+      if (moveDistance > this.TAP_MAX_MOVE) {
+        this.#isTapping = false;
+      }
+    });
+    this.#canvas.addEventListener('touchend', event => {
+      event.preventDefault();
+      this.#isTouching = false;
+      const touchDuration = performance.now() - this.#touchStartTime;
+      if (this.#isTapping && touchDuration <= this.TAP_MAX_DURATION) {
+        this.#onTap();
+      }
     });
 
     // toggle every key state off
@@ -117,6 +161,11 @@ class Input {
     this.#isButtonDown[button] = true;
     return this.#buttonStates[button];
   }
+  static getTap() {
+    const result = this.#isProperTap;
+    this.#isProperTap = false;
+    return result;
+  }
   static getGamepadButton(button) {
     let gamepad = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
     if (gamepad > navigator.getGamepads().length) {
@@ -131,6 +180,9 @@ class Input {
   static isGamepadConnected() {
     let gamepad = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
     return navigator.getGamepads()[gamepad] != null;
+  }
+  static #onTap() {
+    this.#isProperTap = true;
   }
 
   /**

@@ -21,7 +21,7 @@ export default function App() {
     };
     
     return (
-        <Game name="Development" width={800} height={600}>
+        <Game name="Development" width={400} height={600}>
             <Scene>
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 0]}/>

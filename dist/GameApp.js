@@ -28,7 +28,7 @@ function App() {
   };
   return /*#__PURE__*/(0, _jsxRuntime.jsx)(_Game.Game, {
     name: "Development",
-    width: 800,
+    width: 400,
     height: 600,
     children: /*#__PURE__*/(0, _jsxRuntime.jsxs)(_Scene.Scene, {
       children: [/*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
