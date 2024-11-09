@@ -17,6 +17,7 @@ const createProject = (projectName) => {
             name: projectName,
             version: "1.0.0",
             main: "src/index.js", // or whatever your main file is
+            homepage: ".",
             scripts: {
                 start: "react-scripts start",
                 build: "react-scripts build",

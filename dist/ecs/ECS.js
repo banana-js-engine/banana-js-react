@@ -39,7 +39,6 @@ class ECS {
 
     // Remove all components associated with the entity
     Object.values(this.#component).forEach(componentMap => {
-      console.log(componentMap);
       if (componentMap[entity]) {
         componentMap[entity] = {};
       }

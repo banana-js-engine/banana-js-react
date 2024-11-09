@@ -76,7 +76,7 @@ class Engine {
     if (!activeScene) {
       return;
     }
-    if (this.#iteration < 10) {
+    if (this.#iteration < 60) {
       this.#iteration++;
       return;
     }
