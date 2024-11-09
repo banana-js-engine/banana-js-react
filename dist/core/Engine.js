@@ -87,12 +87,6 @@ class Engine {
           goAnimators[i].playAnimation(goAnimators[i].startAnim);
         }
       }
-      const goScripts = activeScene.getComponents(_Types.ComponentType.Script);
-      for (let i = 0; i < goScripts.length; i++) {
-        if (goScripts[i].active) {
-          goScripts[i].ready();
-        }
-      }
     }
     const goScripts = activeScene.getComponents(_Types.ComponentType.Script);
     for (let i = 0; i < goScripts.length; i++) {

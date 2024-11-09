@@ -97,19 +97,12 @@ export class Engine {
         }
 
         if (this.#firstUpdate) {
+
             const goAnimators = activeScene.getComponents(ComponentType.Animator);
 
             for (let i = 0; i < goAnimators.length; i++) {
                 if (goAnimators[i].startAnim) {
                     goAnimators[i].playAnimation(goAnimators[i].startAnim);
-                }
-            }
-
-            const goScripts = activeScene.getComponents(ComponentType.Script);
-
-            for (let i = 0; i < goScripts.length; i++) {
-                if (goScripts[i].active) {
-                    goScripts[i].ready();
                 }
             }
         }

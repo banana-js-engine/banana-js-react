@@ -14,6 +14,7 @@ class MovementScript extends _Component.ScriptComponent {
   ready() {
     this.body = this.getComponent(_Types.ComponentType.Body2D);
     this.text = this.getComponent(_Types.ComponentType.Text);
+    console.log('a');
   }
   step(dt) {
     if (_Input.Input.getKey('w')) {

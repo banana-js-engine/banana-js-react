@@ -9,6 +9,8 @@ export class MovementScript extends ScriptComponent {
     ready() {
         this.body = this.getComponent(ComponentType.Body2D);
         this.text = this.getComponent(ComponentType.Text);
+
+        console.log('a')
     }
 
     step(dt) {
