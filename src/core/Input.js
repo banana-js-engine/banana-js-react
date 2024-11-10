@@ -29,6 +29,8 @@ export class Input {
     static #isButtonDown = {};
 
     // Touch
+    static touchPosition = Vector2.zero;
+
     static #isTouching;
     static #isTapping;
     static #touchStartTime = performance.now();
@@ -91,8 +93,7 @@ export class Input {
             const touch = event.touches[0];
 
             if (!this.#isTapping) {
-                this.mousePosition.x = touch.clientX;
-                this.mousePosition.y = touch.clientY;
+                this.touchPosition.set(touch.clientX, touch.clientY);
             }
 
             this.#touchCurrentPos.set(touch.clientX, touch.clientY);

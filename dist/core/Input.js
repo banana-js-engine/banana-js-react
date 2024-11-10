@@ -32,6 +32,7 @@ class Input {
   static #isButtonDown = {};
 
   // Touch
+  static touchPosition = (() => _Vector.Vector2.zero)();
   static #isTouching;
   static #isTapping;
   static #touchStartTime = (() => performance.now())();
@@ -83,8 +84,7 @@ class Input {
       event.preventDefault();
       const touch = event.touches[0];
       if (!this.#isTapping) {
-        this.mousePosition.x = touch.clientX;
-        this.mousePosition.y = touch.clientY;
+        this.touchPosition.set(touch.clientX, touch.clientY);
       }
       this.#touchCurrentPos.set(touch.clientX, touch.clientY);
       const moveDistance = this.#touchStartPos.distance(this.#touchCurrentPos);
