@@ -51,8 +51,8 @@ class BaseComponent {
   hasComponent(type) {
     return this.gameObject.hasComponent(type);
   }
-  addComponent(type) {
-    return this.gameObject.addComponent(type);
+  addComponent(component) {
+    return this.gameObject.addComponent(component);
   }
 }
 exports.BaseComponent = BaseComponent;

@@ -1,5 +1,4 @@
 import React from "react"
-import { BaseComponent } from "./src/ecs/Component"
 import { ECS } from "./src/ecs/ECS"
 
 declare module "@mfkucuk/banana-js" {
@@ -118,6 +117,7 @@ declare module "@mfkucuk/banana-js" {
         // Properties
         static mousePosition: Vector2;
         static mouseDelta: Vector2;
+        static touchPosition: Vector2;
         
         // Methods
         static init(): void;
@@ -125,6 +125,7 @@ declare module "@mfkucuk/banana-js" {
         static getKeyDown(key: string): boolean;
         static getButton(button: number): boolean;
         static getButtonDown(button: number): boolean;
+        static getTap(): boolean
         static getGamepadButton(button: number, gamepad?: number): boolean;
         static isGamepadConnected(gamepad?: number): boolean;
     }
@@ -148,21 +149,95 @@ declare module "@mfkucuk/banana-js" {
         Circle = 1,
     }
 
+    export class BaseComponent {
+
+        gameObject: GO;
+
+        get active(): boolean;
+        get transform(): TransformComponent;
+        get mainCamera(): CameraComponent;
+
+        getComponent<T extends BaseComponent>(type: ComponentType): T;
+        hasComponent(type: ComponentType): boolean;
+        addComponent<T extends BaseComponent>(component: T): T;
+    }
+
+    export class NameComponent extends BaseComponent {
+        get name(): string;
+        set name(newName: string): void;
+    }
+
+    export class TransformComponent extends BaseComponent {
+        get transformMatrix(): Matrix4;
+        get position(): Vector3;
+        get rotation(): Vector3;
+        get scale(): Vector3;
+
+        moveTo(x: Vector2 | number, y: number, z: number): void;
+        moveBy(x: Vector2 | number, y: number, z: number): void;
+        rotateTo(x: number, y: number, z: number): void;
+        rotateBy(x: number, y: number, z: number): void;
+        scaleTo(x: number, y: number, z: number): void;
+        scaleBy(x: number, y: number, z: number): void;
+    }
+
+    export class SpriteComponent extends BaseComponent {
+        get texture(): Texture;
+        set texture(newTexture: Texture): void;
+        get color(): Vector4;
+        setColor(r: Vector4 | number, g: number, b: number, a: number): void
+
+        get flipX(): boolean;
+        get flipY(): boolean;
+        set flipX(newValue: boolean): void;
+        get flipY(newValue: boolean): void;
+    }
+
+    export class CameraComponent extends BaseComponent {
+        setClearColor(r: number, g: number, b: number, a: number): void;
+        screenToWorldSpace(vector: Vector2): Vector3;
+        worldToScreenSpace(vector: Vector3): Vector2;
+    }
+
     export class ScriptComponent extends BaseComponent {
         constructor(id: string, ecs: ECS);
 
         readonly type: ComponentType.Script;
 
         ready(): void;
-
         step(dt: number): void;
-
         onEnterViewport(): void;
         onExitViewport(): void;
+        onCollisionEnter2D(other: Body2DComponent): void;
+        onCollisionExit2D(other: Body2DComponent): void;
 
-        create(name?: string): string;
+        createPrefab(prefab: React.ReactNode): void;
+        createGameObject(name?: string): string;
+        destroyGameObject(gameObject: GO): void;
+    }
 
-        destroy(component: BaseComponent | string): void;
+    export class AudioComponent extends BaseComponent {
+        play(): void;
+        stop(): void;
+        playOnce(): void;
+        pause(): void;
+        setVolume(volume: number): void;
+    }
+
+    export class Body2DComponent extends BaseComponent {
+        get linearVelocity(): Vector2;
+        addForce(amount: Vector2): void; 
+    }
+
+    export class AnimatorComponent extends BaseComponent {
+        playAnimation(animationName: string): void;
+        stopAnimation(): void;
+    }
+
+    export class TextComponent extends BaseComponent {
+        get text(): string;
+        set text(newText: string): void;
+        get color(): Vector4;
     }
 
     export class GO {
@@ -178,7 +253,7 @@ declare module "@mfkucuk/banana-js" {
     }
 
     export class SceneECS {
-        prefabs: React.ReactFragment[];
+        prefabs: React.ReactNode[];
     
         createPrefab(prefab: React.ReactNode): void;
         createGameObject(): string;
