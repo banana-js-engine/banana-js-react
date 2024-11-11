@@ -16,6 +16,7 @@ var _exportNames = {
   Game: true,
   GameObject: true,
   Icosphere: true,
+  Light: true,
   Mesh: true,
   OrthographicCamera: true,
   PerspectiveCamera: true,
@@ -142,6 +143,12 @@ Object.defineProperty(exports, "KeyCode", {
     return _Types.KeyCode;
   }
 });
+Object.defineProperty(exports, "Light", {
+  enumerable: true,
+  get: function () {
+    return _Light.Light;
+  }
+});
 Object.defineProperty(exports, "Matrix4", {
   enumerable: true,
   get: function () {
@@ -262,6 +269,7 @@ var _Cylinder = require("./components/Cylinder");
 var _Game = require("./components/Game");
 var _GameObject = require("./components/GameObject");
 var _Icosphere = require("./components/Icosphere");
+var _Light = require("./components/Light");
 var _Mesh = require("./components/Mesh");
 var _OrthographicCamera = require("./components/OrthographicCamera");
 var _PerspectiveCamera = require("./components/PerspectiveCamera");

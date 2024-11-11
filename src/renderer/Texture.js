@@ -1,4 +1,10 @@
 export class Texture {
+
+    /**
+     * @type {Map<string, Texture>}
+     */
+    static #textureCache = new Map();
+
     #gl;
     
     #textureId;
@@ -10,6 +16,10 @@ export class Texture {
      * @param {string} src path to the texture (png, jpeg, whatever)
      */
     constructor(gl, src) {
+        if (Texture.#textureCache.get(src)) {
+            return Texture.#textureCache.get(src);
+        }
+
         this.#gl = gl;
 
         this.#textureId = this.#gl.createTexture();
@@ -26,6 +36,8 @@ export class Texture {
         this.#image = new Image();
         this.#image.src = src;
         this.#image.addEventListener('load', this.#onImageLoaded)
+
+        Texture.#textureCache.set(src, this);
     }
 
     get width() {
@@ -34,6 +46,10 @@ export class Texture {
 
     get height() {
         return this.#image.height;
+    }
+
+    get src() {
+        return this.#image.src;
     }
 
     bind(unit = 0) {

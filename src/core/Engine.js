@@ -130,8 +130,6 @@ export class Engine {
             }
         }
 
-
-
         const goCameras = activeScene.getComponentsWithIds(ComponentType.Camera);
         const size = Object.keys(goCameras).length;
         let cameraTransform; 
@@ -190,6 +188,11 @@ export class Engine {
             return;
         }
 
+        const goLights = activeScene.getComponents(ComponentType.Light);
+        if (goLights.length == 0) {
+            console.warn('No light in the scene');
+        }
+
         const goAnimators = activeScene.getComponents(ComponentType.Animator);
 
         for (let i = 0; i < goAnimators.length; i++) {
@@ -198,7 +201,7 @@ export class Engine {
             }
         }
         
-        this.#renderer.beginScene(cameraTransform, cameraComponent);
+        this.#renderer.beginScene(cameraTransform, cameraComponent, goLights);
 
         this.#renderer.clear();
         

@@ -64,6 +64,11 @@ declare module "@mfkucuk/banana-js" {
 
     export function Icosphere(props: { }): React.JSX.Element;
 
+    export function Light(props: {
+        direction: [number, number, number] | Vector3,
+        color: [number, number, number, number] | Color
+    }): void;
+
     export function Mesh(props: {
         objSrc: string,
         mtlSrc: string
@@ -238,6 +243,11 @@ declare module "@mfkucuk/banana-js" {
         get text(): string;
         set text(newText: string): void;
         get color(): Vector4;
+    }
+
+    export class LightComponent extends BaseComponent {
+        get direction(): Vector3;
+        get color(): Color;
     }
 
     export class GO {

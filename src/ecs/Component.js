@@ -58,6 +58,28 @@ export class BaseComponent {
     addComponent(component) {
         return this.gameObject.addComponent(component);
     }
+
+    _processParameterVector3(param) {
+        if (typeof param[0] === 'number') {
+            return { x: param[0], y: param[1], z: param[2] };
+        } else if (param instanceof Vector3) {
+            return { x: param.x, y: param.y, z: param.z };
+        }
+
+        console.error('Invalid type for vector 3')
+        return null;
+    } 
+
+    _processParameterVector4(param) {
+        if (typeof param[0] === 'number') {
+            return { r: param[0], g: param[1], b: param[2], a: param[3] };
+        } else if (param instanceof Vector4) {
+            return { r: param.x, g: param.y, b: param.z, a: param.w };
+        }
+
+        console.error('Invalid type for color')
+        return null;
+    }
 }
 
 export class NameComponent extends BaseComponent {
@@ -122,15 +144,15 @@ export class TransformComponent extends BaseComponent {
 
         
         if (position) {
-            const pos = this.#processParameterType(position);
+            const pos = this._processParameterVector3(position);
             this.moveTo(pos.x, pos.y, pos.z);
         }
         if (rotation) {
-            const rot = this.#processParameterType(rotation);
+            const rot = this._processParameterVector3(rotation);
             this.rotateTo(rot.x, rot.y, rot.z);
         }
         if (scale) {
-            const sc = this.#processParameterType(scale);
+            const sc = this._processParameterVector3(scale);
             this.scaleTo(sc.x, sc.y, sc.z);
         }
 
@@ -173,17 +195,6 @@ export class TransformComponent extends BaseComponent {
     get lastMovedTimestamp() {
         return this.#lastMovedTimestamp;
     }
-
-    #processParameterType(param) {
-        if (typeof param[0] === 'number') {
-            return { x: param[0], y: param[1], z: param[2] };
-        } else if (param instanceof Vector3) {
-            return { x: param.x, y: param.y, z: param.z };
-        }
-
-        console.error('Invalid type for transform')
-        return null;
-    } 
 
     /**
      * Set the position to the given x, y, z values
@@ -320,7 +331,7 @@ export class SpriteComponent extends BaseComponent {
         this.#color = Vector4.one;
 
         if (color) {
-            const c = this.#processParameterType(color);
+            const c = this._processParameterVector4(color);
             this.setColor(c.r, c.g, c.b, c.a);
         }
 
@@ -383,17 +394,6 @@ export class SpriteComponent extends BaseComponent {
         this.#texCoords[1].set(1, 0);
         this.#texCoords[2].set(0, 1);
         this.#texCoords[3].set(1, 1);
-    }
-
-    #processParameterType(param) {
-        if (typeof param[0] === 'number') {
-            return { r: param[0], g: param[1], b: param[2], a: param[3] };
-        } else if (param instanceof Vector4) {
-            return { r: param.x, g: param.y, b: param.z, a: param.w };
-        }
-
-        console.error('Invalid type for color')
-        return null;
     }
     
     get color() {
@@ -467,7 +467,7 @@ export class CameraComponent extends BaseComponent {
 
         this.#clearColor = new Vector4(0.345, 0.588, 0.809, 1);
         if (clearColor) {
-            const cc = this.#processParameterType(clearColor);
+            const cc = this._processParameterVector4(clearColor);
             this.setClearColor(cc.r, cc.g, cc.b, cc.a);
         }
 
@@ -502,17 +502,6 @@ export class CameraComponent extends BaseComponent {
 
     get type() {
         return ComponentType.Camera;
-    }
-
-    #processParameterType(param) {
-        if (typeof param[0] === 'number') {
-            return { r: param[0], g: param[1], b: param[2], a: param[3] };
-        } else if (param instanceof Vector4) {
-            return { r: param.x, g: param.y, b: param.z, a: param.w };
-        }
-
-        console.error('Invalid type for camera')
-        return null;
     }
 
     get projection() {
@@ -1100,7 +1089,7 @@ export class MeshComponent extends BaseComponent {
         mtlSrc = mtlSrc ? mtlSrc : 'defaultModels/Cube.mtl';
 
         if (color) {
-            const c = this.#processParameterType(color);
+            const c = this._processParameterVector4(color);
             this.#color.set(c.r, c.g, c.b, c.a);
         }
 
@@ -1129,17 +1118,6 @@ export class MeshComponent extends BaseComponent {
 
     get color() {
         return this.#color;
-    }
-
-    #processParameterType(param) {
-        if (typeof param[0] === 'number') {
-            return { r: param[0], g: param[1], b: param[2], a: param[3] };
-        } else if (param instanceof Vector4) {
-            return { r: param.x, g: param.y, b: param.z, a: param.w };
-        }
-
-        console.error('Invalid type for color')
-        return null;
     }
 }
 
@@ -1189,6 +1167,46 @@ export class TextComponent extends BaseComponent {
     }
 }
 
+export class LightComponent extends BaseComponent {
+
+    #direction;
+    #color;
+
+    /**
+     * 
+     * @param {GO} gameObject 
+     * @param {Vector3} direction 
+     * @param {Vector4} color 
+     */
+    constructor(gameObject, direction, color) {
+        super(gameObject);
+        this.#direction = Vector3.one;
+        this.#color = Vector3.one;
+
+        if (direction) {
+            const d = this._processParameterVector3(direction);
+            this.#direction.set(d.x, d.y, d.z);
+        }
+
+        if (color) {
+            const c = this._processParameterVector3(color);
+            this.#color.set(c.x, c.y, c.z);
+        }
+    }
+
+    get type() {
+        return ComponentType.Light;
+    }
+
+    get direction() {
+        return this.#direction;
+    }
+
+    get color() {
+        return this.#color;
+    }
+}
+
 export const ComponentMap = {}
 ComponentMap[ComponentType.Name] = NameComponent;
 ComponentMap[ComponentType.Transform] = TransformComponent;
@@ -1200,3 +1218,4 @@ ComponentMap[ComponentType.Body2D] = Body2DComponent.createBoxBody2D;
 ComponentMap[ComponentType.Animator] = AnimatorComponent;
 ComponentMap[ComponentType.Mesh] = MeshComponent;
 ComponentMap[ComponentType.Text] = TextComponent;
+ComponentMap[ComponentType.Light] = LightComponent;

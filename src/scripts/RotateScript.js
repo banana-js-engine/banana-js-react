@@ -4,7 +4,7 @@ export class RotateScript extends ScriptComponent {
 
     step(dt) {
 
-        this.transform.rotateBy(1, 2, 3);
+        this.transform.rotateBy(0, 3, 0);
 
     }
 

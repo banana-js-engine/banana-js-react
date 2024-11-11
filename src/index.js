@@ -10,6 +10,7 @@ export { Cylinder }  from './components/Cylinder';
 export { Game } from './components/Game';
 export { GameObject } from './components/GameObject';
 export { Icosphere } from './components/Icosphere';
+export { Light } from './components/Light';
 export { Mesh } from './components/Mesh';
 export { OrthographicCamera } from './components/OrthographicCamera';
 export { PerspectiveCamera } from './components/PerspectiveCamera';
@@ -32,7 +33,6 @@ export { Matrix4 } from './math/Matrix';
 export { Vector2, Vector3, Vector4 } from './math/Vector';
 
 export { Color } from './renderer/Color';
-
 
 // const App = require('./GameApp');
 // require('react-dom/client').createRoot(document.getElementById('root')).render(<App.default/>);

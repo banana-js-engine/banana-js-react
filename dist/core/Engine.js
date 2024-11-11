@@ -151,13 +151,17 @@ class Engine {
     if (!cameraComponent) {
       return;
     }
+    const goLights = activeScene.getComponents(_Types.ComponentType.Light);
+    if (goLights.length == 0) {
+      console.warn('No light in the scene');
+    }
     const goAnimators = activeScene.getComponents(_Types.ComponentType.Animator);
     for (let i = 0; i < goAnimators.length; i++) {
       if (goAnimators[i].active) {
         goAnimators[i].step(dt);
       }
     }
-    this.#renderer.beginScene(cameraTransform, cameraComponent);
+    this.#renderer.beginScene(cameraTransform, cameraComponent, goLights);
     this.#renderer.clear();
     const goSprites = activeScene.getComponentsWithIds(_Types.ComponentType.Sprite);
     for (const id in goSprites) {

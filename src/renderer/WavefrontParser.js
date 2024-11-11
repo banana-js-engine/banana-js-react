@@ -121,6 +121,8 @@ export class WavefrontParser {
             } else if (words[0] == 'newmtl') {
                 currentMaterial = words[1];
                 material[currentMaterial] = {};
+            } else if (words[0] == 'map_Kd') {
+                material[currentMaterial].diffuseMapSrc = words[1];
             }
         }
 

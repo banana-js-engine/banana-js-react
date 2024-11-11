@@ -1,4 +1,4 @@
-import { CameraComponent, MeshComponent, SpriteComponent, TransformComponent } from "../ecs/Component";
+import { CameraComponent, MeshComponent, SpriteComponent, TransformComponent, LightComponent } from "../ecs/Component";
 import { Matrix4 } from "../math/Matrix";
 import { Vector2, Vector3, Vector4 } from "../math/Vector";
 import { IndexBuffer, VertexBuffer } from "./Buffer";
@@ -57,6 +57,7 @@ class CubeVertex {
     position;
     color;
     texCoord;
+    texIndex;
     normal;
     ambientColor;
     diffuseColor;
@@ -73,6 +74,7 @@ class CubeVertex {
             this.color.z,
             this.texCoord.x,
             this.texCoord.y,
+            this.texIndex,
             this.normal.x,
             this.normal.y,
             this.normal.z,
@@ -192,6 +194,11 @@ export class Renderer {
          * @type {Vector3}
          */
         cameraPos: Vector3.zero,
+
+        /**
+         * @type {LightComponent[]}
+         */
+        lights: [],
     }
 
     /**
@@ -219,8 +226,6 @@ export class Renderer {
         this.#gl.enable(this.#gl.BLEND);
         this.#gl.blendEquation(this.#gl.FUNC_ADD);
         this.#gl.blendFunc(this.#gl.SRC_ALPHA, this.#gl.ONE_MINUS_SRC_ALPHA);
-        this.#gl.disable(this.#gl.CULL_FACE);
-        this.#gl.enable(this.#gl.DEPTH_TEST);
 
         this.#renderData.maxTextureSlotCount = this.#gl.getParameter(this.#gl.MAX_TEXTURE_IMAGE_UNITS);
         this.#renderData.whiteTexture = new Texture(this.#gl); // without src, we'll get the default 1x1 white texture
@@ -286,6 +291,7 @@ export class Renderer {
         const cubePosition = this.#renderData.cubeShader.getAttributeLocation('a_Position');
         const cubeColor = this.#renderData.cubeShader.getAttributeLocation('a_Color');
         const cubeTexCoord = this.#renderData.cubeShader.getAttributeLocation('a_TexCoord');
+        const cubeTexIndex = this.#renderData.cubeShader.getAttributeLocation('a_TexIndex');
         const cubeNormal = this.#renderData.cubeShader.getAttributeLocation('a_Normal');
         const cubeAmbient = this.#renderData.cubeShader.getAttributeLocation('a_Ambient');
         const cubeDiffuse = this.#renderData.cubeShader.getAttributeLocation('a_Diffuse');
@@ -294,23 +300,23 @@ export class Renderer {
         this.#renderData.cubeVB.pushAttribute(cubePosition, 3);
         this.#renderData.cubeVB.pushAttribute(cubeColor, 3);
         this.#renderData.cubeVB.pushAttribute(cubeTexCoord, 2);
+        this.#renderData.cubeVB.pushAttribute(cubeTexIndex, 1);
         this.#renderData.cubeVB.pushAttribute(cubeNormal, 3);
         this.#renderData.cubeVB.pushAttribute(cubeAmbient, 3);
         this.#renderData.cubeVB.pushAttribute(cubeDiffuse, 3);
         this.#renderData.cubeVB.pushAttribute(cubeSpecular, 3);
         this.#renderData.cubeVB.pushAttribute(cubeShininess, 1);
+
+        this.#renderData.cubeShader.setUniform1iv('u_Textures', samplers);
     }
 
     /**
      * 
      * @param {TransformComponent} transform 
      * @param {CameraComponent} camera 
+     * @param {LightComponent} light 
      */
-    beginScene(transform, camera) {
-
-        if (!camera.isOrtho) {
-            transform.scale.set(transform.scale.x, -1, transform.scale.z);
-        } 
+    beginScene(transform, camera, lights) {
 
         this.#sceneData.view.identity();
         this.#sceneData.view.multiply(transform.transformMatrix);
@@ -323,6 +329,11 @@ export class Renderer {
         this.#sceneData.projection.multiply(this.#sceneData.view);
 
         this.#sceneData.cameraPos.set(transform.position);
+
+        this.#sceneData.lights = [];
+        for (let i = 0; i < lights.length; i++) {
+            this.#sceneData.lights.push(lights[i]);
+        }
     }
 
     endScene() {
@@ -447,9 +458,34 @@ export class Renderer {
 
             const material = parsedMtl[parsedObj[i].material];
 
+            let useTextureSlot = -1;
+
+            if (material.diffuseMapSrc) {
+                const diffuseMap = new Texture(this.#gl, material.diffuseMapSrc);
+            
+                for (let i = 1; i < this.#renderData.textureSlotIndex; i++) {
+                    if (this.#renderData.textureSlots[i] == diffuseMap) {
+                        useTextureSlot = i;
+                        break;
+                    }
+                }
+        
+                if (this.#renderData.textureSlotIndex >= this.#renderData.maxTextureSlotCount) {
+                    this.#flush();
+                }
+        
+                if (useTextureSlot === -1) {
+                    useTextureSlot = this.#renderData.textureSlotIndex;
+                    this.#renderData.textureSlots[this.#renderData.textureSlotIndex++] = diffuseMap;
+                }
+            } else {
+                useTextureSlot = 0;
+            }
+
             this.#cubeVertex.position = t.multiplyVector3(parsedObj[i].position);
             this.#cubeVertex.color = parsedObj[i].color ? parsedObj[i].color : mesh.color;
             this.#cubeVertex.texCoord = parsedObj[i].texCoord;
+            this.#cubeVertex.texIndex = useTextureSlot;
             this.#cubeVertex.normal = t.multiplyVector3(parsedObj[i].normal);
 
             this.#cubeVertex.ambientColor = (material && material.ambientColor) ? material.ambientColor : Vector3.one;
@@ -469,6 +505,8 @@ export class Renderer {
             for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
                 this.#renderData.textureSlots[i].bind(i);
             }
+
+            this.#settings2d();
     
             this.#renderData.quadIB.bind();
             this.#renderData.quadVB.bind();
@@ -477,6 +515,8 @@ export class Renderer {
             this.#gl.drawElements(this.#gl.TRIANGLES, this.#renderData.quadIndexCount, this.#gl.UNSIGNED_SHORT, 0);
         }
         if (this.#renderData.lineVertexCount > 0) {
+            this.#settings2d();
+
             this.#renderData.lineVB.bind();
             this.#renderData.lineShader.bind();
             this.#renderData.lineShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
@@ -486,11 +526,20 @@ export class Renderer {
             for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
                 this.#renderData.textureSlots[i].bind(i);
             }
+
+            this.#settings3d();
     
             this.#renderData.cubeVB.bind();
             this.#renderData.cubeShader.bind();
             this.#renderData.cubeShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
             this.#renderData.cubeShader.setUniform3fv('u_CameraPosition', this.#sceneData.cameraPos.data);
+
+
+            this.#renderData.cubeShader.setUniform1i('u_LightCount', this.#sceneData.lights.length);
+            for (let i = 0; i < this.#sceneData.lights.length; i++) {
+                this.#renderData.cubeShader.setUniform3fv(`u_Lights[${i}].position`, this.#sceneData.lights[i].direction.data);
+                this.#renderData.cubeShader.setUniform3fv(`u_Lights[${i}].color`, this.#sceneData.lights[i].color.data);
+            }
             this.#gl.drawArrays(this.#gl.TRIANGLES, 0, this.#renderData.cubeVertexCount);
         }
 
@@ -513,11 +562,13 @@ export class Renderer {
         this.#gl.clearColor(r, g, b, a);
     }
 
-    settings2d() {
+    #settings2d() {
+        this.#gl.disable(this.#gl.CULL_FACE);
         this.#gl.disable(this.#gl.DEPTH_TEST);
     }
 
-    settings3d() {
+    #settings3d() {
+        this.#gl.enable(this.#gl.CULL_FACE);
         this.#gl.enable(this.#gl.DEPTH_TEST);
     }
 }

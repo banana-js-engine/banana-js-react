@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.NameComponent = exports.MeshComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
+exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
 var _Matrix = require("../math/Matrix");
 var _Vector = require("../math/Vector");
 var _AABB = require("../physics/AABB");
@@ -53,6 +53,42 @@ class BaseComponent {
   }
   addComponent(component) {
     return this.gameObject.addComponent(component);
+  }
+  _processParameterVector3(param) {
+    if (typeof param[0] === 'number') {
+      return {
+        x: param[0],
+        y: param[1],
+        z: param[2]
+      };
+    } else if (param instanceof _Vector.Vector3) {
+      return {
+        x: param.x,
+        y: param.y,
+        z: param.z
+      };
+    }
+    console.error('Invalid type for vector 3');
+    return null;
+  }
+  _processParameterVector4(param) {
+    if (typeof param[0] === 'number') {
+      return {
+        r: param[0],
+        g: param[1],
+        b: param[2],
+        a: param[3]
+      };
+    } else if (param instanceof _Vector.Vector4) {
+      return {
+        r: param.x,
+        g: param.y,
+        b: param.z,
+        a: param.w
+      };
+    }
+    console.error('Invalid type for color');
+    return null;
   }
 }
 exports.BaseComponent = BaseComponent;
@@ -104,15 +140,15 @@ class TransformComponent extends BaseComponent {
     this.#scale = _Vector.Vector3.one;
     this.#transform = new _Matrix.Matrix4();
     if (position) {
-      const pos = this.#processParameterType(position);
+      const pos = this._processParameterVector3(position);
       this.moveTo(pos.x, pos.y, pos.z);
     }
     if (rotation) {
-      const rot = this.#processParameterType(rotation);
+      const rot = this._processParameterVector3(rotation);
       this.rotateTo(rot.x, rot.y, rot.z);
     }
     if (scale) {
-      const sc = this.#processParameterType(scale);
+      const sc = this._processParameterVector3(scale);
       this.scaleTo(sc.x, sc.y, sc.z);
     }
     this.#lastMovedTimestamp = 0;
@@ -145,23 +181,6 @@ class TransformComponent extends BaseComponent {
   }
   get lastMovedTimestamp() {
     return this.#lastMovedTimestamp;
-  }
-  #processParameterType(param) {
-    if (typeof param[0] === 'number') {
-      return {
-        x: param[0],
-        y: param[1],
-        z: param[2]
-      };
-    } else if (param instanceof _Vector.Vector3) {
-      return {
-        x: param.x,
-        y: param.y,
-        z: param.z
-      };
-    }
-    console.error('Invalid type for transform');
-    return null;
   }
 
   /**
@@ -289,7 +308,7 @@ class SpriteComponent extends BaseComponent {
     super(gameObject);
     this.#color = _Vector.Vector4.one;
     if (color) {
-      const c = this.#processParameterType(color);
+      const c = this._processParameterVector4(color);
       this.setColor(c.r, c.g, c.b, c.a);
     }
     if (textureSrc) {
@@ -335,25 +354,6 @@ class SpriteComponent extends BaseComponent {
     this.#texCoords[1].set(1, 0);
     this.#texCoords[2].set(0, 1);
     this.#texCoords[3].set(1, 1);
-  }
-  #processParameterType(param) {
-    if (typeof param[0] === 'number') {
-      return {
-        r: param[0],
-        g: param[1],
-        b: param[2],
-        a: param[3]
-      };
-    } else if (param instanceof _Vector.Vector4) {
-      return {
-        r: param.x,
-        g: param.y,
-        b: param.z,
-        a: param.w
-      };
-    }
-    console.error('Invalid type for color');
-    return null;
   }
   get color() {
     return this.#color;
@@ -412,7 +412,7 @@ class CameraComponent extends BaseComponent {
     this.#projectionMatrix = _Matrix.Matrix4.zero;
     this.#clearColor = new _Vector.Vector4(0.345, 0.588, 0.809, 1);
     if (clearColor) {
-      const cc = this.#processParameterType(clearColor);
+      const cc = this._processParameterVector4(clearColor);
       this.setClearColor(cc.r, cc.g, cc.b, cc.a);
     }
     this.#canvas = document.getElementById('banana-canvas');
@@ -439,25 +439,6 @@ class CameraComponent extends BaseComponent {
   }
   get type() {
     return _Types.ComponentType.Camera;
-  }
-  #processParameterType(param) {
-    if (typeof param[0] === 'number') {
-      return {
-        r: param[0],
-        g: param[1],
-        b: param[2],
-        a: param[3]
-      };
-    } else if (param instanceof _Vector.Vector4) {
-      return {
-        r: param.x,
-        g: param.y,
-        b: param.z,
-        a: param.w
-      };
-    }
-    console.error('Invalid type for camera');
-    return null;
   }
   get projection() {
     return this.#projectionMatrix;
@@ -980,7 +961,7 @@ class MeshComponent extends BaseComponent {
     objSrc = objSrc ? objSrc : 'defaultModels/Cube.obj';
     mtlSrc = mtlSrc ? mtlSrc : 'defaultModels/Cube.mtl';
     if (color) {
-      const c = this.#processParameterType(color);
+      const c = this._processParameterVector4(color);
       this.#color.set(c.r, c.g, c.b, c.a);
     }
     _WavefrontParser.WavefrontParser.parseObj(objSrc).then(vertices => {
@@ -1001,25 +982,6 @@ class MeshComponent extends BaseComponent {
   }
   get color() {
     return this.#color;
-  }
-  #processParameterType(param) {
-    if (typeof param[0] === 'number') {
-      return {
-        r: param[0],
-        g: param[1],
-        b: param[2],
-        a: param[3]
-      };
-    } else if (param instanceof _Vector.Vector4) {
-      return {
-        r: param.x,
-        g: param.y,
-        b: param.z,
-        a: param.w
-      };
-    }
-    console.error('Invalid type for color');
-    return null;
   }
 }
 exports.MeshComponent = MeshComponent;
@@ -1058,6 +1020,40 @@ class TextComponent extends BaseComponent {
   }
 }
 exports.TextComponent = TextComponent;
+class LightComponent extends BaseComponent {
+  #direction;
+  #color;
+
+  /**
+   * 
+   * @param {GO} gameObject 
+   * @param {Vector3} direction 
+   * @param {Vector4} color 
+   */
+  constructor(gameObject, direction, color) {
+    super(gameObject);
+    this.#direction = _Vector.Vector3.one;
+    this.#color = _Vector.Vector3.one;
+    if (direction) {
+      const d = this._processParameterVector3(direction);
+      this.#direction.set(d.x, d.y, d.z);
+    }
+    if (color) {
+      const c = this._processParameterVector3(color);
+      this.#color.set(c.x, c.y, c.z);
+    }
+  }
+  get type() {
+    return _Types.ComponentType.Light;
+  }
+  get direction() {
+    return this.#direction;
+  }
+  get color() {
+    return this.#color;
+  }
+}
+exports.LightComponent = LightComponent;
 const ComponentMap = exports.ComponentMap = {};
 ComponentMap[_Types.ComponentType.Name] = NameComponent;
 ComponentMap[_Types.ComponentType.Transform] = TransformComponent;
@@ -1069,3 +1065,4 @@ ComponentMap[_Types.ComponentType.Body2D] = Body2DComponent.createBoxBody2D;
 ComponentMap[_Types.ComponentType.Animator] = AnimatorComponent;
 ComponentMap[_Types.ComponentType.Mesh] = MeshComponent;
 ComponentMap[_Types.ComponentType.Text] = TextComponent;
+ComponentMap[_Types.ComponentType.Light] = LightComponent;

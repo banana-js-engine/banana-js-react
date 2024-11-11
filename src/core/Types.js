@@ -13,6 +13,7 @@ export const ComponentType = {
     Animator: 7,
     Mesh: 8,
     Text: 9,
+    Light: 10,
 };
 
 /**

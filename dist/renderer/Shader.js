@@ -119,6 +119,10 @@ class Shader {
     const uniformLocation = this.#getUniformLocation(name);
     this.#gl.uniformMatrix4fv(uniformLocation, transpose, value);
   }
+  setUniform1i(name, value) {
+    const uniformLocation = this.#getUniformLocation(name);
+    this.#gl.uniform1i(uniformLocation, value);
+  }
   setUniform1iv(name, value) {
     const uniformLocation = this.#getUniformLocation(name);
     this.#gl.uniform1iv(uniformLocation, value);
@@ -126,6 +130,10 @@ class Shader {
   setUniform3fv(name, value) {
     const uniformLocation = this.#getUniformLocation(name);
     this.#gl.uniform3fv(uniformLocation, value);
+  }
+  setUniform4fv(name, value) {
+    const uniformLocation = this.#getUniformLocation(name);
+    this.#gl.uniform4fv(uniformLocation, value);
   }
 }
 exports.Shader = Shader;
