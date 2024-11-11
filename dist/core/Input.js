@@ -3,18 +3,8 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.KeyCode = exports.Input = void 0;
+exports.Input = void 0;
 var _Vector = require("../math/Vector");
-const KeyCode = exports.KeyCode = {
-  A: 0,
-  B: 1,
-  X: 2,
-  Y: 3,
-  DpadUp: 12,
-  DpadDown: 13,
-  DpadLeft: 14,
-  DpadRight: 15
-};
 class Input {
   /**
    * @type {HTMLCanvasElement} canvas

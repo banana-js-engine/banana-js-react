@@ -6,9 +6,15 @@ Object.defineProperty(exports, "__esModule", {
 exports.Cylinder = Cylinder;
 var _Mesh = require("./Mesh");
 var _jsxRuntime = require("react/jsx-runtime");
+/**
+ * 
+ * @param {{ color }} props 
+ * @returns 
+ */
 function Cylinder(props) {
   return /*#__PURE__*/(0, _jsxRuntime.jsx)(_Mesh.Mesh, {
     objSrc: "defaultModels/Cylinder.obj",
-    mtlSrc: "defaultModels/Cylinder.mtl"
+    mtlSrc: "defaultModels/Cylinder.mtl",
+    color: props.color
   });
 }

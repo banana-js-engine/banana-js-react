@@ -3,9 +3,7 @@ import { Vector2, Vector3 } from "../math/Vector"
 export class WavefrontParser {
 
     static async parseObj(src) {
-        const text = await this.#readFileAsText(src)
-
-        const white = Vector3.one;
+        const text = await this.#readFileAsText(src);
 
         const vertices = [];
 
@@ -31,9 +29,8 @@ export class WavefrontParser {
                     const b = Number(words[6]);
 
                     colors.push(new Vector3(r, g, b));
-                }
-                else {
-                    colors.push(white);
+                } else {
+                    colors.push(null);
                 }
 
                 positions.push(new Vector3(x, y, z));

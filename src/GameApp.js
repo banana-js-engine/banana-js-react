@@ -12,6 +12,7 @@ import { CircleBody2D } from "./components/CircleBody2D";
 import { Color } from "./renderer/Color";
 import { useState } from "react";
 import { Cube } from "./components/Cube";
+import { Mesh } from "./components/Mesh";
 
 export default function App() {
     const [count, setCount] = useState(0);
@@ -30,9 +31,8 @@ export default function App() {
                 </GameObject>
                 <GameObject name="Square">
                     <Transform position={[0, 3, 0]} scale={[0.5, 0.5, 1]}/>
-                    <Cube/>
-                    <CircleBody2D isStatic gravityScale={0}/>
-                    <Script import={import('./scripts/RotateScript')}/>
+                    <Sprite color={Color.orange}/>
+                    <BoxBody2D isStatic gravityScale={0}/>
                 </GameObject>
                 <GameObject>
                     <Transform/>
@@ -40,6 +40,11 @@ export default function App() {
                     <BoxBody2D isStatic={false} gravityScale={0}/>
                     <Script import={import('./scripts/MovementScript')} speed={0.1} test={incrementCount}/>
                     <Text color={Color.red}>{count}</Text>
+                </GameObject>
+                <GameObject name="Book">
+                    <Transform position={[0, -3, 0]} scale={[1, 1, 1]}/>
+                    <Sprite/>
+                    <BoxBody2D isStatic gravityScale={0}/>
                 </GameObject>
             </Scene>
         </Game>

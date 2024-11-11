@@ -352,7 +352,7 @@ class SpriteComponent extends BaseComponent {
         a: param.w
       };
     }
-    console.error('Invalid type for sprite');
+    console.error('Invalid type for color');
     return null;
   }
   get color() {
@@ -973,10 +973,16 @@ exports.AnimatorComponent = AnimatorComponent;
 class MeshComponent extends BaseComponent {
   #vertices;
   #material;
-  constructor(gameObject, objSrc, mtlSrc) {
+  #color;
+  constructor(gameObject, objSrc, mtlSrc, color) {
     super(gameObject);
+    this.#color = _Vector.Vector4.one;
     objSrc = objSrc ? objSrc : 'defaultModels/Cube.obj';
     mtlSrc = mtlSrc ? mtlSrc : 'defaultModels/Cube.mtl';
+    if (color) {
+      const c = this.#processParameterType(color);
+      this.#color.set(c.r, c.g, c.b, c.a);
+    }
     _WavefrontParser.WavefrontParser.parseObj(objSrc).then(vertices => {
       this.#vertices = vertices;
     });
@@ -992,6 +998,28 @@ class MeshComponent extends BaseComponent {
   }
   get material() {
     return this.#material;
+  }
+  get color() {
+    return this.#color;
+  }
+  #processParameterType(param) {
+    if (typeof param[0] === 'number') {
+      return {
+        r: param[0],
+        g: param[1],
+        b: param[2],
+        a: param[3]
+      };
+    } else if (param instanceof _Vector.Vector4) {
+      return {
+        r: param.x,
+        g: param.y,
+        b: param.z,
+        a: param.w
+      };
+    }
+    console.error('Invalid type for color');
+    return null;
   }
 }
 exports.MeshComponent = MeshComponent;

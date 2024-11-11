@@ -6,9 +6,15 @@ Object.defineProperty(exports, "__esModule", {
 exports.Torus = Torus;
 var _Mesh = require("./Mesh");
 var _jsxRuntime = require("react/jsx-runtime");
+/**
+ * 
+ * @param {{ color }} props 
+ * @returns 
+ */
 function Torus(props) {
   return /*#__PURE__*/(0, _jsxRuntime.jsx)(_Mesh.Mesh, {
     objSrc: "defaultModels/Torus.obj",
-    mtlSrc: "defaultModels/Torus.mtl"
+    mtlSrc: "defaultModels/Torus.mtl",
+    color: props.color
   });
 }

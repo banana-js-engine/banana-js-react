@@ -8,7 +8,6 @@ var _Vector = require("../math/Vector");
 class WavefrontParser {
   static async parseObj(src) {
     const text = await this.#readFileAsText(src);
-    const white = _Vector.Vector3.one;
     const vertices = [];
     const positions = [];
     const texCoords = [];
@@ -28,7 +27,7 @@ class WavefrontParser {
           const b = Number(words[6]);
           colors.push(new _Vector.Vector3(r, g, b));
         } else {
-          colors.push(white);
+          colors.push(null);
         }
         positions.push(new _Vector.Vector3(x, y, z));
       } else if (words[0] == 'vt') {

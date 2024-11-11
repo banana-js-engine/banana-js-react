@@ -392,7 +392,7 @@ export class SpriteComponent extends BaseComponent {
             return { r: param.x, g: param.y, b: param.z, a: param.w };
         }
 
-        console.error('Invalid type for sprite')
+        console.error('Invalid type for color')
         return null;
     }
     
@@ -1090,12 +1090,19 @@ export class MeshComponent extends BaseComponent {
 
     #vertices;
     #material;
+    #color;
 
-    constructor(gameObject, objSrc, mtlSrc) {
+    constructor(gameObject, objSrc, mtlSrc, color) {
         super(gameObject);
+        this.#color = Vector4.one;
 
         objSrc = objSrc ? objSrc : 'defaultModels/Cube.obj';
         mtlSrc = mtlSrc ? mtlSrc : 'defaultModels/Cube.mtl';
+
+        if (color) {
+            const c = this.#processParameterType(color);
+            this.#color.set(c.r, c.g, c.b, c.a);
+        }
 
         WavefrontParser.parseObj(objSrc)
         .then(vertices => {
@@ -1120,6 +1127,20 @@ export class MeshComponent extends BaseComponent {
         return this.#material;
     }
 
+    get color() {
+        return this.#color;
+    }
+
+    #processParameterType(param) {
+        if (typeof param[0] === 'number') {
+            return { r: param[0], g: param[1], b: param[2], a: param[3] };
+        } else if (param instanceof Vector4) {
+            return { r: param.x, g: param.y, b: param.z, a: param.w };
+        }
+
+        console.error('Invalid type for color')
+        return null;
+    }
 }
 
 export class TextComponent extends BaseComponent {

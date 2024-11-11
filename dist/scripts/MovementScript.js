@@ -14,22 +14,21 @@ class MovementScript extends _Component.ScriptComponent {
   ready() {
     this.body = this.getComponent(_Types.ComponentType.Body2D);
     this.text = this.getComponent(_Types.ComponentType.Text);
-    console.log('a');
   }
   step(dt) {
-    if (_Input.Input.getKey('w')) {
+    if (_Input.Input.getKey(_Types.KeyCode.W)) {
       this.body.addForce(_Vector.Vector2.down.mul(this.speed));
     }
-    if (_Input.Input.getKey('a')) {
+    if (_Input.Input.getKey(_Types.KeyCode.A)) {
       this.body.addForce(_Vector.Vector2.left.mul(this.speed));
     }
-    if (_Input.Input.getKey('s')) {
+    if (_Input.Input.getKey(_Types.KeyCode.S)) {
       this.body.addForce(_Vector.Vector2.up.mul(this.speed));
     }
-    if (_Input.Input.getKey('d')) {
+    if (_Input.Input.getKey(_Types.KeyCode.D)) {
       this.body.addForce(_Vector.Vector2.right.mul(this.speed));
     }
-    if (_Input.Input.getKeyDown('c')) {
+    if (_Input.Input.getKeyDown(_Types.KeyCode.C)) {
       // const gameObject = this.createGameObject('TEST');
       // gameObject.addEmptyComponent(ComponentType.Sprite);
       // gameObject.addEmptyComponent(ComponentType.Body2D);
@@ -38,11 +37,11 @@ class MovementScript extends _Component.ScriptComponent {
     }
   }
   onExitViewport() {
-    console.log('exit');
+    console.log('viewport exit');
     this.test();
   }
   onEnterViewport() {
-    console.log('enter');
+    console.log('viewport enter');
   }
   onCollisionEnter2D(other) {
     console.log('collision enter');

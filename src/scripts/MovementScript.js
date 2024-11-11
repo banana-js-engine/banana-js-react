@@ -1,5 +1,5 @@
 import { Input } from "../core/Input";
-import { ComponentType } from "../core/Types";
+import { ComponentType, KeyCode } from "../core/Types";
 import { ScriptComponent } from "../ecs/Component";
 import { Vector2 } from "../math/Vector";
 import { Test } from "../prefabs/Test";
@@ -9,25 +9,23 @@ export class MovementScript extends ScriptComponent {
     ready() {
         this.body = this.getComponent(ComponentType.Body2D);
         this.text = this.getComponent(ComponentType.Text);
-
-        console.log('a')
     }
 
     step(dt) {
-        if (Input.getKey('w')) {
+        if (Input.getKey(KeyCode.W)) {
             this.body.addForce(Vector2.down.mul(this.speed));
         }
-        if (Input.getKey('a')) {
+        if (Input.getKey(KeyCode.A)) {
             this.body.addForce(Vector2.left.mul(this.speed));
         } 
-        if (Input.getKey('s')) {
+        if (Input.getKey(KeyCode.S)) {
             this.body.addForce(Vector2.up.mul(this.speed));
         } 
-        if (Input.getKey('d')) {
+        if (Input.getKey(KeyCode.D)) {
             this.body.addForce(Vector2.right.mul(this.speed));
         }
 
-        if (Input.getKeyDown('c')) {
+        if (Input.getKeyDown(KeyCode.C)) {
             // const gameObject = this.createGameObject('TEST');
             // gameObject.addEmptyComponent(ComponentType.Sprite);
             // gameObject.addEmptyComponent(ComponentType.Body2D);
@@ -37,12 +35,12 @@ export class MovementScript extends ScriptComponent {
     }
 
     onExitViewport() {
-        console.log('exit');
+        console.log('viewport exit');
         this.test();
     }
     
     onEnterViewport() {
-        console.log('enter');
+        console.log('viewport enter');
     }
 
     onCollisionEnter2D(other) {

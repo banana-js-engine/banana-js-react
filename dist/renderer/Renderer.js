@@ -330,7 +330,7 @@ class Renderer {
     for (let i = 0; i < parsedObj.length; i++) {
       const material = parsedMtl[parsedObj[i].material];
       this.#cubeVertex.position = t.multiplyVector3(parsedObj[i].position);
-      this.#cubeVertex.color = parsedObj[i].color;
+      this.#cubeVertex.color = parsedObj[i].color ? parsedObj[i].color : mesh.color;
       this.#cubeVertex.texCoord = parsedObj[i].texCoord;
       this.#cubeVertex.normal = t.multiplyVector3(parsedObj[i].normal);
       this.#cubeVertex.ambientColor = material && material.ambientColor ? material.ambientColor : _Vector.Vector3.one;

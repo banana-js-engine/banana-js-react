@@ -29,6 +29,9 @@ var _exportNames = {
   Input: true,
   ComponentType: true,
   ShapeType: true,
+  KeyCode: true,
+  MouseButtonCode: true,
+  GamepadButtonCode: true,
   ScriptComponent: true,
   SceneManager: true,
   Matrix4: true,
@@ -115,6 +118,12 @@ Object.defineProperty(exports, "GameObject", {
     return _GameObject.GameObject;
   }
 });
+Object.defineProperty(exports, "GamepadButtonCode", {
+  enumerable: true,
+  get: function () {
+    return _Types.GamepadButtonCode;
+  }
+});
 Object.defineProperty(exports, "Icosphere", {
   enumerable: true,
   get: function () {
@@ -127,6 +136,12 @@ Object.defineProperty(exports, "Input", {
     return _Input.Input;
   }
 });
+Object.defineProperty(exports, "KeyCode", {
+  enumerable: true,
+  get: function () {
+    return _Types.KeyCode;
+  }
+});
 Object.defineProperty(exports, "Matrix4", {
   enumerable: true,
   get: function () {
@@ -137,6 +152,12 @@ Object.defineProperty(exports, "Mesh", {
   enumerable: true,
   get: function () {
     return _Mesh.Mesh;
+  }
+});
+Object.defineProperty(exports, "MouseButtonCode", {
+  enumerable: true,
+  get: function () {
+    return _Types.MouseButtonCode;
   }
 });
 Object.defineProperty(exports, "OrthographicCamera", {

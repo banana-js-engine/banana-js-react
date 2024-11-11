@@ -22,7 +22,7 @@ export { Torus } from './components/Torus';
 export { Transform } from './components/Transform';
 
 export { Input } from './core/Input';
-export { ComponentType, ShapeType } from './core/Types';
+export { ComponentType, ShapeType, KeyCode, MouseButtonCode, GamepadButtonCode } from './core/Types';
 
 export { ScriptComponent } from './ecs/Component';
 export { SceneManager } from './ecs/SceneManager';
