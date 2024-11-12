@@ -3,6 +3,7 @@ import { Vector2, Vector3, Vector4 } from "../math/Vector";
 import { AABB } from "../physics/AABB";
 import { Texture } from "../renderer/Texture";
 import { Color } from "../renderer/Color";
+import { VertexBuffer } from "../renderer/Buffer";
 import { ComponentType, ShapeType } from "../core/Types";
 import { clamp01, toDegrees } from "../math/bananaMath";
 import { AnimationClip } from "../renderer/AnimationClip";
@@ -1260,6 +1261,134 @@ export class LightComponent extends BaseComponent {
     get color() {
         return this.#color;
     }
+}
+
+export class ParticleComponent extends BaseComponent {
+
+    #buffers;
+    #read;
+    #write;
+    #birthRate;
+    bornParticleCount;
+
+    #particleCount;
+    #minAge;
+    #maxAge;
+    #minTheta;
+    #maxTheta;
+    #minSpeed;
+    #maxSpeed;
+    #gravity;
+
+    #playing;
+    #initialParticleData
+
+    constructor(gameObject, count, minAge, maxAge, minTheta, maxTheta, minSpeed, maxSpeed, gravity) {
+        super(gameObject);
+
+        this.#read = 0;
+        this.#write = 1;
+        this.#birthRate = 100;
+        this.bornParticleCount = 0;
+        
+        this.#particleCount = count ? count : 200;
+        this.#minAge = minAge ? minAge : 1.01;
+        this.#maxAge = maxAge ? maxAge : 1.15;
+        
+        this.#initialParticleData = new Float32Array(this.#initializeParticleData());
+        this.#buffers = [];
+        this.#buffers.push(new VertexBuffer(this.gameObject.gl, this.#initialParticleData));
+        this.#buffers.push(new VertexBuffer(this.gameObject.gl, this.#initialParticleData));
+
+        this.#minTheta = minTheta ? minTheta : Math.PI / 2 - 0.5;
+        this.#maxTheta = maxTheta ? maxTheta : Math.PI / 2 + 0.5;
+        this.#minSpeed = minSpeed ? minSpeed : 0.5;
+        this.#maxSpeed = maxSpeed ? maxSpeed : 1;
+        this.#gravity = gravity ? gravity : Vector3.down;
+
+        this.#playing = true;
+    }
+
+    get type() {
+        return ComponentType.Particle;
+    }
+
+    get playing() { 
+        return this.#playing;
+    }
+
+    play() {
+        this.bornParticleCount = 0;
+        this.#playing = true;
+    }
+
+    stop() {
+        this.#playing = false;
+    }
+
+    get readBuffer() {
+        return this.#buffers[this.#read];
+    }
+
+    get writeBuffer() {
+        return this.#buffers[this.#write];
+    }
+
+    get maxCount() {
+        return this.#particleCount;
+    }
+
+    get birthRate() {
+        return this.#birthRate;
+    }
+
+    get minTheta() {
+        return this.#minTheta;
+    }
+
+    get maxTheta() {
+        return this.#maxTheta;
+    }
+
+    get minSpeed() {
+        return this.#minSpeed;
+    }
+
+    get maxSpeed() {
+        return this.#maxSpeed;
+    }
+
+    get gravity() {
+        return this.#gravity;
+    }
+
+    swapReadWrite() {
+        this.#read = 1 - this.#read;
+        this.#write = 1 - this.#write;
+    }
+
+    #initializeParticleData() {
+        var data = [];
+        for (var i = 0; i < this.#particleCount; ++i) {
+            // position
+            data.push(0.0);
+            data.push(0.0);
+            data.push(0.0);
+
+            var life = this.#minAge + Math.random() * (this.#maxAge - this.#minAge);
+            // set age to max. life + 1 to ensure the particle gets initialized
+            // on first invocation of particle update shader
+            data.push(life + 1);
+            data.push(life);
+
+            // velocity
+            data.push(0.0);
+            data.push(0.0);
+            data.push(0.0);
+        }
+        return data;
+    }
+
 }
 
 export const ComponentMap = {}

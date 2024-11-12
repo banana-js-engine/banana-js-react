@@ -14,6 +14,8 @@ uniform float u_MinTheta;
 uniform float u_MaxTheta;
 uniform float u_MinSpeed;
 uniform float u_MaxSpeed;
+uniform mat4 u_ViewProjectionMatrix;
+uniform int u_Playing;
 
 out vec3 v_Position;
 out float v_Age;
@@ -21,7 +23,7 @@ out float v_Life;
 out vec3 v_Velocity;
 
 void main() {
-    if (a_Age >= a_Life) {
+    if (a_Age >= a_Life && u_Playing == 1) {
         
         ivec2 noiseCoord = ivec2(gl_VertexID % 512, gl_VertexID / 512);
         vec2 rand = texelFetch(u_RgNoise, noiseCoord, 0).rg;
@@ -31,7 +33,7 @@ void main() {
         float x = cos(theta);
         float y = sin(theta);
 
-        v_Position = u_Origin;
+        v_Position = mat3(u_ViewProjectionMatrix) * u_Origin;
 
         v_Age = 0.0;
         v_Life = a_Life;

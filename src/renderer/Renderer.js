@@ -1,4 +1,4 @@
-import { CameraComponent, MeshComponent, SpriteComponent, TransformComponent, LightComponent } from "../ecs/Component";
+import { CameraComponent, MeshComponent, SpriteComponent, TransformComponent, LightComponent, ParticleComponent } from "../ecs/Component";
 import { Matrix4 } from "../math/Matrix";
 import { Vector2, Vector3, Vector4 } from "../math/Vector";
 import { IndexBuffer, VertexBuffer } from "./Buffer";
@@ -175,30 +175,15 @@ export class Renderer {
          */
         particleRenderShader: null,
 
-        /**
-         * @type {VertexBuffer}
-         */
-        particleVB_1: null,
+        particleUpdatePosition: -1,
+        particleUpdateAge: -1,
+        particleUpdateLife: -1,
+        particleUpdateVelocity: -1,
 
-        /**
-         * @type {VertexBuffer}
-         */
-        particleVB_2: null,
-
-        particleCount: 2000,
-        minAge: 1.01,
-        maxAge: 1.15,
-        bornParticles: 0,
-        birthRate: 100,
-        totalTime: 0,
-        minTheta: Math.PI/2.0 - 0.5,
-        maxTheta: Math.PI/2.0 + 0.5,
-        minSpeed: 0.5,
-        maxSpeed: 1.0,
-        gravity: Vector3.down,
-        origin: Vector3.zero,
-        readIndex: 0,
-        writeIndex: 1,
+        particleRenderPosition: -1,
+        particleRenderAge: -1,
+        particleRenderLife: -1,
+        particleRenderVelocity: -1,
 
         // texture data
         maxTextureSlotCount: -1,
@@ -362,11 +347,17 @@ export class Renderer {
         );
         this.#renderData.particleRenderShader = new Shader(this.#gl, Shader.particleRenderShaderPath);
 
-        const initialParticleData = new Float32Array(this.#initialParticleData());
-        this.#renderData.particleVB_1 = new VertexBuffer(this.#gl, initialParticleData);
-        this.#renderData.particleVB_2 = new VertexBuffer(this.#gl, initialParticleData);
-
         this.#renderData.textureSlots[1] = this.#renderData.noiseTexture;
+
+        this.#renderData.particleUpdatePosition = this.#renderData.particleUpdateShader.getAttributeLocation('a_Position');
+        this.#renderData.particleUpdateAge = this.#renderData.particleUpdateShader.getAttributeLocation('a_Age');
+        this.#renderData.particleUpdateLife = this.#renderData.particleUpdateShader.getAttributeLocation('a_Life');
+        this.#renderData.particleUpdateVelocity = this.#renderData.particleUpdateShader.getAttributeLocation('a_Velocity');
+
+        this.#renderData.particleRenderPosition = this.#renderData.particleRenderShader.getAttributeLocation('a_Position');
+        this.#renderData.particleRenderAge = this.#renderData.particleRenderShader.getAttributeLocation('a_Age');
+        this.#renderData.particleRenderLife = this.#renderData.particleRenderShader.getAttributeLocation('a_Life');
+        this.#renderData.particleRenderVelocity = this.#renderData.particleRenderShader.getAttributeLocation('a_Velocity');
     }
 
     /**
@@ -395,16 +386,15 @@ export class Renderer {
         }
     }
 
-    endScene(dt) {
-        this.#flush(dt);
+    endScene() {
+        this.#flush();
     }
 
     /**
      * draws a quad (filled rectangular shape)
-     * @param {TransformComponent} transform 
      * @param {SpriteComponent} sprite 
      */
-    drawQuad(transform, sprite) {
+    drawQuad(sprite) {
 
         if (this.#renderData.quadIndexCount >= this.#renderData.maxIndices) {
             this.#flush();
@@ -433,7 +423,7 @@ export class Renderer {
             useTextureSlot = 0;
         }
 
-        const t = transform.transformMatrix;
+        const t = sprite.transform.transformMatrix;
 
         for (let i = 0; i < 4; i++) {
             this.#quadVertex.position = t.multiplyVector3(this.#renderData.initialVertexPositions[i]);
@@ -500,16 +490,14 @@ export class Renderer {
     }
 
     /**
-     * 
-     * @param {TransformComponent} transform 
      * @param {MeshComponent} mesh 
      */
-    drawMesh(transform, mesh) {
+    drawMesh(mesh) {
         if (this.#renderData.meshVertexCount >= this.#renderData.maxVertices) {
             this.#flush();
         }
 
-        const t = transform.transformMatrix;
+        const t = mesh.transform.transformMatrix;
         const parsedObj = mesh.vertices;
         const parsedMtl = mesh.material;
 
@@ -559,7 +547,72 @@ export class Renderer {
         }
     }
 
-    #flush(dt) {
+    /**
+     * 
+     * @param {ParticleComponent} particle 
+     */
+    drawParticle(particle, dt) {
+        this.#settings2d();
+
+        if (particle.bornParticleCount < particle.maxCount) {
+            particle.bornParticleCount = Math.min(
+                particle.maxCount,
+                Math.floor(particle.bornParticleCount + particle.birthRate * dt)
+            );
+        }
+
+        this.#renderData.particleUpdateShader.bind();
+        this.#renderData.particleUpdateShader.setUniform1f('u_TimeDelta', dt);
+        this.#renderData.particleUpdateShader.setUniform3fv('u_Gravity', particle.gravity.data);
+        this.#renderData.particleUpdateShader.setUniform3fv('u_Origin', particle.transform.position.data);
+        this.#renderData.particleUpdateShader.setUniform1f('u_MinTheta', particle.minTheta);
+        this.#renderData.particleUpdateShader.setUniform1f('u_MaxTheta', particle.maxTheta);
+        this.#renderData.particleUpdateShader.setUniform1f('u_MinSpeed', particle.minSpeed);
+        this.#renderData.particleUpdateShader.setUniform1f('u_MaxSpeed', particle.maxSpeed);
+        this.#renderData.particleUpdateShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
+        this.#renderData.particleUpdateShader.setUniform1i('u_Playing', particle.playing ? 1 : 0);
+
+        this.#renderData.noiseTexture.bind(1);
+        this.#renderData.particleUpdateShader.setUniform1i('u_RgNoise', 1);
+
+        particle.readBuffer.clearAttributes();
+        particle.writeBuffer.clearAttributes();
+
+        particle.readBuffer.pushAttribute(this.#renderData.particleUpdatePosition, 3);
+        particle.readBuffer.pushAttribute(this.#renderData.particleUpdateAge, 1);
+        particle.readBuffer.pushAttribute(this.#renderData.particleUpdateLife, 1);
+        particle.readBuffer.pushAttribute(this.#renderData.particleUpdateVelocity, 3);
+
+        particle.writeBuffer.pushAttribute(this.#renderData.particleUpdatePosition, 3);
+        particle.writeBuffer.pushAttribute(this.#renderData.particleUpdateAge, 1);
+        particle.writeBuffer.pushAttribute(this.#renderData.particleUpdateLife, 1);
+        particle.writeBuffer.pushAttribute(this.#renderData.particleUpdateVelocity, 3);
+
+        particle.readBuffer.bind(false);
+        particle.writeBuffer.bindBase();
+
+        this.#gl.enable(this.#gl.RASTERIZER_DISCARD);
+
+        this.#gl.beginTransformFeedback(this.#gl.POINTS);
+        this.#gl.drawArrays(this.#gl.POINTS, 0, particle.bornParticleCount);
+        this.#gl.endTransformFeedback();
+
+        this.#gl.disable(this.#gl.RASTERIZER_DISCARD);
+
+        particle.writeBuffer.unbindBase();
+        
+        this.#renderData.particleRenderShader.bind();
+        particle.readBuffer.clearAttributes();
+        particle.readBuffer.pushAttribute(this.#renderData.particleRenderPosition, 3);
+        particle.readBuffer.pushAttribute(this.#renderData.particleRenderAge, 1);
+        particle.readBuffer.pushAttribute(this.#renderData.particleRenderLife, 1);
+        particle.readBuffer.pushAttribute(this.#renderData.particleRenderVelocity, 3);
+        particle.readBuffer.bind(false);
+        this.#gl.drawArrays(this.#gl.POINTS, 0, particle.bornParticleCount);
+        particle.swapReadWrite();
+    }
+
+    #flush() {
         if (this.#renderData.quadIndexCount > 0) {
             for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
                 this.#renderData.textureSlots[i].bind(i);
@@ -602,81 +655,6 @@ export class Renderer {
             this.#gl.drawArrays(this.#gl.TRIANGLES, 0, this.#renderData.meshVertexCount);
         }
 
-        this.#settings2d();
-
-        if (this.#renderData.bornParticles < this.#renderData.particleCount) {
-            this.#renderData.bornParticles = Math.min(
-                this.#renderData.particleCount,
-                Math.floor(this.#renderData.bornParticles + this.#renderData.birthRate * dt)
-            );
-        }
-
-        this.#renderData.particleUpdateShader.bind();
-        this.#renderData.particleUpdateShader.setUniform1f('u_TimeDelta', dt);
-        this.#renderData.particleUpdateShader.setUniform3fv('u_Gravity', this.#renderData.gravity.data);
-        this.#renderData.particleUpdateShader.setUniform3fv('u_Origin', this.#renderData.origin.data);
-        this.#renderData.particleUpdateShader.setUniform1f('u_MinTheta', this.#renderData.minTheta);
-        this.#renderData.particleUpdateShader.setUniform1f('u_MaxTheta', this.#renderData.maxTheta);
-        this.#renderData.particleUpdateShader.setUniform1f('u_MinSpeed', this.#renderData.minSpeed);
-        this.#renderData.particleUpdateShader.setUniform1f('u_MaxSpeed', this.#renderData.maxSpeed);
-
-        this.#renderData.totalTime += dt;
-
-        this.#renderData.noiseTexture.bind(1);
-        this.#renderData.particleUpdateShader.setUniform1i('u_RgNoise', 1);
-
-        this.#renderData.particleVB_1.clearAttributes();
-        this.#renderData.particleVB_2.clearAttributes();
-
-        const particleUpdatePosition = this.#renderData.particleUpdateShader.getAttributeLocation('a_Position');
-        const particleUpdateAge = this.#renderData.particleUpdateShader.getAttributeLocation('a_Age');
-        const particleUpdateLife = this.#renderData.particleUpdateShader.getAttributeLocation('a_Life');
-        const particleUpdateVelocity = this.#renderData.particleUpdateShader.getAttributeLocation('a_Velocity');
-
-        this.#renderData.particleVB_1.pushAttribute(particleUpdatePosition, 3);
-        this.#renderData.particleVB_1.pushAttribute(particleUpdateAge, 1);
-        this.#renderData.particleVB_1.pushAttribute(particleUpdateLife, 1);
-        this.#renderData.particleVB_1.pushAttribute(particleUpdateVelocity, 3);
-
-        this.#renderData.particleVB_2.pushAttribute(particleUpdatePosition, 3);
-        this.#renderData.particleVB_2.pushAttribute(particleUpdateAge, 1);
-        this.#renderData.particleVB_2.pushAttribute(particleUpdateLife, 1);
-        this.#renderData.particleVB_2.pushAttribute(particleUpdateVelocity, 3);
-
-        const buffers = [this.#renderData.particleVB_1, this.#renderData.particleVB_2];
-
-        buffers[this.#renderData.readIndex].bind(false);
-        buffers[this.#renderData.writeIndex].bindBase();
-
-        this.#gl.enable(this.#gl.RASTERIZER_DISCARD);
-
-        this.#gl.beginTransformFeedback(this.#gl.POINTS);
-        this.#gl.drawArrays(this.#gl.POINTS, 0, this.#renderData.bornParticles);
-        this.#gl.endTransformFeedback();
-
-        this.#gl.disable(this.#gl.RASTERIZER_DISCARD);
-
-        buffers[this.#renderData.writeIndex].unbindBase();
-        
-        buffers[this.#renderData.readIndex].clearAttributes();
-
-        this.#renderData.particleRenderShader.bind();
-        
-        const particleRenderPosition = this.#renderData.particleRenderShader.getAttributeLocation('a_Position');
-        const particleRenderAge = this.#renderData.particleRenderShader.getAttributeLocation('a_Age');
-        const particleRenderLife = this.#renderData.particleRenderShader.getAttributeLocation('a_Life');
-        const particleRenderVelocity = this.#renderData.particleRenderShader.getAttributeLocation('a_Velocity');
-        
-        buffers[this.#renderData.readIndex].pushAttribute(particleRenderPosition, 3);
-        buffers[this.#renderData.readIndex].pushAttribute(particleRenderAge, 1);
-        buffers[this.#renderData.readIndex].pushAttribute(particleRenderLife, 1);
-        buffers[this.#renderData.readIndex].pushAttribute(particleRenderVelocity, 3);
-        buffers[this.#renderData.readIndex].bind(false);
-        this.#gl.drawArrays(this.#gl.POINTS, 0, this.#renderData.bornParticles);
-
-        this.#renderData.readIndex = 1 - this.#renderData.readIndex;
-        this.#renderData.writeIndex = 1 - this.#renderData.writeIndex;
-
         // reset batch
         this.#renderData.quadVertexCount = 0;
         this.#renderData.quadIndexCount = 0;
@@ -704,27 +682,5 @@ export class Renderer {
     #settings3d() {
         this.#gl.enable(this.#gl.CULL_FACE);
         this.#gl.enable(this.#gl.DEPTH_TEST);
-    }
-
-    #initialParticleData() {
-        var data = [];
-        for (var i = 0; i < this.#renderData.particleCount; ++i) {
-            // position
-            data.push(0.0);
-            data.push(0.0);
-            data.push(0.0);
-
-            var life = this.#renderData.minAge + Math.random() * (this.#renderData.maxAge - this.#renderData.minAge);
-            // set age to max. life + 1 to ensure the particle gets initialized
-            // on first invocation of particle update shader
-            data.push(life + 1);
-            data.push(life);
-
-            // velocity
-            data.push(0.0);
-            data.push(0.0);
-            data.push(0.0);
-        }
-        return data;
     }
 }

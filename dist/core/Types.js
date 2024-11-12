@@ -20,7 +20,8 @@ const ComponentType = exports.ComponentType = {
   Mesh: 8,
   Text: 9,
   UIText: 10,
-  Light: 11
+  Light: 11,
+  Particle: 12
 };
 
 /**

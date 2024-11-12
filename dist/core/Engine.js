@@ -159,28 +159,33 @@ class Engine {
     }
     this.#renderer.beginScene(cameraTransform, cameraComponent, goLights);
     this.#renderer.clear();
-    const goSprites = activeScene.getComponentsWithIds(_Types.ComponentType.Sprite);
-    for (const id in goSprites) {
-      if (!goSprites[id].active) {
+    const goSprites = activeScene.getComponents(_Types.ComponentType.Sprite);
+    for (let i = 0; i < goSprites.length; i++) {
+      if (!goSprites[i].active) {
         continue;
       }
-      const transform = goSprites[id].getComponent(_Types.ComponentType.Transform);
-      if (goSprites[id].hasComponent(_Types.ComponentType.Body2D)) {
-        const body = goSprites[id].getComponent(_Types.ComponentType.Body2D);
+      if (goSprites[i].hasComponent(_Types.ComponentType.Body2D)) {
+        const body = goSprites[i].getComponent(_Types.ComponentType.Body2D);
         if (_Collisions.Collisions.checkAABBCollision(body.AABB, cameraComponent.AABB)) {
-          this.#renderer.drawQuad(transform, goSprites[id]);
+          this.#renderer.drawQuad(goSprites[i]);
         }
       } else {
-        this.#renderer.drawQuad(transform, goSprites[id]);
+        this.#renderer.drawQuad(goSprites[i]);
       }
     }
-    const goMeshes = activeScene.getComponentsWithIds(_Types.ComponentType.Mesh);
-    for (const id in goMeshes) {
-      if (!goMeshes[id].active) {
+    const goMeshes = activeScene.getComponents(_Types.ComponentType.Mesh);
+    for (let i = 0; i < goMeshes.length; i++) {
+      if (!goMeshes[i].active) {
         continue;
       }
-      const transform = goMeshes[id].getComponent(_Types.ComponentType.Transform);
-      this.#renderer.drawMesh(transform, goMeshes[id]);
+      this.#renderer.drawMesh(goMeshes[i]);
+    }
+    const goParticles = activeScene.getComponents(_Types.ComponentType.Particle);
+    for (let i = 0; i < goParticles.length; i++) {
+      if (!goParticles[i].active) {
+        continue;
+      }
+      this.#renderer.drawParticle(goParticles[i], dt);
     }
     if (_Debug.Debug.showCollisionShapes) {
       const goBodies = activeScene.getAll(_Types.ComponentType.Body2D);

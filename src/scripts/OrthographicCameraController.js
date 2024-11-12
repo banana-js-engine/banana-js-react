@@ -1,5 +1,5 @@
 import { Input } from "../core/Input";
-import { ComponentType } from "../core/Types";
+import { ComponentType, KeyCode, MouseButtonCode } from "../core/Types";
 import { ScriptComponent } from "../ecs/Component";
 import { Vector3 } from "../math/Vector";
 
@@ -20,7 +20,7 @@ export class OrthographicCameraController extends ScriptComponent {
     step(dt) {
         const currentMousePosition = this.camera.screenToWorldSpace(Input.mousePosition);
         
-        if (Input.getButton(1)) {
+        if (Input.getButton(MouseButtonCode.Middle)) {
 
             // rotation
             this.#direction.set(0, 0, 0);

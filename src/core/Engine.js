@@ -195,36 +195,42 @@ export class Engine {
 
         this.#renderer.clear();
         
-        const goSprites = activeScene.getComponentsWithIds(ComponentType.Sprite);
+        const goSprites = activeScene.getComponents(ComponentType.Sprite);
 
-        for (const id in goSprites) {
-            if (!goSprites[id].active) {
+        for (let i = 0; i < goSprites.length; i++) {
+            if (!goSprites[i].active) {
                 continue;
             }
-
-            const transform = goSprites[id].getComponent(ComponentType.Transform);
             
-            if (goSprites[id].hasComponent(ComponentType.Body2D)) {
-                const body = goSprites[id].getComponent(ComponentType.Body2D);
+            if (goSprites[i].hasComponent(ComponentType.Body2D)) {
+                const body = goSprites[i].getComponent(ComponentType.Body2D);
                 
                 if (Collisions.checkAABBCollision(body.AABB, cameraComponent.AABB)) {
-                    this.#renderer.drawQuad(transform, goSprites[id]);
+                    this.#renderer.drawQuad(goSprites[i]);
                 }
             } else {
-                this.#renderer.drawQuad(transform, goSprites[id]);
+                this.#renderer.drawQuad(goSprites[i]);
             }
         }
 
-        const goMeshes = activeScene.getComponentsWithIds(ComponentType.Mesh);
+        const goMeshes = activeScene.getComponents(ComponentType.Mesh);
 
-        for (const id in goMeshes) {
-            if (!goMeshes[id].active) {
+        for (let i = 0; i < goMeshes.length; i++) {
+            if (!goMeshes[i].active) {
                 continue;
             }
 
-            const transform = goMeshes[id].getComponent(ComponentType.Transform)
+            this.#renderer.drawMesh(goMeshes[i]);
+        }
 
-            this.#renderer.drawMesh(transform, goMeshes[id]);
+        const goParticles = activeScene.getComponents(ComponentType.Particle);
+
+        for (let i = 0; i < goParticles.length; i++) {
+            if (!goParticles[i].active) {
+                continue;
+            }
+
+            this.#renderer.drawParticle(goParticles[i], dt);
         }
 
         if (Debug.showCollisionShapes) {

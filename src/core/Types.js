@@ -15,6 +15,7 @@ export const ComponentType = {
     Text: 9,
     UIText: 10,
     Light: 11,
+    Particle: 12,
 };
 
 /**

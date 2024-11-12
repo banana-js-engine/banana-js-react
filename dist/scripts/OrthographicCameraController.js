@@ -20,7 +20,7 @@ class OrthographicCameraController extends _Component.ScriptComponent {
   }
   step(dt) {
     const currentMousePosition = this.camera.screenToWorldSpace(_Input.Input.mousePosition);
-    if (_Input.Input.getButton(1)) {
+    if (_Input.Input.getButton(_Types.MouseButtonCode.Middle)) {
       // rotation
       this.#direction.set(0, 0, 0);
       this.#direction.x = this.#previousMousePosition.x - currentMousePosition.x;

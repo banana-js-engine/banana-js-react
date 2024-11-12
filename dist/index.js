@@ -19,6 +19,7 @@ var _exportNames = {
   Light: true,
   Mesh: true,
   OrthographicCamera: true,
+  Particle: true,
   PerspectiveCamera: true,
   Scene: true,
   Script: true,
@@ -174,6 +175,12 @@ Object.defineProperty(exports, "OrthographicCamera", {
     return _OrthographicCamera.OrthographicCamera;
   }
 });
+Object.defineProperty(exports, "Particle", {
+  enumerable: true,
+  get: function () {
+    return _Particle.Particle;
+  }
+});
 Object.defineProperty(exports, "PerspectiveCamera", {
   enumerable: true,
   get: function () {
@@ -279,6 +286,7 @@ var _Icosphere = require("./components/Icosphere");
 var _Light = require("./components/Light");
 var _Mesh = require("./components/Mesh");
 var _OrthographicCamera = require("./components/OrthographicCamera");
+var _Particle = require("./components/Particle");
 var _PerspectiveCamera = require("./components/PerspectiveCamera");
 var _Scene = require("./components/Scene");
 var _Script = require("./components/Script");

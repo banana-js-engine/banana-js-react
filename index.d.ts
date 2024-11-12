@@ -81,6 +81,17 @@ declare module "@mfkucuk/banana-js" {
         far: number
     }): void;
 
+    export function Particle(props: {
+        count: number,
+        minAge: number,
+        maxAge: number,
+        minTheta: number,
+        maxTheta: number,
+        minSpeed: number,
+        maxSpeed: number,
+        gravity: [number, number, number] | Vector3
+    }): void;
+
     export function PerspectiveCamera(props: {
         bgColor: [number, number, number, number] | Color
         fovy: number,
@@ -321,6 +332,11 @@ declare module "@mfkucuk/banana-js" {
     export class LightComponent extends BaseComponent {
         get direction(): Vector3;
         get color(): Color;
+    }
+
+    export class ParticleComponent extends BaseComponent {
+        play(): void;
+        stop(): void;   
     }
 
     export class GO {

@@ -15,6 +15,7 @@ import { Cube } from "./components/Cube";
 import { Mesh } from "./components/Mesh";
 import { Light } from "./components/Light";
 import { UIText } from "./components/UIText";
+import { Particle } from "./components/Particle";
 
 export default function GameApp() {
     const [count, setCount] = useState(0);
@@ -50,11 +51,22 @@ export default function GameApp() {
                     <Script import={import('./scripts/MovementScript')} speed={0.1} test={incrementCount}/>
                     <Text color={Color.red}>{count}</Text>
                 </GameObject> */}
-                {/* <GameObject name="Book">
+                <GameObject name="Book">
                     <Transform position={[0, 0, 0]} scale={[1, -1, 1]}/>
                     <Mesh objSrc="defaultModels/Banana.obj" mtlSrc="defaultModels/Banana.mtl"/>
                     <Script import={import('./scripts/RotateScript')} speed={100}/>
-                </GameObject> */}
+                </GameObject>
+
+                <GameObject name="Particle">
+                    <Transform position={[3, 0, 0]}/>
+                    <Particle/>
+                    <Script import={import('./scripts/ParticleScript')}/>
+                </GameObject>
+
+                <GameObject name="Particle">
+                    <Transform position={[-1, 0, 0]}/>
+                    <Particle/>
+                </GameObject>
                 
             </Scene>
         </Game>

@@ -13,6 +13,7 @@ export { Icosphere } from './components/Icosphere';
 export { Light } from './components/Light';
 export { Mesh } from './components/Mesh';
 export { OrthographicCamera } from './components/OrthographicCamera';
+export { Particle } from './components/Particle';
 export { PerspectiveCamera } from './components/PerspectiveCamera';
 export { Scene } from './components/Scene';
 export { Script } from './components/Script';

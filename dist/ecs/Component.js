@@ -3,12 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.UITextComponent = exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
+exports.UITextComponent = exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.ParticleComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
 var _Matrix = require("../math/Matrix");
 var _Vector = require("../math/Vector");
 var _AABB = require("../physics/AABB");
 var _Texture = require("../renderer/Texture");
 var _Color = require("../renderer/Color");
+var _Buffer = require("../renderer/Buffer");
 var _Types = require("../core/Types");
 var _bananaMath = require("../math/bananaMath");
 var _AnimationClip = require("../renderer/AnimationClip");
@@ -1097,6 +1098,108 @@ class LightComponent extends BaseComponent {
   }
 }
 exports.LightComponent = LightComponent;
+class ParticleComponent extends BaseComponent {
+  #buffers;
+  #read;
+  #write;
+  #birthRate;
+  bornParticleCount;
+  #particleCount;
+  #minAge;
+  #maxAge;
+  #minTheta;
+  #maxTheta;
+  #minSpeed;
+  #maxSpeed;
+  #gravity;
+  #playing;
+  #initialParticleData;
+  constructor(gameObject, count, minAge, maxAge, minTheta, maxTheta, minSpeed, maxSpeed, gravity) {
+    super(gameObject);
+    this.#read = 0;
+    this.#write = 1;
+    this.#birthRate = 100;
+    this.bornParticleCount = 0;
+    this.#particleCount = count ? count : 200;
+    this.#minAge = minAge ? minAge : 1.01;
+    this.#maxAge = maxAge ? maxAge : 1.15;
+    this.#initialParticleData = new Float32Array(this.#initializeParticleData());
+    this.#buffers = [];
+    this.#buffers.push(new _Buffer.VertexBuffer(this.gameObject.gl, this.#initialParticleData));
+    this.#buffers.push(new _Buffer.VertexBuffer(this.gameObject.gl, this.#initialParticleData));
+    this.#minTheta = minTheta ? minTheta : Math.PI / 2 - 0.5;
+    this.#maxTheta = maxTheta ? maxTheta : Math.PI / 2 + 0.5;
+    this.#minSpeed = minSpeed ? minSpeed : 0.5;
+    this.#maxSpeed = maxSpeed ? maxSpeed : 1;
+    this.#gravity = gravity ? gravity : _Vector.Vector3.down;
+    this.#playing = true;
+  }
+  get type() {
+    return _Types.ComponentType.Particle;
+  }
+  get playing() {
+    return this.#playing;
+  }
+  play() {
+    this.bornParticleCount = 0;
+    this.#playing = true;
+  }
+  stop() {
+    this.#playing = false;
+  }
+  get readBuffer() {
+    return this.#buffers[this.#read];
+  }
+  get writeBuffer() {
+    return this.#buffers[this.#write];
+  }
+  get maxCount() {
+    return this.#particleCount;
+  }
+  get birthRate() {
+    return this.#birthRate;
+  }
+  get minTheta() {
+    return this.#minTheta;
+  }
+  get maxTheta() {
+    return this.#maxTheta;
+  }
+  get minSpeed() {
+    return this.#minSpeed;
+  }
+  get maxSpeed() {
+    return this.#maxSpeed;
+  }
+  get gravity() {
+    return this.#gravity;
+  }
+  swapReadWrite() {
+    this.#read = 1 - this.#read;
+    this.#write = 1 - this.#write;
+  }
+  #initializeParticleData() {
+    var data = [];
+    for (var i = 0; i < this.#particleCount; ++i) {
+      // position
+      data.push(0.0);
+      data.push(0.0);
+      data.push(0.0);
+      var life = this.#minAge + Math.random() * (this.#maxAge - this.#minAge);
+      // set age to max. life + 1 to ensure the particle gets initialized
+      // on first invocation of particle update shader
+      data.push(life + 1);
+      data.push(life);
+
+      // velocity
+      data.push(0.0);
+      data.push(0.0);
+      data.push(0.0);
+    }
+    return data;
+  }
+}
+exports.ParticleComponent = ParticleComponent;
 const ComponentMap = exports.ComponentMap = {};
 ComponentMap[_Types.ComponentType.Name] = NameComponent;
 ComponentMap[_Types.ComponentType.Transform] = TransformComponent;
