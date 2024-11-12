@@ -58,16 +58,16 @@ function GameApp() {
           import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/FPSScript')))
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
-        name: "Book",
-        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
-          position: [0, 0, 0],
-          scale: [1, -1, 1]
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Mesh.Mesh, {
-          objSrc: "defaultModels/Banana.obj",
-          mtlSrc: "defaultModels/Banana.mtl"
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.Sprite, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_BoxBody2D.BoxBody2D, {
+          isStatic: false,
+          gravityScale: 0
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.Script, {
-          import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/RotateScript'))),
-          speed: 100
+          import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/MovementScript'))),
+          speed: 0.1,
+          test: incrementCount
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Text.Text, {
+          color: _Color.Color.red,
+          children: count
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
         name: "Particle",
@@ -81,6 +81,18 @@ function GameApp() {
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
           position: [-1, 0, 0]
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Particle.Particle, {})]
+      }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
+        name: "Book",
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
+          position: [0, 0, 0],
+          scale: [1, -1, 1]
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Mesh.Mesh, {
+          objSrc: "TallBuilding01.obj",
+          mtlSrc: "TallBuilding01.mtl"
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.Script, {
+          import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/RotateScript'))),
+          speed: 100
+        })]
       })]
     })
   });

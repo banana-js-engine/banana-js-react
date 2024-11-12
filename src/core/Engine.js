@@ -10,6 +10,7 @@ import { Renderer } from "../renderer/Renderer";
 import { TextRenderer } from "../renderer/TextRenderer";
 import { Collisions } from "../physics/Collisions";
 import { SceneECS } from "../ecs/SceneECS";
+import { Matrix4 } from "../math/Matrix";
 
 /**
  * The class that controls the game-loop
@@ -54,6 +55,7 @@ export class Engine {
         this.#multipleCameraFlag = false;
 
         Input.init();
+        Matrix4.init();
 
         SceneManager.onSceneChanged = () => {
             this.#world2d.clear();
@@ -90,6 +92,7 @@ export class Engine {
         }
 
         const goAnimators = activeScene.getComponents(ComponentType.Animator);
+        const goParticles = activeScene.getComponents(ComponentType.Particle);
 
         if (this.#firstUpdate) {
             for (let i = 0; i < goAnimators.length; i++) {
@@ -97,6 +100,8 @@ export class Engine {
                     goAnimators[i].playAnimation(goAnimators[i].startAnim);
                 }
             }
+
+            this.#renderer.particlesInit(goParticles);
         }
 
         const goScripts = activeScene.getComponents(ComponentType.Script);
@@ -222,8 +227,6 @@ export class Engine {
 
             this.#renderer.drawMesh(goMeshes[i]);
         }
-
-        const goParticles = activeScene.getComponents(ComponentType.Particle);
 
         for (let i = 0; i < goParticles.length; i++) {
             if (!goParticles[i].active) {

@@ -12,11 +12,52 @@ var _Vector = require("./Vector");
  */
 class Matrix4 {
   #data;
+  offset;
+  static #mat4_multiply;
+  static #memory;
+  static #currentOffset = 0;
   constructor() {
+    if (Matrix4.#memory != null) {
+      if (Matrix4.#currentOffset > 50000) {
+        Matrix4.#currentOffset = 0;
+      }
+      this.offset = Matrix4.#currentOffset;
+      this.data = new Float32Array(Matrix4.#memory.buffer, this.offset, 16);
+      this.identity();
+      Matrix4.#currentOffset += 16 * Float32Array.BYTES_PER_ELEMENT;
+      return;
+    }
     this.#data = new Float32Array(16);
+    this.offset = -1;
+    this.identity();
+  }
+  static init() {
+    let memory = new WebAssembly.Memory({
+      initial: 256,
+      maximum: 512
+    });
+    const importObject = {
+      env: {
+        memory: memory,
+        emscripten_resize_heap: memory.grow
+      },
+      js: {
+        mem: memory
+      }
+    };
+    WebAssembly.instantiateStreaming(fetch('webAssembly/matrix.wasm'), importObject).then(obj => {
+      this.#mat4_multiply = obj.instance.exports.mat4_multiply;
+      this.#memory = obj.instance.exports.memory;
+    });
   }
   static get zero() {
     return new Matrix4();
+  }
+  get data() {
+    return this.#data;
+  }
+  set data(newData) {
+    this.#data = newData;
   }
   get flat() {
     return this.#data;
@@ -33,7 +74,35 @@ class Matrix4 {
     this.#data[15] = 1;
     return this;
   }
+  #multiplySIMD(other) {
+    // corner case
+    if (this.offset == -1) {
+      if (Matrix4.#currentOffset > 65536) {
+        Matrix4.#currentOffset = 0;
+      }
+      const a = new Float32Array(this.data);
+      this.offset = Matrix4.#currentOffset;
+      this.#data = new Float32Array(Matrix4.#memory.buffer, this.offset, 16);
+      this.#data.set(a);
+      Matrix4.#currentOffset += 16 * Float32Array.BYTES_PER_ELEMENT;
+    }
+    if (other.offset == -1) {
+      if (Matrix4.#currentOffset > 65536) {
+        Matrix4.#currentOffset = 0;
+      }
+      const a = new Float32Array(other.data);
+      other.offset = Matrix4.#currentOffset;
+      other.data = new Float32Array(Matrix4.#memory.buffer, other.offset, 16);
+      other.data.set(a);
+      Matrix4.#currentOffset += 16 * Float32Array.BYTES_PER_ELEMENT;
+    }
+    Matrix4.#mat4_multiply(this.offset, other.offset);
+    return this;
+  }
   multiply(other) {
+    if (Matrix4.#memory != null) {
+      return this.#multiplySIMD(other);
+    }
     const nm00 = this.#data[0] * other.#data[0] + this.#data[4] * other.#data[1] + this.#data[8] * other.#data[2] + this.#data[12] * other.#data[3];
     const nm01 = this.#data[1] * other.#data[0] + this.#data[5] * other.#data[1] + this.#data[9] * other.#data[2] + this.#data[13] * other.#data[3];
     const nm02 = this.#data[2] * other.#data[0] + this.#data[6] * other.#data[1] + this.#data[10] * other.#data[2] + this.#data[14] * other.#data[3];
@@ -75,7 +144,7 @@ class Matrix4 {
    * @returns 
    */
   multiplyVector3(vec3) {
-    const result = _Vector.Vector3.zero;
+    const result = {};
     result.x = this.#data[0] * vec3.x + this.#data[1] * vec3.y + this.#data[2] * vec3.z + this.#data[3];
     result.y = this.#data[4] * vec3.x + this.#data[5] * vec3.y + this.#data[6] * vec3.z + this.#data[7];
     result.z = this.#data[8] * vec3.x + this.#data[9] * vec3.y + this.#data[10] * vec3.z + this.#data[11];
@@ -88,7 +157,7 @@ class Matrix4 {
    * @returns 
    */
   multiplyVector4(vec4) {
-    const result = _Vector.Vector4.zero;
+    const result = {};
     result.x = this.#data[0] * vec4.x + this.#data[1] * vec4.y + this.#data[2] * vec4.z + this.#data[3] * vec4.w;
     result.y = this.#data[4] * vec4.x + this.#data[5] * vec4.y + this.#data[6] * vec4.z + this.#data[7] * vec4.w;
     result.z = this.#data[8] * vec4.x + this.#data[9] * vec4.y + this.#data[10] * vec4.z + this.#data[11] * vec4.w;

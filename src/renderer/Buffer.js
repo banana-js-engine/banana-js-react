@@ -40,20 +40,17 @@ export class VertexBuffer {
         this.#stride = 0;
         this.#attributes = [];
 
-        this.bind();
+        this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, this.#bufferId);
+        this.#gl.bufferData(this.#gl.ARRAY_BUFFER, this.#data, this.#usage);
     }
 
     /**
      * Binds the vertex buffer
      */
-    bind(updateData = true) {
+    bind() {
         this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, this.#bufferId);
-        if (updateData) {
-            this.#gl.bufferData(this.#gl.ARRAY_BUFFER, this.#data, this.#usage);
-        }
-        this.linkAttributes();
     }
-
+    
     /**
      * Unbinds the vertex buffer
      */
@@ -61,9 +58,13 @@ export class VertexBuffer {
         this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, null);
     }
 
+    setData() {
+        this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, this.#bufferId);
+        this.#gl.bufferSubData(this.#gl.ARRAY_BUFFER, 0, this.#data);
+    }
+
     bindBase() {
         this.#gl.bindBufferBase(this.#gl.TRANSFORM_FEEDBACK_BUFFER, 0, this.#bufferId);
-        this.linkAttributes();
     }
     
     unbindBase() {
@@ -131,16 +132,20 @@ export class IndexBuffer {
 
         this.#bufferId = this.#gl.createBuffer();
         this.#data = data;
-        this.bind();
+        this.setData();
     }
 
     bind() {
         this.#gl.bindBuffer(this.#gl.ELEMENT_ARRAY_BUFFER, this.#bufferId);
-        this.#gl.bufferData(this.#gl.ELEMENT_ARRAY_BUFFER, this.#data, this.#gl.STATIC_DRAW);
     }
 
     unbind() {
         this.#gl.bindBuffer(this.#gl.ELEMENT_ARRAY_BUFFER, null);
+    }
+
+    setData() {
+        this.#gl.bindBuffer(this.#gl.ELEMENT_ARRAY_BUFFER, this.#bufferId);
+        this.#gl.bufferData(this.#gl.ELEMENT_ARRAY_BUFFER, this.#data, this.#gl.STATIC_DRAW);
     }
 
     getCount() {

@@ -40,22 +40,21 @@ export default function GameApp() {
                     <Script import={import('./scripts/FPSScript')}/>
                 </GameObject>
                 {/* <GameObject name="Square">
-                    <Transform position={[0, 3, 0]} scale={[0.5, 0.5, 1]}/>
-                    <Circle color={Color.orange}/>
-                    <BoxBody2D isStatic gravityScale={0}/>
-                </GameObject>
+                    <Transform/>
+                    <Sprite color={Color.orange}/>
+                </GameObject> */}
                 <GameObject>
                     <Transform/>
                     <Sprite/>
                     <BoxBody2D isStatic={false} gravityScale={0}/>
                     <Script import={import('./scripts/MovementScript')} speed={0.1} test={incrementCount}/>
                     <Text color={Color.red}>{count}</Text>
-                </GameObject> */}
-                <GameObject name="Book">
+                </GameObject>
+                {/* <GameObject name="Book">
                     <Transform position={[0, 0, 0]} scale={[1, -1, 1]}/>
                     <Mesh objSrc="defaultModels/Banana.obj" mtlSrc="defaultModels/Banana.mtl"/>
                     <Script import={import('./scripts/RotateScript')} speed={100}/>
-                </GameObject>
+                </GameObject> */}
 
                 <GameObject name="Particle">
                     <Transform position={[3, 0, 0]}/>
@@ -68,6 +67,11 @@ export default function GameApp() {
                     <Particle/>
                 </GameObject>
                 
+                <GameObject name="Book">
+                    <Transform position={[0, 0, 0]} scale={[1, -1, 1]}/>
+                    <Mesh objSrc="TallBuilding01.obj" mtlSrc="TallBuilding01.mtl"/>
+                    <Script import={import('./scripts/RotateScript')} speed={100}/>
+                </GameObject>
             </Scene>
         </Game>
     );

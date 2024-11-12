@@ -15,6 +15,7 @@ var _bananaMath = require("../math/bananaMath");
 var _AnimationClip = require("../renderer/AnimationClip");
 var _WavefrontParser = require("../renderer/WavefrontParser");
 var _GO = require("./GO");
+var _VertexArray = require("../renderer/VertexArray");
 class BaseComponent {
   gameObject;
 
@@ -956,6 +957,7 @@ class MeshComponent extends BaseComponent {
   #vertices;
   #material;
   #color;
+  #textureMaps;
   constructor(gameObject, objSrc, mtlSrc, color) {
     super(gameObject);
     this.#color = _Vector.Vector4.one;
@@ -965,11 +967,15 @@ class MeshComponent extends BaseComponent {
       const c = this._processParameterVector4(color);
       this.#color.set(c.r, c.g, c.b, c.a);
     }
+    this.#textureMaps = new Map();
     _WavefrontParser.WavefrontParser.parseObj(objSrc).then(vertices => {
       this.#vertices = vertices;
     });
     _WavefrontParser.WavefrontParser.parseMtl(mtlSrc).then(material => {
       this.#material = material;
+      for (const value of Object.values(material)) {
+        this.#textureMaps.set(value.diffuseMapSrc, new _Texture.Texture(this.gameObject.gl, value.diffuseMapSrc));
+      }
     });
   }
   get type() {
@@ -983,6 +989,9 @@ class MeshComponent extends BaseComponent {
   }
   get color() {
     return this.#color;
+  }
+  getMap(src) {
+    return this.#textureMaps.get(src);
   }
 }
 exports.MeshComponent = MeshComponent;
@@ -1100,6 +1109,7 @@ class LightComponent extends BaseComponent {
 exports.LightComponent = LightComponent;
 class ParticleComponent extends BaseComponent {
   #buffers;
+  #vaos;
   #read;
   #write;
   #birthRate;
@@ -1127,6 +1137,11 @@ class ParticleComponent extends BaseComponent {
     this.#buffers = [];
     this.#buffers.push(new _Buffer.VertexBuffer(this.gameObject.gl, this.#initialParticleData));
     this.#buffers.push(new _Buffer.VertexBuffer(this.gameObject.gl, this.#initialParticleData));
+    this.#vaos = [];
+    this.#vaos.push(new _VertexArray.VertexArray(this.gameObject.gl));
+    this.#vaos.push(new _VertexArray.VertexArray(this.gameObject.gl));
+    this.#vaos.push(new _VertexArray.VertexArray(this.gameObject.gl));
+    this.#vaos.push(new _VertexArray.VertexArray(this.gameObject.gl));
     this.#minTheta = minTheta ? minTheta : Math.PI / 2 - 0.5;
     this.#maxTheta = maxTheta ? maxTheta : Math.PI / 2 + 0.5;
     this.#minSpeed = minSpeed ? minSpeed : 0.5;
@@ -1152,6 +1167,15 @@ class ParticleComponent extends BaseComponent {
   }
   get writeBuffer() {
     return this.#buffers[this.#write];
+  }
+  get read() {
+    return this.#read;
+  }
+  get write() {
+    return this.#write;
+  }
+  get vaos() {
+    return this.#vaos;
   }
   get maxCount() {
     return this.#particleCount;

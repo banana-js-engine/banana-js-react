@@ -4,6 +4,7 @@ import { Vector2, Vector3, Vector4 } from "../math/Vector";
 import { IndexBuffer, VertexBuffer } from "./Buffer";
 import { Shader } from "./Shader";
 import { Texture } from "./Texture";
+import { VertexArray } from "./VertexArray";
 
 class QuadVertex {
     position = null;
@@ -140,6 +141,11 @@ export class Renderer {
          */
         quadIB: null,
 
+        /**
+         * @type {VertexArray}
+         */
+        quadVAO: null,
+
         lineVertexCount: 0,
 
         /**
@@ -151,6 +157,11 @@ export class Renderer {
          * @type {VertexBuffer}
          */
         lineVB: null,
+
+        /**
+         * @type {VertexArray}
+         */
+        lineVAO: null,
 
         meshVertexCount: 0,
 
@@ -164,6 +175,11 @@ export class Renderer {
          */
         meshVB: null,
 
+        /**
+         * @type {VertexArray}
+         */
+        meshVAO: null,
+
         // particles
         /**
          * @type {Shader}
@@ -174,16 +190,6 @@ export class Renderer {
          * @type {Shader}
          */
         particleRenderShader: null,
-
-        particleUpdatePosition: -1,
-        particleUpdateAge: -1,
-        particleUpdateLife: -1,
-        particleUpdateVelocity: -1,
-
-        particleRenderPosition: -1,
-        particleRenderAge: -1,
-        particleRenderLife: -1,
-        particleRenderVelocity: -1,
 
         // texture data
         maxTextureSlotCount: -1,
@@ -292,6 +298,10 @@ export class Renderer {
         this.#renderData.quadVB.pushAttribute(quadCoords, 2);
         this.#renderData.quadVB.pushAttribute(quadIndex, 1);
 
+        this.#renderData.quadVAO = new VertexArray(this.#gl);
+        this.#renderData.quadVAO.VB = this.#renderData.quadVB;
+        this.#renderData.quadVAO.IB = this.#renderData.quadIB;
+
         // textures
         const samplers = [];
         for (let i = 0; i < this.#renderData.maxTextureSlotCount; i++) {
@@ -310,6 +320,9 @@ export class Renderer {
 
         this.#renderData.lineVB.pushAttribute(linePosition, 3);
         this.#renderData.lineVB.pushAttribute(lineColor, 4);
+
+        this.#renderData.lineVAO = new VertexArray(this.#gl);
+        this.#renderData.lineVAO.VB = this.#renderData.lineVB;
 
         // 3D
         this.#renderData.meshShader = new Shader(this.#gl, Shader.meshShaderPath);
@@ -334,6 +347,9 @@ export class Renderer {
         this.#renderData.meshVB.pushAttribute(meshSpecular, 3);
         this.#renderData.meshVB.pushAttribute(meshShininess, 1);
 
+        this.#renderData.meshVAO = new VertexArray(this.#gl);
+        this.#renderData.meshVAO.VB = this.#renderData.meshVB;
+
         this.#renderData.meshShader.setUniform1iv('u_Textures', samplers);
 
         // particles
@@ -348,16 +364,58 @@ export class Renderer {
         this.#renderData.particleRenderShader = new Shader(this.#gl, Shader.particleRenderShaderPath);
 
         this.#renderData.textureSlots[1] = this.#renderData.noiseTexture;
+    }
 
-        this.#renderData.particleUpdatePosition = this.#renderData.particleUpdateShader.getAttributeLocation('a_Position');
-        this.#renderData.particleUpdateAge = this.#renderData.particleUpdateShader.getAttributeLocation('a_Age');
-        this.#renderData.particleUpdateLife = this.#renderData.particleUpdateShader.getAttributeLocation('a_Life');
-        this.#renderData.particleUpdateVelocity = this.#renderData.particleUpdateShader.getAttributeLocation('a_Velocity');
+    /**
+     * 
+     * @param {ParticleComponent[]} particles 
+     */
+    particlesInit(particles) {
+        for (let i = 0; i < particles.length; i++) {
+            const vaos = particles[i].vaos;
+            const readBuffer = particles[i].readBuffer;
+            const writeBuffer = particles[i].writeBuffer;
 
-        this.#renderData.particleRenderPosition = this.#renderData.particleRenderShader.getAttributeLocation('a_Position');
-        this.#renderData.particleRenderAge = this.#renderData.particleRenderShader.getAttributeLocation('a_Age');
-        this.#renderData.particleRenderLife = this.#renderData.particleRenderShader.getAttributeLocation('a_Life');
-        this.#renderData.particleRenderVelocity = this.#renderData.particleRenderShader.getAttributeLocation('a_Velocity');
+            const particleUpdatePosition = this.#renderData.particleUpdateShader.getAttributeLocation('a_Position');
+            const particleUpdateAge = this.#renderData.particleUpdateShader.getAttributeLocation('a_Age');
+            const particleUpdateLife = this.#renderData.particleUpdateShader.getAttributeLocation('a_Life');
+            const particleUpdateVelocity = this.#renderData.particleUpdateShader.getAttributeLocation('a_Velocity');
+
+            readBuffer.pushAttribute(particleUpdatePosition, 3);
+            readBuffer.pushAttribute(particleUpdateAge, 1);
+            readBuffer.pushAttribute(particleUpdateLife, 1);
+            readBuffer.pushAttribute(particleUpdateVelocity, 3);
+            vaos[0].VB = readBuffer;
+
+            writeBuffer.pushAttribute(particleUpdatePosition, 3);
+            writeBuffer.pushAttribute(particleUpdateAge, 1);
+            writeBuffer.pushAttribute(particleUpdateLife, 1);
+            writeBuffer.pushAttribute(particleUpdateVelocity, 3);
+            vaos[1].VB = writeBuffer;
+
+            readBuffer.clearAttributes();
+            writeBuffer.clearAttributes();
+
+            const particleRenderPosition = this.#renderData.particleRenderShader.getAttributeLocation('a_Position');
+            const particleRenderAge = this.#renderData.particleRenderShader.getAttributeLocation('a_Age');
+            const particleRenderLife = this.#renderData.particleRenderShader.getAttributeLocation('a_Life');
+            const particleRenderVelocity = this.#renderData.particleRenderShader.getAttributeLocation('a_Velocity');
+
+            readBuffer.pushAttribute(particleRenderPosition, 3);
+            readBuffer.pushAttribute(particleRenderAge, 1);
+            readBuffer.pushAttribute(particleRenderLife, 1);
+            readBuffer.pushAttribute(particleRenderVelocity, 3);
+            vaos[2].VB = readBuffer;
+
+            writeBuffer.pushAttribute(particleRenderPosition, 3);
+            writeBuffer.pushAttribute(particleRenderAge, 1);
+            writeBuffer.pushAttribute(particleRenderLife, 1);
+            writeBuffer.pushAttribute(particleRenderVelocity, 3);
+            vaos[3].VB = writeBuffer;
+
+            readBuffer.unbind();
+            writeBuffer.unbind();
+        }
     }
 
     /**
@@ -508,7 +566,7 @@ export class Renderer {
             let useTextureSlot = -1;
 
             if (material.diffuseMapSrc) {
-                const diffuseMap = new Texture(this.#gl, material.diffuseMapSrc);
+                const diffuseMap = mesh.getMap(material.diffuseMapSrc);
             
                 for (let i = 2; i < this.#renderData.textureSlotIndex; i++) {
                     if (this.#renderData.textureSlots[i] == diffuseMap) {
@@ -575,20 +633,7 @@ export class Renderer {
         this.#renderData.noiseTexture.bind(1);
         this.#renderData.particleUpdateShader.setUniform1i('u_RgNoise', 1);
 
-        particle.readBuffer.clearAttributes();
-        particle.writeBuffer.clearAttributes();
-
-        particle.readBuffer.pushAttribute(this.#renderData.particleUpdatePosition, 3);
-        particle.readBuffer.pushAttribute(this.#renderData.particleUpdateAge, 1);
-        particle.readBuffer.pushAttribute(this.#renderData.particleUpdateLife, 1);
-        particle.readBuffer.pushAttribute(this.#renderData.particleUpdateVelocity, 3);
-
-        particle.writeBuffer.pushAttribute(this.#renderData.particleUpdatePosition, 3);
-        particle.writeBuffer.pushAttribute(this.#renderData.particleUpdateAge, 1);
-        particle.writeBuffer.pushAttribute(this.#renderData.particleUpdateLife, 1);
-        particle.writeBuffer.pushAttribute(this.#renderData.particleUpdateVelocity, 3);
-
-        particle.readBuffer.bind(false);
+        particle.vaos[particle.read].bind();
         particle.writeBuffer.bindBase();
 
         this.#gl.enable(this.#gl.RASTERIZER_DISCARD);
@@ -602,26 +647,21 @@ export class Renderer {
         particle.writeBuffer.unbindBase();
         
         this.#renderData.particleRenderShader.bind();
-        particle.readBuffer.clearAttributes();
-        particle.readBuffer.pushAttribute(this.#renderData.particleRenderPosition, 3);
-        particle.readBuffer.pushAttribute(this.#renderData.particleRenderAge, 1);
-        particle.readBuffer.pushAttribute(this.#renderData.particleRenderLife, 1);
-        particle.readBuffer.pushAttribute(this.#renderData.particleRenderVelocity, 3);
-        particle.readBuffer.bind(false);
+        particle.vaos[particle.read + 2].bind();
         this.#gl.drawArrays(this.#gl.POINTS, 0, particle.bornParticleCount);
         particle.swapReadWrite();
     }
 
     #flush() {
-        if (this.#renderData.quadIndexCount > 0) {
-            for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
-                this.#renderData.textureSlots[i].bind(i);
-            }
+        for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
+            this.#renderData.textureSlots[i].bind(i);
+        }
 
+        if (this.#renderData.quadIndexCount > 0) {  
             this.#settings2d();
     
-            this.#renderData.quadIB.bind();
-            this.#renderData.quadVB.bind();
+            this.#renderData.quadVAO.bind();
+            this.#renderData.quadVAO.VB.setData();
             this.#renderData.quadShader.bind();
             this.#renderData.quadShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
             this.#gl.drawElements(this.#gl.TRIANGLES, this.#renderData.quadIndexCount, this.#gl.UNSIGNED_SHORT, 0);
@@ -629,19 +669,17 @@ export class Renderer {
         if (this.#renderData.lineVertexCount > 0) {
             this.#settings2d();
 
-            this.#renderData.lineVB.bind();
+            this.#renderData.lineVAO.bind();
+            this.#renderData.lineVAO.VB.setData();
             this.#renderData.lineShader.bind();
             this.#renderData.lineShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
             this.#gl.drawArrays(this.#gl.LINES, 0, this.#renderData.lineVertexCount);
         }
         if (this.#renderData.meshVertexCount > 0) {
-            for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
-                this.#renderData.textureSlots[i].bind(i);
-            }
-
             this.#settings3d();
     
-            this.#renderData.meshVB.bind();
+            this.#renderData.meshVAO.bind();
+            this.#renderData.meshVAO.VB.setData();
             this.#renderData.meshShader.bind();
             this.#renderData.meshShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
             this.#renderData.meshShader.setUniform3fv('u_CameraPosition', this.#sceneData.cameraPos.data);

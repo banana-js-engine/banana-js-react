@@ -16,6 +16,7 @@ var _Renderer = require("../renderer/Renderer");
 var _TextRenderer = require("../renderer/TextRenderer");
 var _Collisions = require("../physics/Collisions");
 var _SceneECS = require("../ecs/SceneECS");
+var _Matrix = require("../math/Matrix");
 /**
  * The class that controls the game-loop
  */
@@ -50,6 +51,7 @@ class Engine {
     this.#zeroCameraFlag = false;
     this.#multipleCameraFlag = false;
     _Input.Input.init();
+    _Matrix.Matrix4.init();
     _SceneManager.SceneManager.onSceneChanged = () => {
       this.#world2d.clear();
       this.#firstUpdate = true;
@@ -78,12 +80,14 @@ class Engine {
       return;
     }
     const goAnimators = activeScene.getComponents(_Types.ComponentType.Animator);
+    const goParticles = activeScene.getComponents(_Types.ComponentType.Particle);
     if (this.#firstUpdate) {
       for (let i = 0; i < goAnimators.length; i++) {
         if (goAnimators[i].startAnim) {
           goAnimators[i].playAnimation(goAnimators[i].startAnim);
         }
       }
+      this.#renderer.particlesInit(goParticles);
     }
     const goScripts = activeScene.getComponents(_Types.ComponentType.Script);
     for (let i = 0; i < goScripts.length; i++) {
@@ -180,7 +184,6 @@ class Engine {
       }
       this.#renderer.drawMesh(goMeshes[i]);
     }
-    const goParticles = activeScene.getComponents(_Types.ComponentType.Particle);
     for (let i = 0; i < goParticles.length; i++) {
       if (!goParticles[i].active) {
         continue;
