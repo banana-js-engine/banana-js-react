@@ -77,7 +77,7 @@ const createDesktopProject = (projectName) => {
         const packageJsonDesktop = {
             name: projectName,
             version: "1.0.0",
-            main: "src/index.js",
+            main: "build/index.js",
             scripts: {
                 start: "electron .",
                 "build": "babel src --out-dir build",
