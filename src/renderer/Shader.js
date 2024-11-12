@@ -15,8 +15,12 @@ export class Shader {
         return 'shader/line_shader.glsl';
     }
 
-    static get meshShaderPath() {
-        return 'shader/mesh_shader.glsl';
+    static get smallMeshShaderPath() {
+        return 'shader/small_mesh_shader.glsl';
+    }
+
+    static get largeMeshShaderPath() {
+        return 'shader/large_mesh_shader.glsl';
     }
 
     static get particleUpdateShaderPath() {

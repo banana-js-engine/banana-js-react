@@ -958,6 +958,9 @@ class MeshComponent extends BaseComponent {
   #material;
   #color;
   #textureMaps;
+  VAO;
+  VB;
+  vertexCount;
   constructor(gameObject, objSrc, mtlSrc, color) {
     super(gameObject);
     this.#color = _Vector.Vector4.one;
@@ -977,6 +980,7 @@ class MeshComponent extends BaseComponent {
         this.#textureMaps.set(value.diffuseMapSrc, new _Texture.Texture(this.gameObject.gl, value.diffuseMapSrc));
       }
     });
+    this.vertexCount = 0;
   }
   get type() {
     return _Types.ComponentType.Mesh;

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useRef, useState } from 'r
 import { Renderer } from '../renderer/Renderer';
 import { Engine } from '../core/Engine';
 import { TextRenderer } from '../renderer/TextRenderer';
+import { PlatformType } from '../core/Types';
 
 // gl context
 const GLContext = createContext(null);
@@ -24,6 +25,11 @@ export function useAudioContext() {
     return useContext(AudioContextContext);
 }
 
+/**
+ * 
+ * @param {{ name, width, height, platform }} props 
+ * @returns 
+ */
 export function Game(props) {
     // Refs
     const engineRef = useRef();
@@ -46,8 +52,8 @@ export function Game(props) {
 
         // set canvas size
         const canvas = document.getElementById('banana-canvas');
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = props.platform == PlatformType.Desktop ? props.width : width;
+        canvas.height = props.platform == PlatformType.Desktop ? props.height : height;
         canvas.addEventListener('contextmenu', event => {
             event.preventDefault();
         });
@@ -60,8 +66,8 @@ export function Game(props) {
 
         // 2d context
         const textCanvas = document.getElementById('banana-text');
-        textCanvas.width = width;
-        textCanvas.height = height;
+        textCanvas.width = props.platform == PlatformType.Desktop ? props.width : width;
+        textCanvas.height = props.platform == PlatformType.Desktop ? props.height : height;
         textCanvas.addEventListener('contextmenu', event => {
             event.preventDefault();
         });

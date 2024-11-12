@@ -16,6 +16,7 @@ import { Mesh } from "./components/Mesh";
 import { Light } from "./components/Light";
 import { UIText } from "./components/UIText";
 import { Particle } from "./components/Particle";
+import { PlatformType } from "./core/Types";
 
 export default function GameApp() {
     const [count, setCount] = useState(0);
@@ -25,7 +26,7 @@ export default function GameApp() {
     };
     
     return (
-        <Game name="Development" width={600} height={600}>
+        <Game name="Development" width={600} height={600} platform={PlatformType.Desktop}>
             <Scene>
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 0]}/>
@@ -43,13 +44,12 @@ export default function GameApp() {
                     <Transform/>
                     <Sprite color={Color.orange}/>
                 </GameObject> */}
-                <GameObject>
+                {/* <GameObject>
                     <Transform/>
-                    <Sprite/>
+                    <Cube/>
                     <BoxBody2D isStatic={false} gravityScale={0}/>
                     <Script import={import('./scripts/MovementScript')} speed={0.1} test={incrementCount}/>
-                    <Text color={Color.red}>{count}</Text>
-                </GameObject>
+                </GameObject> */}
                 {/* <GameObject name="Book">
                     <Transform position={[0, 0, 0]} scale={[1, -1, 1]}/>
                     <Mesh objSrc="defaultModels/Banana.obj" mtlSrc="defaultModels/Banana.mtl"/>
@@ -67,11 +67,17 @@ export default function GameApp() {
                     <Particle/>
                 </GameObject>
                 
-                <GameObject name="Book">
-                    <Transform position={[0, 0, 0]} scale={[1, -1, 1]}/>
+                {/* <GameObject name="Building">
+                    <Transform scale={[1, -1, 1]}/>
                     <Mesh objSrc="TallBuilding01.obj" mtlSrc="TallBuilding01.mtl"/>
                     <Script import={import('./scripts/RotateScript')} speed={100}/>
-                </GameObject>
+                </GameObject> */}
+
+                {/* <GameObject name="Chair">
+                    <Transform scale={[1, -1, 1]}/>
+                    <Mesh objSrc="Chair.obj" mtlSrc="Chair.mtl"/>
+                    <Script import={import('./scripts/RotateScript')} speed={100}/>
+                </GameObject> */}
             </Scene>
         </Game>
     );

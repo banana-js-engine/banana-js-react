@@ -46,7 +46,7 @@ class MeshVertex {
   get flat() {
     return [this.position.x, this.position.y, this.position.z, this.color.x, this.color.y, this.color.z, this.texCoord.x, this.texCoord.y, this.texIndex, this.normal.x, this.normal.y, this.normal.z, this.ambientColor.x, this.ambientColor.y, this.ambientColor.z, this.diffuseColor.x, this.diffuseColor.y, this.diffuseColor.z, this.specularColor.x, this.specularColor.y, this.specularColor.z, this.shininess];
   }
-  static vertexSize = 21;
+  static vertexSize = 22;
 }
 
 /**
@@ -97,6 +97,10 @@ class Renderer {
      * @type {Shader}
      */
     meshShader: null,
+    /**
+     * @type {Shader}
+     */
+    largeMeshShader: null,
     /**
      * @type {VertexBuffer}
      */
@@ -228,7 +232,7 @@ class Renderer {
     this.#renderData.lineVAO.VB = this.#renderData.lineVB;
 
     // 3D
-    this.#renderData.meshShader = new _Shader.Shader(this.#gl, _Shader.Shader.meshShaderPath);
+    this.#renderData.meshShader = new _Shader.Shader(this.#gl, _Shader.Shader.smallMeshShaderPath);
     this.#renderData.meshVB = new _Buffer.VertexBuffer(this.#gl, this.#renderData.maxVertices * MeshVertex.vertexSize);
     const meshPosition = this.#renderData.meshShader.getAttributeLocation('a_Position');
     const meshColor = this.#renderData.meshShader.getAttributeLocation('a_Color');
@@ -256,6 +260,8 @@ class Renderer {
     this.#renderData.particleUpdateShader = new _Shader.Shader(this.#gl, _Shader.Shader.particleUpdateShaderPath, ['v_Position', 'v_Age', 'v_Life', 'v_Velocity']);
     this.#renderData.particleRenderShader = new _Shader.Shader(this.#gl, _Shader.Shader.particleRenderShaderPath);
     this.#renderData.textureSlots[1] = this.#renderData.noiseTexture;
+    this.#renderData.largeMeshShader = new _Shader.Shader(this.#gl, _Shader.Shader.largeMeshShaderPath);
+    this.#renderData.largeMeshShader.setUniform1iv('u_Textures', samplers);
   }
 
   /**
@@ -409,6 +415,13 @@ class Renderer {
    * @param {MeshComponent} mesh 
    */
   drawMesh(mesh) {
+    if (mesh.vertices.length < 1000) {
+      this.#drawSmallMesh(mesh);
+    } else {
+      this.#drawLargeMesh(mesh);
+    }
+  }
+  #drawSmallMesh(mesh) {
     if (this.#renderData.meshVertexCount >= this.#renderData.maxVertices) {
       this.#flush();
     }
@@ -448,6 +461,80 @@ class Renderer {
       this.#renderData.meshVB.addVertex(this.#renderData.meshVertexCount, this.#meshVertex.flat);
       this.#renderData.meshVertexCount++;
     }
+  }
+  #drawLargeMesh(mesh) {
+    this.#settings3d();
+    const t = mesh.transform.transformMatrix;
+    this.#renderData.largeMeshShader.bind();
+    this.#renderData.largeMeshShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
+    this.#renderData.largeMeshShader.setUniformMatrix4fv('u_ModelMatrix', t.flat);
+    this.#renderData.largeMeshShader.setUniform3fv('u_CameraPosition', this.#sceneData.cameraPos.data);
+    this.#renderData.largeMeshShader.setUniform1i('u_LightCount', this.#sceneData.lights.length);
+    for (let i = 0; i < this.#sceneData.lights.length; i++) {
+      this.#renderData.largeMeshShader.setUniform3fv(`u_Lights[${i}].position`, this.#sceneData.lights[i].direction.data);
+      this.#renderData.largeMeshShader.setUniform3fv(`u_Lights[${i}].color`, this.#sceneData.lights[i].color.data);
+    }
+    if (mesh.VAO) {
+      mesh.VAO.bind();
+      this.#gl.drawArrays(this.#gl.TRIANGLES, 0, mesh.vertexCount);
+      return;
+    }
+    mesh.VB = new _Buffer.VertexBuffer(this.#gl, mesh.vertices.length * MeshVertex.vertexSize);
+    const meshPosition = this.#renderData.largeMeshShader.getAttributeLocation('a_Position');
+    const meshColor = this.#renderData.largeMeshShader.getAttributeLocation('a_Color');
+    const meshTexCoord = this.#renderData.largeMeshShader.getAttributeLocation('a_TexCoord');
+    const meshTexIndex = this.#renderData.largeMeshShader.getAttributeLocation('a_TexIndex');
+    const meshNormal = this.#renderData.largeMeshShader.getAttributeLocation('a_Normal');
+    const meshAmbient = this.#renderData.largeMeshShader.getAttributeLocation('a_Ambient');
+    const meshDiffuse = this.#renderData.largeMeshShader.getAttributeLocation('a_Diffuse');
+    const meshSpecular = this.#renderData.largeMeshShader.getAttributeLocation('a_Specular');
+    const meshShininess = this.#renderData.largeMeshShader.getAttributeLocation('a_Shininess');
+    mesh.VB.pushAttribute(meshPosition, 3);
+    mesh.VB.pushAttribute(meshColor, 3);
+    mesh.VB.pushAttribute(meshTexCoord, 2);
+    mesh.VB.pushAttribute(meshTexIndex, 1);
+    mesh.VB.pushAttribute(meshNormal, 3);
+    mesh.VB.pushAttribute(meshAmbient, 3);
+    mesh.VB.pushAttribute(meshDiffuse, 3);
+    mesh.VB.pushAttribute(meshSpecular, 3);
+    mesh.VB.pushAttribute(meshShininess, 1);
+    mesh.VAO = new _VertexArray.VertexArray(this.#gl);
+    mesh.VAO.VB = mesh.VB;
+    const parsedObj = mesh.vertices;
+    const parsedMtl = mesh.material;
+    for (let i = 0; i < parsedObj.length; i++) {
+      const material = parsedMtl[parsedObj[i].material];
+      let useTextureSlot = -1;
+      if (material.diffuseMapSrc) {
+        const diffuseMap = mesh.getMap(material.diffuseMapSrc);
+        for (let i = 2; i < this.#renderData.textureSlotIndex; i++) {
+          if (this.#renderData.textureSlots[i] == diffuseMap) {
+            useTextureSlot = i;
+            break;
+          }
+        }
+        if (useTextureSlot === -1) {
+          useTextureSlot = this.#renderData.textureSlotIndex;
+          this.#renderData.textureSlots[this.#renderData.textureSlotIndex++] = diffuseMap;
+        }
+      } else {
+        useTextureSlot = 0;
+      }
+      this.#meshVertex.position = parsedObj[i].position;
+      this.#meshVertex.color = parsedObj[i].color ? parsedObj[i].color : mesh.color;
+      this.#meshVertex.texCoord = parsedObj[i].texCoord;
+      this.#meshVertex.texIndex = useTextureSlot;
+      this.#meshVertex.normal = parsedObj[i].normal;
+      this.#meshVertex.ambientColor = material && material.ambientColor ? material.ambientColor : _Vector.Vector3.one;
+      this.#meshVertex.diffuseColor = material && material.diffuseColor ? material.diffuseColor : _Vector.Vector3.one;
+      this.#meshVertex.specularColor = material && material.specularColor ? material.specularColor : _Vector.Vector3.zero;
+      this.#meshVertex.shininess = material && material.shininess ? material.shininess : 1.0;
+      mesh.VB.addVertex(mesh.vertexCount, this.#meshVertex.flat);
+      mesh.vertexCount++;
+    }
+    mesh.VAO.bind();
+    mesh.VAO.VB.setData();
+    this.#gl.drawArrays(this.#gl.TRIANGLES, 0, mesh.VB.count);
   }
 
   /**
@@ -533,11 +620,11 @@ class Renderer {
     this.#gl.clearColor(r, g, b, a);
   }
   #settings2d() {
-    this.#gl.disable(this.#gl.CULL_FACE);
+    // this.#gl.disable(this.#gl.CULL_FACE);
     this.#gl.disable(this.#gl.DEPTH_TEST);
   }
   #settings3d() {
-    this.#gl.enable(this.#gl.CULL_FACE);
+    // this.#gl.enable(this.#gl.CULL_FACE);
     this.#gl.enable(this.#gl.DEPTH_TEST);
   }
 }

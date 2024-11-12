@@ -25,7 +25,7 @@ export { Transform } from './components/Transform';
 export { UIText } from './components/UIText';
 
 export { Input } from './core/Input';
-export { ComponentType, ShapeType, KeyCode, MouseButtonCode, GamepadButtonCode } from './core/Types';
+export *  from './core/Types';
 
 export { ScriptComponent } from './ecs/Component';
 export { SceneManager } from './ecs/SceneManager';
@@ -38,3 +38,44 @@ export { Color } from './renderer/Color';
 
 // const App = require('./GameApp');
 // require('react-dom/client').createRoot(document.getElementById('root')).render(<App.default/>);
+
+// electron.js
+// const { app, BrowserWindow } = require('electron');
+// const path = require('path');
+
+// let mainWindow;
+
+// function createWindow() {
+//     mainWindow = new BrowserWindow({
+//         width: 600,
+//         height: 600,
+//         webPreferences: {
+//             preload: path.join(__dirname, 'preloader.js'),  // Preload script for renderer
+//             contextIsolation: false,                       // Needed for using require in renderer
+//             nodeIntegration: true,                         // Allow Node.js in renderer
+//         },
+//         autoHideMenuBar: true,
+//         resizable: false,
+//         roundedCorners: true,
+//     });
+
+//     const startURL = `file://${path.join(__dirname, '../public/index.html')}`;
+
+//     mainWindow.loadURL(startURL);
+
+//     mainWindow.on('closed', () => (mainWindow = null));
+// }
+
+// app.on('ready', createWindow);
+
+// app.on('window-all-closed', () => {
+//     if (process.platform !== 'darwin') {
+//         app.quit();
+//     }
+// });
+
+// app.on('activate', () => {
+//     if (mainWindow === null) {
+//         createWindow();
+//     }
+// });

@@ -6,14 +6,14 @@ const { execSync } = require('child_process');
 const fse = require('fs-extra'); // 'fs-extra' makes file copying easy
 
 // Function to create a new project directory and files
-const createProject = (projectName) => {
+const createWebProject = (projectName) => {
     const projectPath = path.join(process.cwd(), projectName);
   
     if (!fs.existsSync(projectPath)) {
         fs.mkdirSync(projectPath);
         console.log(`Creating project at ${projectPath}`);
 
-        const packageJson = {
+        const packageJsonWeb = {
             name: projectName,
             version: "1.0.0",
             main: "src/index.js", // or whatever your main file is
@@ -42,12 +42,12 @@ const createProject = (projectName) => {
                 "last 1 safari version"
               ]
             }
-        };
+        };        
 
-        fs.writeFileSync(path.join(projectPath, 'package.json'), JSON.stringify(packageJson, null, 2));
+        fs.writeFileSync(path.join(projectPath, 'package.json'), JSON.stringify(packageJsonWeb, null, 2));
 
         // Copy template files from the `templates` directory
-        const templateDir = path.join(__dirname, '../template');
+        const templateDir = path.join(__dirname, '../template-web');
         fse.copySync(templateDir, projectPath);
 
         // Replace placeholders in specific files (e.g., App.js)
@@ -65,6 +65,65 @@ const createProject = (projectName) => {
         console.error(`Project ${projectName} already exists.`);
     }
 };
+
+// Function to create a new project directory and files
+const createDesktopProject = (projectName) => {
+    const projectPath = path.join(process.cwd(), projectName);
+  
+    if (!fs.existsSync(projectPath)) {
+        fs.mkdirSync(projectPath);
+        console.log(`Creating project at ${projectPath}`);
+
+        const packageJsonDesktop = {
+            name: projectName,
+            version: "1.0.0",
+            main: "src/index.js",
+            scripts: {
+                start: "electron .",
+                "package": "electron-packager . --out=dist --overwrite"
+            },
+            dependencies: {
+                react: "^18.0.0",
+                "react-dom": "^18.0.0",
+                "@mfkucuk/banana-js": "latest"
+            },
+            devDependencies: {
+                "electron-packager": "^17.0.0",
+                "electron": "^33.2.0"
+            },
+            "browserslist": {
+              "production": [
+                ">0.2%",
+                "not dead",
+                "not op_mini all"
+              ],
+              "development": [
+                "last 1 chrome version",
+                "last 1 firefox version",
+                "last 1 safari version"
+              ]
+            }
+        };
+        
+
+        fs.writeFileSync(path.join(projectPath, 'package.json'), JSON.stringify(packageJsonDesktop, null, 2));
+
+        // Copy template files from the `templates` directory
+        const templateDir = path.join(__dirname, '../template-desktop');
+        fse.copySync(templateDir, projectPath);
+
+        // Replace placeholders in specific files (e.g., App.js)
+        const appJsPath = path.join(projectPath, 'src', 'GameApp.js');
+        let appJsContent = fs.readFileSync(appJsPath, 'utf8');
+        appJsContent = appJsContent.replace('{process.env.PROJECT_NAME}', projectName);
+        fs.writeFileSync(appJsPath, appJsContent);
+
+        // Install additional dependencies
+        installPackages(projectPath, ['react', 'react-dom']);
+    } else {
+        console.error(`Project ${projectName} already exists.`);
+    }
+};
   
 // Function to install npm packages
 const installPackages = (projectPath, packages) => {
@@ -77,25 +136,34 @@ const installPackages = (projectPath, packages) => {
     }
 };
   
-// Function to link the local main package (if needed)
-const linkLocalPackage = (projectPath, packageName) => {
-    console.log(`Linking local package ${packageName}...`);
-    try {
-        execSync(`npm link ${packageName}`, { cwd: projectPath, stdio: 'inherit' });
-        console.log(`Linked ${packageName} successfully.`);
-    } catch (err) {
-        console.error(`Error linking package ${packageName}:`, err);
-    }
-};
-  
 // Get project name from command-line arguments
 console.log('Fetching project name...');
+
 
 const args = process.argv.slice(2);
 const projectName = args[0];  // This fetches 'sandbox'
 
-if (!projectName) {
-    console.error('Please provide a project name.');
+if (args.length == 1) {
+    const projectName = args[0];  // This fetches 'sandbox'
+
+    if (!projectName) {
+        console.error('Please provide a project name.');
+        process.exit(1);
+    }
+    createWebProject(projectName);
+} else if (args.length == 2) {
+    const flag = args[0];
+    const projectName = args[1];
+
+    if (flag == '--desktop') {
+        createDesktopProject(projectName);
+    } else if (flag == '--web') {
+        createWebProject(projectName);
+    } else {
+        console.error('Unknown platform');
+        process.exit(1);
+    }
+} else {
+    console.error('Example usage: create-bananajs-app --desktop hello-world');
     process.exit(1);
 }
-createProject(projectName);

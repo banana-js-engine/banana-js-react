@@ -3,7 +3,12 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ShapeType = exports.MouseButtonCode = exports.KeyCode = exports.GamepadButtonCode = exports.ComponentType = void 0;
+exports.ShapeType = exports.PlatformType = exports.MouseButtonCode = exports.KeyCode = exports.GamepadButtonCode = exports.ComponentType = void 0;
+const PlatformType = exports.PlatformType = {
+  Web: 'web',
+  Desktop: 'desktop'
+};
+
 /**
  * Types of all components
  */

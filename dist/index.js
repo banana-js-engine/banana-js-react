@@ -30,11 +30,6 @@ var _exportNames = {
   Transform: true,
   UIText: true,
   Input: true,
-  ComponentType: true,
-  ShapeType: true,
-  KeyCode: true,
-  MouseButtonCode: true,
-  GamepadButtonCode: true,
   ScriptComponent: true,
   SceneManager: true,
   Matrix4: true,
@@ -85,12 +80,6 @@ Object.defineProperty(exports, "Color", {
     return _Color.Color;
   }
 });
-Object.defineProperty(exports, "ComponentType", {
-  enumerable: true,
-  get: function () {
-    return _Types.ComponentType;
-  }
-});
 Object.defineProperty(exports, "Cube", {
   enumerable: true,
   get: function () {
@@ -121,12 +110,6 @@ Object.defineProperty(exports, "GameObject", {
     return _GameObject.GameObject;
   }
 });
-Object.defineProperty(exports, "GamepadButtonCode", {
-  enumerable: true,
-  get: function () {
-    return _Types.GamepadButtonCode;
-  }
-});
 Object.defineProperty(exports, "Icosphere", {
   enumerable: true,
   get: function () {
@@ -137,12 +120,6 @@ Object.defineProperty(exports, "Input", {
   enumerable: true,
   get: function () {
     return _Input.Input;
-  }
-});
-Object.defineProperty(exports, "KeyCode", {
-  enumerable: true,
-  get: function () {
-    return _Types.KeyCode;
   }
 });
 Object.defineProperty(exports, "Light", {
@@ -161,12 +138,6 @@ Object.defineProperty(exports, "Mesh", {
   enumerable: true,
   get: function () {
     return _Mesh.Mesh;
-  }
-});
-Object.defineProperty(exports, "MouseButtonCode", {
-  enumerable: true,
-  get: function () {
-    return _Types.MouseButtonCode;
   }
 });
 Object.defineProperty(exports, "OrthographicCamera", {
@@ -209,12 +180,6 @@ Object.defineProperty(exports, "ScriptComponent", {
   enumerable: true,
   get: function () {
     return _Component.ScriptComponent;
-  }
-});
-Object.defineProperty(exports, "ShapeType", {
-  enumerable: true,
-  get: function () {
-    return _Types.ShapeType;
   }
 });
 Object.defineProperty(exports, "Sphere", {
@@ -298,6 +263,17 @@ var _Transform = require("./components/Transform");
 var _UIText = require("./components/UIText");
 var _Input = require("./core/Input");
 var _Types = require("./core/Types");
+Object.keys(_Types).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
+  if (key in exports && exports[key] === _Types[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _Types[key];
+    }
+  });
+});
 var _Component = require("./ecs/Component");
 var _SceneManager = require("./ecs/SceneManager");
 var _bananaMath = require("./math/bananaMath");
@@ -315,3 +291,43 @@ Object.keys(_bananaMath).forEach(function (key) {
 var _Matrix = require("./math/Matrix");
 var _Vector = require("./math/Vector");
 var _Color = require("./renderer/Color");
+// const App = require('./GameApp');
+// require('react-dom/client').createRoot(document.getElementById('root')).render(<App.default/>);
+
+// electron.js
+const {
+  app,
+  BrowserWindow
+} = require('electron');
+const path = require('path');
+let mainWindow;
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 600,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, 'preloader.js'),
+      // Preload script for renderer
+      contextIsolation: false,
+      // Needed for using require in renderer
+      nodeIntegration: true // Allow Node.js in renderer
+    },
+    autoHideMenuBar: true,
+    resizable: false,
+    roundedCorners: true
+  });
+  const startURL = `file://${path.join(__dirname, '../public/index.html')}`;
+  mainWindow.loadURL(startURL);
+  mainWindow.on('closed', () => mainWindow = null);
+}
+app.on('ready', createWindow);
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+app.on('activate', () => {
+  if (mainWindow === null) {
+    createWindow();
+  }
+});

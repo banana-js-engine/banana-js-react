@@ -154,6 +154,11 @@ declare module "@mfkucuk/banana-js" {
         static isGamepadConnected(gamepad?: number): boolean;
     }
 
+    export const enum PlatformType {
+        Web = 'web',
+        Desktop = 'desktop'
+    }
+
     export const enum ComponentType {
         None = -1,
         Transform = 0,

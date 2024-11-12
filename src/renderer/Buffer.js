@@ -44,6 +44,10 @@ export class VertexBuffer {
         this.#gl.bufferData(this.#gl.ARRAY_BUFFER, this.#data, this.#usage);
     }
 
+    get count() {
+        return Math.floor(this.#data.length / (this.#stride / 4));
+    }
+
     /**
      * Binds the vertex buffer
      */

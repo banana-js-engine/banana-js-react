@@ -1,3 +1,8 @@
+export const PlatformType = {
+    Web: 'web',
+    Desktop: 'desktop'
+};
+
 /**
  * Types of all components
  */

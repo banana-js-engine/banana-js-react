@@ -11,6 +11,7 @@ var _react = _interopRequireWildcard(require("react"));
 var _Renderer = require("../renderer/Renderer");
 var _Engine = require("../core/Engine");
 var _TextRenderer = require("../renderer/TextRenderer");
+var _Types = require("../core/Types");
 var _jsxRuntime = require("react/jsx-runtime");
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
@@ -31,6 +32,12 @@ const AudioContextContext = /*#__PURE__*/(0, _react.createContext)(null);
 function useAudioContext() {
   return (0, _react.useContext)(AudioContextContext);
 }
+
+/**
+ * 
+ * @param {{ name, width, height, platform }} props 
+ * @returns 
+ */
 function Game(props) {
   // Refs
   const engineRef = (0, _react.useRef)();
@@ -51,8 +58,8 @@ function Game(props) {
 
     // set canvas size
     const canvas = document.getElementById('banana-canvas');
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = props.platform == _Types.PlatformType.Desktop ? props.width : width;
+    canvas.height = props.platform == _Types.PlatformType.Desktop ? props.height : height;
     canvas.addEventListener('contextmenu', event => {
       event.preventDefault();
     });
@@ -66,8 +73,8 @@ function Game(props) {
 
     // 2d context
     const textCanvas = document.getElementById('banana-text');
-    textCanvas.width = width;
-    textCanvas.height = height;
+    textCanvas.width = props.platform == _Types.PlatformType.Desktop ? props.width : width;
+    textCanvas.height = props.platform == _Types.PlatformType.Desktop ? props.height : height;
     textCanvas.addEventListener('contextmenu', event => {
       event.preventDefault();
     });
