@@ -27,7 +27,7 @@ export class VertexBuffer {
          */
         if (data instanceof Float32Array) {
             this.#data = data;
-            this.#usage = this.#gl.STATIC_DRAW;
+            this.#usage = this.#gl.STREAM_DRAW;
         } else if (typeof data == 'number') {
             this.#data = new Float32Array(data);
             this.#usage = this.#gl.DYNAMIC_DRAW
@@ -46,9 +46,11 @@ export class VertexBuffer {
     /**
      * Binds the vertex buffer
      */
-    bind() {
+    bind(updateData = true) {
         this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, this.#bufferId);
-        this.#gl.bufferData(this.#gl.ARRAY_BUFFER, this.#data, this.#usage);
+        if (updateData) {
+            this.#gl.bufferData(this.#gl.ARRAY_BUFFER, this.#data, this.#usage);
+        }
         this.linkAttributes();
     }
 
@@ -57,6 +59,15 @@ export class VertexBuffer {
      */
     unbind() {
         this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, null);
+    }
+
+    bindBase() {
+        this.#gl.bindBufferBase(this.#gl.TRANSFORM_FEEDBACK_BUFFER, 0, this.#bufferId);
+        this.linkAttributes();
+    }
+    
+    unbindBase() {
+        this.#gl.bindBufferBase(this.#gl.TRANSFORM_FEEDBACK_BUFFER, 0, null);
     }
 
     /**
@@ -82,6 +93,11 @@ export class VertexBuffer {
         });
 
         this.#offset = 0;
+    }
+
+    clearAttributes() {
+        this.#attributes = [];
+        this.#stride = 0;
     }
 
     /**

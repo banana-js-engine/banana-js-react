@@ -27,6 +27,7 @@ var _exportNames = {
   Text: true,
   Torus: true,
   Transform: true,
+  UIText: true,
   Input: true,
   ComponentType: true,
   ShapeType: true,
@@ -239,6 +240,12 @@ Object.defineProperty(exports, "Transform", {
     return _Transform.Transform;
   }
 });
+Object.defineProperty(exports, "UIText", {
+  enumerable: true,
+  get: function () {
+    return _UIText.UIText;
+  }
+});
 Object.defineProperty(exports, "Vector2", {
   enumerable: true,
   get: function () {
@@ -280,6 +287,7 @@ var _Sprite = require("./components/Sprite");
 var _Text = require("./components/Text");
 var _Torus = require("./components/Torus");
 var _Transform = require("./components/Transform");
+var _UIText = require("./components/UIText");
 var _Input = require("./core/Input");
 var _Types = require("./core/Types");
 var _Component = require("./ecs/Component");

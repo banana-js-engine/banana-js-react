@@ -64,19 +64,12 @@ export class Engine {
         this.#tick();
     }
 
-    #tick = () => {
-        const currentFrameTime = performance.now();
-        const deltaTimeMs = currentFrameTime - this.#previousFrameTime;
-        let deltaTimeS = deltaTimeMs / 1000;
-
-        this.#previousFrameTime = currentFrameTime;
-
-        deltaTimeS = clamp(deltaTimeS, 0.01, 0.1);
-
+    #tick = (timestamp) => {
+        const deltaTimeS = clamp((timestamp - this.#previousFrameTime) / 1000, 0.01, 0.1);
+        this.#previousFrameTime = timestamp;
         if (this.#running) {
             requestAnimationFrame(this.#tick);
         }
-
         this.#update(deltaTimeS);
     }
 
@@ -96,10 +89,9 @@ export class Engine {
             return;
         }
 
+        const goAnimators = activeScene.getComponents(ComponentType.Animator);
+
         if (this.#firstUpdate) {
-
-            const goAnimators = activeScene.getComponents(ComponentType.Animator);
-
             for (let i = 0; i < goAnimators.length; i++) {
                 if (goAnimators[i].startAnim) {
                     goAnimators[i].playAnimation(goAnimators[i].startAnim);
@@ -120,9 +112,9 @@ export class Engine {
             }
         }
 
-        const goBodies = activeScene.getComponents(ComponentType.Body2D);
-
         this.#world2d.clear();
+
+        const goBodies = activeScene.getComponents(ComponentType.Body2D);
 
         for (let i = 0; i < goBodies.length; i++) {
             if (goBodies[i].active) {
@@ -193,8 +185,6 @@ export class Engine {
             console.warn('No light in the scene');
         }
 
-        const goAnimators = activeScene.getComponents(ComponentType.Animator);
-
         for (let i = 0; i < goAnimators.length; i++) {
             if (goAnimators[i].active) {
                 goAnimators[i].step(dt);
@@ -260,7 +250,7 @@ export class Engine {
             }
         }
         
-        this.#renderer.endScene();
+        this.#renderer.endScene(dt);
 
         this.#textRenderer.clear();
 
@@ -269,6 +259,14 @@ export class Engine {
         for (let i = 0; i < goTexts.length; i++) {
             if (goTexts[i].active) {
                 this.#textRenderer.drawText(goTexts[i]);
+            }
+        }
+
+        const goUITexts = activeScene.getComponents(ComponentType.UIText);
+
+        for (let i = 0; i < goUITexts.length; i++) {
+            if (goUITexts[i].active) {
+                this.#textRenderer.drawUIText(goUITexts[i]);
             }
         }
 

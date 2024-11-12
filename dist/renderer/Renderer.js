@@ -32,7 +32,7 @@ class LineVertex {
   }
   static vertexSize = 7;
 }
-class CubeVertex {
+class MeshVertex {
   position;
   color;
   texCoord;
@@ -83,15 +83,46 @@ class Renderer {
      * @type {VertexBuffer}
      */
     lineVB: null,
-    cubeVertexCount: 0,
+    meshVertexCount: 0,
     /**
      * @type {Shader}
      */
-    cubeShader: null,
+    meshShader: null,
     /**
      * @type {VertexBuffer}
      */
-    cubeVB: null,
+    meshVB: null,
+    // particles
+    /**
+     * @type {Shader}
+     */
+    particleUpdateShader: null,
+    /**
+     * @type {Shader}
+     */
+    particleRenderShader: null,
+    /**
+     * @type {VertexBuffer}
+     */
+    particleVB_1: null,
+    /**
+     * @type {VertexBuffer}
+     */
+    particleVB_2: null,
+    particleCount: 2000,
+    minAge: 1.01,
+    maxAge: 1.15,
+    bornParticles: 0,
+    birthRate: 100,
+    totalTime: 0,
+    minTheta: Math.PI / 2.0 - 0.5,
+    maxTheta: Math.PI / 2.0 + 0.5,
+    minSpeed: 0.5,
+    maxSpeed: 1.0,
+    gravity: _Vector.Vector3.down,
+    origin: _Vector.Vector3.zero,
+    readIndex: 0,
+    writeIndex: 1,
     // texture data
     maxTextureSlotCount: -1,
     textureSlotIndex: 1,
@@ -102,7 +133,11 @@ class Renderer {
     /**
      * @type {Texture}
      */
-    whiteTexture: null
+    whiteTexture: null,
+    /**
+     * @type {Texture}
+     */
+    noiseTexture: null
   }))();
   #sceneData = (() => ({
     /**
@@ -134,9 +169,9 @@ class Renderer {
   #lineVertex;
 
   /**
-   * @type {CubeVertex} vertex of type line (used for caching reasons)
+   * @type {MeshVertex} vertex of type mesh (used for caching reasons)
    */
-  #cubeVertex;
+  #meshVertex;
 
   /**
    * 
@@ -149,11 +184,12 @@ class Renderer {
     this.#gl.blendFunc(this.#gl.SRC_ALPHA, this.#gl.ONE_MINUS_SRC_ALPHA);
     this.#renderData.maxTextureSlotCount = this.#gl.getParameter(this.#gl.MAX_TEXTURE_IMAGE_UNITS);
     this.#renderData.whiteTexture = new _Texture.Texture(this.#gl); // without src, we'll get the default 1x1 white texture
+    this.#renderData.noiseTexture = _Texture.Texture.createNoiseTexture(this.#gl);
 
     // initialize vertices of each type
     this.#quadVertex = new QuadVertex();
     this.#lineVertex = new LineVertex();
-    this.#cubeVertex = new CubeVertex();
+    this.#meshVertex = new MeshVertex();
 
     // prepare indices for index buffer creation
     let indices = new Uint16Array(this.#renderData.maxIndices);
@@ -196,27 +232,35 @@ class Renderer {
     this.#renderData.lineVB.pushAttribute(lineColor, 4);
 
     // 3D
-    this.#renderData.cubeShader = new _Shader.Shader(this.#gl, _Shader.Shader.cubeShaderPath);
-    this.#renderData.cubeVB = new _Buffer.VertexBuffer(this.#gl, this.#renderData.maxVertices * CubeVertex.vertexSize);
-    const cubePosition = this.#renderData.cubeShader.getAttributeLocation('a_Position');
-    const cubeColor = this.#renderData.cubeShader.getAttributeLocation('a_Color');
-    const cubeTexCoord = this.#renderData.cubeShader.getAttributeLocation('a_TexCoord');
-    const cubeTexIndex = this.#renderData.cubeShader.getAttributeLocation('a_TexIndex');
-    const cubeNormal = this.#renderData.cubeShader.getAttributeLocation('a_Normal');
-    const cubeAmbient = this.#renderData.cubeShader.getAttributeLocation('a_Ambient');
-    const cubeDiffuse = this.#renderData.cubeShader.getAttributeLocation('a_Diffuse');
-    const cubeSpecular = this.#renderData.cubeShader.getAttributeLocation('a_Specular');
-    const cubeShininess = this.#renderData.cubeShader.getAttributeLocation('a_Shininess');
-    this.#renderData.cubeVB.pushAttribute(cubePosition, 3);
-    this.#renderData.cubeVB.pushAttribute(cubeColor, 3);
-    this.#renderData.cubeVB.pushAttribute(cubeTexCoord, 2);
-    this.#renderData.cubeVB.pushAttribute(cubeTexIndex, 1);
-    this.#renderData.cubeVB.pushAttribute(cubeNormal, 3);
-    this.#renderData.cubeVB.pushAttribute(cubeAmbient, 3);
-    this.#renderData.cubeVB.pushAttribute(cubeDiffuse, 3);
-    this.#renderData.cubeVB.pushAttribute(cubeSpecular, 3);
-    this.#renderData.cubeVB.pushAttribute(cubeShininess, 1);
-    this.#renderData.cubeShader.setUniform1iv('u_Textures', samplers);
+    this.#renderData.meshShader = new _Shader.Shader(this.#gl, _Shader.Shader.meshShaderPath);
+    this.#renderData.meshVB = new _Buffer.VertexBuffer(this.#gl, this.#renderData.maxVertices * MeshVertex.vertexSize);
+    const meshPosition = this.#renderData.meshShader.getAttributeLocation('a_Position');
+    const meshColor = this.#renderData.meshShader.getAttributeLocation('a_Color');
+    const meshTexCoord = this.#renderData.meshShader.getAttributeLocation('a_TexCoord');
+    const meshTexIndex = this.#renderData.meshShader.getAttributeLocation('a_TexIndex');
+    const meshNormal = this.#renderData.meshShader.getAttributeLocation('a_Normal');
+    const meshAmbient = this.#renderData.meshShader.getAttributeLocation('a_Ambient');
+    const meshDiffuse = this.#renderData.meshShader.getAttributeLocation('a_Diffuse');
+    const meshSpecular = this.#renderData.meshShader.getAttributeLocation('a_Specular');
+    const meshShininess = this.#renderData.meshShader.getAttributeLocation('a_Shininess');
+    this.#renderData.meshVB.pushAttribute(meshPosition, 3);
+    this.#renderData.meshVB.pushAttribute(meshColor, 3);
+    this.#renderData.meshVB.pushAttribute(meshTexCoord, 2);
+    this.#renderData.meshVB.pushAttribute(meshTexIndex, 1);
+    this.#renderData.meshVB.pushAttribute(meshNormal, 3);
+    this.#renderData.meshVB.pushAttribute(meshAmbient, 3);
+    this.#renderData.meshVB.pushAttribute(meshDiffuse, 3);
+    this.#renderData.meshVB.pushAttribute(meshSpecular, 3);
+    this.#renderData.meshVB.pushAttribute(meshShininess, 1);
+    this.#renderData.meshShader.setUniform1iv('u_Textures', samplers);
+
+    // particles
+    this.#renderData.particleUpdateShader = new _Shader.Shader(this.#gl, _Shader.Shader.particleUpdateShaderPath, ['v_Position', 'v_Age', 'v_Life', 'v_Velocity']);
+    this.#renderData.particleRenderShader = new _Shader.Shader(this.#gl, _Shader.Shader.particleRenderShaderPath);
+    const initialParticleData = new Float32Array(this.#initialParticleData());
+    this.#renderData.particleVB_1 = new _Buffer.VertexBuffer(this.#gl, initialParticleData);
+    this.#renderData.particleVB_2 = new _Buffer.VertexBuffer(this.#gl, initialParticleData);
+    this.#renderData.textureSlots[1] = this.#renderData.noiseTexture;
   }
 
   /**
@@ -241,8 +285,8 @@ class Renderer {
       this.#sceneData.lights.push(lights[i]);
     }
   }
-  endScene() {
-    this.#flush();
+  endScene(dt) {
+    this.#flush(dt);
   }
 
   /**
@@ -256,7 +300,7 @@ class Renderer {
     }
     let useTextureSlot = -1;
     if (sprite.texture) {
-      for (let i = 1; i < this.#renderData.textureSlotIndex; i++) {
+      for (let i = 2; i < this.#renderData.textureSlotIndex; i++) {
         if (this.#renderData.textureSlots[i] == sprite.texture) {
           useTextureSlot = i;
           break;
@@ -329,7 +373,7 @@ class Renderer {
    * @param {MeshComponent} mesh 
    */
   drawMesh(transform, mesh) {
-    if (this.#renderData.cubeVertexCount >= this.#renderData.maxVertices) {
+    if (this.#renderData.meshVertexCount >= this.#renderData.maxVertices) {
       this.#flush();
     }
     const t = transform.transformMatrix;
@@ -340,7 +384,7 @@ class Renderer {
       let useTextureSlot = -1;
       if (material.diffuseMapSrc) {
         const diffuseMap = new _Texture.Texture(this.#gl, material.diffuseMapSrc);
-        for (let i = 1; i < this.#renderData.textureSlotIndex; i++) {
+        for (let i = 2; i < this.#renderData.textureSlotIndex; i++) {
           if (this.#renderData.textureSlots[i] == diffuseMap) {
             useTextureSlot = i;
             break;
@@ -356,20 +400,20 @@ class Renderer {
       } else {
         useTextureSlot = 0;
       }
-      this.#cubeVertex.position = t.multiplyVector3(parsedObj[i].position);
-      this.#cubeVertex.color = parsedObj[i].color ? parsedObj[i].color : mesh.color;
-      this.#cubeVertex.texCoord = parsedObj[i].texCoord;
-      this.#cubeVertex.texIndex = useTextureSlot;
-      this.#cubeVertex.normal = t.multiplyVector3(parsedObj[i].normal);
-      this.#cubeVertex.ambientColor = material && material.ambientColor ? material.ambientColor : _Vector.Vector3.one;
-      this.#cubeVertex.diffuseColor = material && material.diffuseColor ? material.diffuseColor : _Vector.Vector3.one;
-      this.#cubeVertex.specularColor = material && material.specularColor ? material.specularColor : _Vector.Vector3.zero;
-      this.#cubeVertex.shininess = material && material.shininess ? material.shininess : 1.0;
-      this.#renderData.cubeVB.addVertex(this.#renderData.cubeVertexCount, this.#cubeVertex.flat);
-      this.#renderData.cubeVertexCount++;
+      this.#meshVertex.position = t.multiplyVector3(parsedObj[i].position);
+      this.#meshVertex.color = parsedObj[i].color ? parsedObj[i].color : mesh.color;
+      this.#meshVertex.texCoord = parsedObj[i].texCoord;
+      this.#meshVertex.texIndex = useTextureSlot;
+      this.#meshVertex.normal = t.multiplyVector3(parsedObj[i].normal);
+      this.#meshVertex.ambientColor = material && material.ambientColor ? material.ambientColor : _Vector.Vector3.one;
+      this.#meshVertex.diffuseColor = material && material.diffuseColor ? material.diffuseColor : _Vector.Vector3.one;
+      this.#meshVertex.specularColor = material && material.specularColor ? material.specularColor : _Vector.Vector3.zero;
+      this.#meshVertex.shininess = material && material.shininess ? material.shininess : 1.0;
+      this.#renderData.meshVB.addVertex(this.#renderData.meshVertexCount, this.#meshVertex.flat);
+      this.#renderData.meshVertexCount++;
     }
   }
-  #flush() {
+  #flush(dt) {
     if (this.#renderData.quadIndexCount > 0) {
       for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
         this.#renderData.textureSlots[i].bind(i);
@@ -388,29 +432,81 @@ class Renderer {
       this.#renderData.lineShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
       this.#gl.drawArrays(this.#gl.LINES, 0, this.#renderData.lineVertexCount);
     }
-    if (this.#renderData.cubeVertexCount > 0) {
+    if (this.#renderData.meshVertexCount > 0) {
       for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
         this.#renderData.textureSlots[i].bind(i);
       }
       this.#settings3d();
-      this.#renderData.cubeVB.bind();
-      this.#renderData.cubeShader.bind();
-      this.#renderData.cubeShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
-      this.#renderData.cubeShader.setUniform3fv('u_CameraPosition', this.#sceneData.cameraPos.data);
-      this.#renderData.cubeShader.setUniform1i('u_LightCount', this.#sceneData.lights.length);
+      this.#renderData.meshVB.bind();
+      this.#renderData.meshShader.bind();
+      this.#renderData.meshShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
+      this.#renderData.meshShader.setUniform3fv('u_CameraPosition', this.#sceneData.cameraPos.data);
+      this.#renderData.meshShader.setUniform1i('u_LightCount', this.#sceneData.lights.length);
       for (let i = 0; i < this.#sceneData.lights.length; i++) {
-        this.#renderData.cubeShader.setUniform3fv(`u_Lights[${i}].position`, this.#sceneData.lights[i].direction.data);
-        this.#renderData.cubeShader.setUniform3fv(`u_Lights[${i}].color`, this.#sceneData.lights[i].color.data);
+        this.#renderData.meshShader.setUniform3fv(`u_Lights[${i}].position`, this.#sceneData.lights[i].direction.data);
+        this.#renderData.meshShader.setUniform3fv(`u_Lights[${i}].color`, this.#sceneData.lights[i].color.data);
       }
-      this.#gl.drawArrays(this.#gl.TRIANGLES, 0, this.#renderData.cubeVertexCount);
+      this.#gl.drawArrays(this.#gl.TRIANGLES, 0, this.#renderData.meshVertexCount);
     }
+    this.#settings2d();
+    if (this.#renderData.bornParticles < this.#renderData.particleCount) {
+      this.#renderData.bornParticles = Math.min(this.#renderData.particleCount, Math.floor(this.#renderData.bornParticles + this.#renderData.birthRate * dt));
+    }
+    this.#renderData.particleUpdateShader.bind();
+    this.#renderData.particleUpdateShader.setUniform1f('u_TimeDelta', dt);
+    this.#renderData.particleUpdateShader.setUniform3fv('u_Gravity', this.#renderData.gravity.data);
+    this.#renderData.particleUpdateShader.setUniform3fv('u_Origin', this.#renderData.origin.data);
+    this.#renderData.particleUpdateShader.setUniform1f('u_MinTheta', this.#renderData.minTheta);
+    this.#renderData.particleUpdateShader.setUniform1f('u_MaxTheta', this.#renderData.maxTheta);
+    this.#renderData.particleUpdateShader.setUniform1f('u_MinSpeed', this.#renderData.minSpeed);
+    this.#renderData.particleUpdateShader.setUniform1f('u_MaxSpeed', this.#renderData.maxSpeed);
+    this.#renderData.totalTime += dt;
+    this.#renderData.noiseTexture.bind(1);
+    this.#renderData.particleUpdateShader.setUniform1i('u_RgNoise', 1);
+    this.#renderData.particleVB_1.clearAttributes();
+    this.#renderData.particleVB_2.clearAttributes();
+    const particleUpdatePosition = this.#renderData.particleUpdateShader.getAttributeLocation('a_Position');
+    const particleUpdateAge = this.#renderData.particleUpdateShader.getAttributeLocation('a_Age');
+    const particleUpdateLife = this.#renderData.particleUpdateShader.getAttributeLocation('a_Life');
+    const particleUpdateVelocity = this.#renderData.particleUpdateShader.getAttributeLocation('a_Velocity');
+    this.#renderData.particleVB_1.pushAttribute(particleUpdatePosition, 3);
+    this.#renderData.particleVB_1.pushAttribute(particleUpdateAge, 1);
+    this.#renderData.particleVB_1.pushAttribute(particleUpdateLife, 1);
+    this.#renderData.particleVB_1.pushAttribute(particleUpdateVelocity, 3);
+    this.#renderData.particleVB_2.pushAttribute(particleUpdatePosition, 3);
+    this.#renderData.particleVB_2.pushAttribute(particleUpdateAge, 1);
+    this.#renderData.particleVB_2.pushAttribute(particleUpdateLife, 1);
+    this.#renderData.particleVB_2.pushAttribute(particleUpdateVelocity, 3);
+    const buffers = [this.#renderData.particleVB_1, this.#renderData.particleVB_2];
+    buffers[this.#renderData.readIndex].bind(false);
+    buffers[this.#renderData.writeIndex].bindBase();
+    this.#gl.enable(this.#gl.RASTERIZER_DISCARD);
+    this.#gl.beginTransformFeedback(this.#gl.POINTS);
+    this.#gl.drawArrays(this.#gl.POINTS, 0, this.#renderData.bornParticles);
+    this.#gl.endTransformFeedback();
+    this.#gl.disable(this.#gl.RASTERIZER_DISCARD);
+    buffers[this.#renderData.writeIndex].unbindBase();
+    buffers[this.#renderData.readIndex].clearAttributes();
+    this.#renderData.particleRenderShader.bind();
+    const particleRenderPosition = this.#renderData.particleRenderShader.getAttributeLocation('a_Position');
+    const particleRenderAge = this.#renderData.particleRenderShader.getAttributeLocation('a_Age');
+    const particleRenderLife = this.#renderData.particleRenderShader.getAttributeLocation('a_Life');
+    const particleRenderVelocity = this.#renderData.particleRenderShader.getAttributeLocation('a_Velocity');
+    buffers[this.#renderData.readIndex].pushAttribute(particleRenderPosition, 3);
+    buffers[this.#renderData.readIndex].pushAttribute(particleRenderAge, 1);
+    buffers[this.#renderData.readIndex].pushAttribute(particleRenderLife, 1);
+    buffers[this.#renderData.readIndex].pushAttribute(particleRenderVelocity, 3);
+    buffers[this.#renderData.readIndex].bind(false);
+    this.#gl.drawArrays(this.#gl.POINTS, 0, this.#renderData.bornParticles);
+    this.#renderData.readIndex = 1 - this.#renderData.readIndex;
+    this.#renderData.writeIndex = 1 - this.#renderData.writeIndex;
 
     // reset batch
     this.#renderData.quadVertexCount = 0;
     this.#renderData.quadIndexCount = 0;
-    this.#renderData.textureSlotIndex = 1;
+    this.#renderData.textureSlotIndex = 2;
     this.#renderData.lineVertexCount = 0;
-    this.#renderData.cubeVertexCount = 0;
+    this.#renderData.meshVertexCount = 0;
   }
   clear() {
     this.#gl.clear(this.#gl.COLOR_BUFFER_BIT | this.#gl.DEPTH_BUFFER_BIT);
@@ -425,6 +521,26 @@ class Renderer {
   #settings3d() {
     this.#gl.enable(this.#gl.CULL_FACE);
     this.#gl.enable(this.#gl.DEPTH_TEST);
+  }
+  #initialParticleData() {
+    var data = [];
+    for (var i = 0; i < this.#renderData.particleCount; ++i) {
+      // position
+      data.push(0.0);
+      data.push(0.0);
+      data.push(0.0);
+      var life = this.#renderData.minAge + Math.random() * (this.#renderData.maxAge - this.#renderData.minAge);
+      // set age to max. life + 1 to ensure the particle gets initialized
+      // on first invocation of particle update shader
+      data.push(life + 1);
+      data.push(life);
+
+      // velocity
+      data.push(0.0);
+      data.push(0.0);
+      data.push(0.0);
+    }
+    return data;
   }
 }
 exports.Renderer = Renderer;

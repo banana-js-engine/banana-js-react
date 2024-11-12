@@ -1,4 +1,4 @@
-import { TextComponent } from "../ecs/Component";
+import { TextComponent, UITextComponent } from "../ecs/Component";
 
 export class TextRenderer {
 
@@ -21,6 +21,19 @@ export class TextRenderer {
         const position = textComponent.position;
 
         this.#ctx.fillText(textComponent.text, position.x, position.y);
+    }
+
+    /**
+     * 
+     * @param {UITextComponent} uiTextComponent 
+     */
+    drawUIText(uiTextComponent) {
+        this.#ctx.font = `${uiTextComponent.fontSize}px ${uiTextComponent.fontFamily}`;
+        this.#ctx.fillStyle = uiTextComponent.color.hex;
+
+        const position = uiTextComponent.position;
+
+        this.#ctx.fillText(uiTextComponent.text, position.x, position.y);
     }
 
     clear() {

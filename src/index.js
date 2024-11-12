@@ -21,6 +21,7 @@ export { Sprite } from './components/Sprite';
 export { Text } from './components/Text';
 export { Torus } from './components/Torus';
 export { Transform } from './components/Transform';
+export { UIText } from './components/UIText';
 
 export { Input } from './core/Input';
 export { ComponentType, ShapeType, KeyCode, MouseButtonCode, GamepadButtonCode } from './core/Types';

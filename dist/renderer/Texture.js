@@ -36,6 +36,25 @@ class Texture {
     this.#image.addEventListener('load', this.#onImageLoaded);
     Texture.#textureCache.set(src, this);
   }
+  static createNoiseTexture(gl) {
+    const noiseTexture = new Texture(gl);
+    noiseTexture.bind(1);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RG8, 512, 512, 0, gl.RG, gl.UNSIGNED_BYTE, this.#randomRGData(512, 512));
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    noiseTexture.unbind();
+    return noiseTexture;
+  }
+  static #randomRGData(size_x, size_y) {
+    var d = [];
+    for (var i = 0; i < size_x * size_y; ++i) {
+      d.push(Math.random() * 255.0);
+      d.push(Math.random() * 255.0);
+    }
+    return new Uint8Array(d);
+  }
   get width() {
     return this.#image.width;
   }

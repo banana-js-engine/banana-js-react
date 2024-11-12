@@ -13,103 +13,96 @@ class WavefrontParser {
     const texCoords = [];
     const normals = [];
     const colors = [];
-    const lines = text.split('\n');
     let currentMaterial = "";
-    for (let i = 0; i < lines.length; i++) {
-      const words = lines[i].split(' ');
-      if (words[0] == 'v') {
-        const x = Number(words[1]);
-        const y = Number(words[2]);
-        const z = Number(words[3]);
-        if (words.length > 4) {
-          const r = Number(words[4]);
-          const g = Number(words[5]);
-          const b = Number(words[6]);
-          colors.push(new _Vector.Vector3(r, g, b));
-        } else {
-          colors.push(null);
-        }
-        positions.push(new _Vector.Vector3(x, y, z));
-      } else if (words[0] == 'vt') {
-        const x = Number(words[1]);
-        const y = Number(words[2]);
-        texCoords.push(new _Vector.Vector2(x, y));
-      } else if (words[0] == 'vn') {
-        const x = Number(words[1]);
-        const y = Number(words[2]);
-        const z = Number(words[3]);
-        normals.push(new _Vector.Vector3(x, y, z));
-      } else if (words[0] == 'f') {
-        const indices = [];
-        for (let i = 1; i < words.length; i++) {
-          indices.push(words[i].split('/'));
-        }
-        for (let i = 1; i < indices.length - 1; i++) {
-          vertices.push({
-            'position': positions[indices[0][0] - 1],
-            'color': colors[indices[0][0] - 1],
-            'texCoord': texCoords[indices[0][1] - 1],
-            'normal': normals[indices[0][2] - 1],
-            'material': currentMaterial
-          });
-          vertices.push({
-            'position': positions[indices[i][0] - 1],
-            'color': colors[indices[i][0] - 1],
-            'texCoord': texCoords[indices[i][1] - 1],
-            'normal': normals[indices[i][2] - 1],
-            'material': currentMaterial
-          });
-          vertices.push({
-            'position': positions[indices[i + 1][0] - 1],
-            'color': colors[indices[i + 1][0] - 1],
-            'texCoord': texCoords[indices[i + 1][1] - 1],
-            'normal': normals[indices[i + 1][2] - 1],
-            'material': currentMaterial
-          });
-        }
-      } else if (words[0] == 'usemtl') {
-        currentMaterial = words[1];
+    const lines = text.split('\n');
+    for (const line of lines) {
+      const words = line.trim().split(/\s+/); // Trim and handle multiple spaces
+
+      switch (words[0]) {
+        case 'v':
+          {
+            const x = Number(words[1]);
+            const y = Number(words[2]);
+            const z = Number(words[3]);
+            positions.push(new _Vector.Vector3(x, y, z));
+            if (words.length > 4) {
+              colors.push(new _Vector.Vector3(Number(words[4]), Number(words[5]), Number(words[6])));
+            } else {
+              colors.push(null);
+            }
+            break;
+          }
+        case 'vt':
+          {
+            texCoords.push(new _Vector.Vector2(Number(words[1]), Number(words[2])));
+            break;
+          }
+        case 'vn':
+          {
+            normals.push(new _Vector.Vector3(Number(words[1]), Number(words[2]), Number(words[3])));
+            break;
+          }
+        case 'f':
+          {
+            const indices = words.slice(1).map(word => word.split('/'));
+            for (let i = 1; i < indices.length - 1; i++) {
+              vertices.push(...[0, i, i + 1].map(index => ({
+                position: positions[indices[index][0] - 1],
+                color: colors[indices[index][0] - 1],
+                texCoord: indices[index][1] ? texCoords[indices[index][1] - 1] : null,
+                normal: indices[index][2] ? normals[indices[index][2] - 1] : null,
+                material: currentMaterial
+              })));
+            }
+            break;
+          }
+        case 'usemtl':
+          currentMaterial = words[1];
+          break;
       }
     }
     return vertices;
   }
   static async parseMtl(src) {
     const text = await this.#readFileAsText(src);
-    const material = {};
+    const materials = {};
     const lines = text.split('\n');
-    let currentMaterial = '';
-    for (let i = 0; i < lines.length; i++) {
-      const words = lines[i].split(' ');
-      if (words[0] == 'Ka') {
-        const x = Number(words[1]);
-        const y = Number(words[2]);
-        const z = Number(words[3]);
-        material[currentMaterial].ambientColor = new _Vector.Vector3(x, y, z);
-      } else if (words[0] == 'Kd') {
-        const x = Number(words[1]);
-        const y = Number(words[2]);
-        const z = Number(words[3]);
-        material[currentMaterial].diffuseColor = new _Vector.Vector3(x, y, z);
-      } else if (words[0] == 'Ks') {
-        const x = Number(words[1]);
-        const y = Number(words[2]);
-        const z = Number(words[3]);
-        material[currentMaterial].specularColor = new _Vector.Vector3(x, y, z);
-      } else if (words[0] == 'Ns') {
-        material[currentMaterial].shininess = Number(words[1]);
-      } else if (words[0] == 'newmtl') {
-        currentMaterial = words[1];
-        material[currentMaterial] = {};
-      } else if (words[0] == 'map_Kd') {
-        material[currentMaterial].diffuseMapSrc = words[1];
+    let currentMaterial = "";
+    for (const line of lines) {
+      const words = line.trim().split(/\s+/);
+      switch (words[0]) {
+        case 'newmtl':
+          currentMaterial = words[1];
+          materials[currentMaterial] = {};
+          break;
+        case 'Ka':
+          materials[currentMaterial].ambientColor = new _Vector.Vector3(Number(words[1]), Number(words[2]), Number(words[3]));
+          break;
+        case 'Kd':
+          materials[currentMaterial].diffuseColor = new _Vector.Vector3(Number(words[1]), Number(words[2]), Number(words[3]));
+          break;
+        case 'Ks':
+          materials[currentMaterial].specularColor = new _Vector.Vector3(Number(words[1]), Number(words[2]), Number(words[3]));
+          break;
+        case 'Ns':
+          materials[currentMaterial].shininess = Number(words[1]);
+          break;
+        case 'map_Kd':
+          materials[currentMaterial].diffuseMapSrc = words[1];
+          break;
       }
     }
-    return material;
+    return materials;
   }
   static async #readFileAsText(src) {
-    const response = await fetch(src);
-    const content = await response.text();
-    return content;
+    try {
+      const response = await fetch(src);
+      if (!response.ok) throw new Error(`Failed to fetch ${src}: ${response.statusText}`);
+      return await response.text();
+    } catch (error) {
+      console.error(`Error reading file: ${error.message}`);
+      return "";
+    }
   }
 }
 exports.WavefrontParser = WavefrontParser;

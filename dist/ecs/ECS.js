@@ -5,112 +5,71 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ECS = void 0;
 class ECS {
-  #count;
-  #list;
-  #component;
-  constructor() {
-    this.#count = 0;
-    this.#list = [];
-    this.#component = {};
-  }
-  #generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      const r = Math.random() * 16 | 0,
-        v = c === 'x' ? r : r & 0x3 | 0x8;
-      return v.toString(16);
-    });
+  #nextGameObjectId = 0;
+  #gameObjects = (() => new Set())();
+  #component = {};
+  #generateId() {
+    return `entity-${this.#nextGameObjectId++}`;
   }
   create() {
-    const id = this.#generateUUID();
-    this.#list[this.#count++] = id;
+    const id = this.#generateId();
+    this.#gameObjects.add(id);
     return id;
   }
   createWithId(id) {
-    this.#list[this.#count++] = id;
+    this.#gameObjects.add(id);
     return id;
   }
   release(entity) {
-    const index = this.#list.indexOf(entity);
-    if (index === -1) {
-      return;
-    }
-    this.#list.splice(index, 1);
-    this.#count--;
+    if (!this.#gameObjects.has(entity)) return;
+    this.#gameObjects.delete(entity);
 
-    // Remove all components associated with the entity
-    Object.values(this.#component).forEach(componentMap => {
-      if (componentMap[entity]) {
-        componentMap[entity] = {};
-      }
-    });
+    // Efficiently remove all components associated with the entity
+    for (const componentMap of Object.values(this.#component)) {
+      delete componentMap[entity];
+    }
   }
   valid(entity) {
-    return this.#list.indexOf(entity) !== -1;
+    return this.#gameObjects.has(entity);
   }
   getAllEntities() {
-    return this.#list;
+    return Array.from(this.#gameObjects);
   }
-
-  // component functions
   emplace(entity, component) {
-    if (!this.valid(entity)) {
-      return;
-    }
-    if (!this.#component[component.type]) {
-      this.#component[component.type] = {};
-    }
-    this.#component[component.type][entity] = component;
+    if (!this.valid(entity)) return;
+    const {
+      type
+    } = component;
+    (this.#component[type] ??= {})[entity] = component;
     return component;
   }
   remove(entity, componentType) {
-    if (!this.valid(entity) || !this.#component[componentType]) {
-      return;
-    }
-    delete this.#component[componentType][entity];
+    if (!this.valid(entity)) return;
+    const componentMap = this.#component[componentType];
+    if (componentMap) delete componentMap[entity];
   }
   clear() {
-    this.#list = [];
-    this.#count = 0;
+    this.#gameObjects.clear();
     this.#component = {};
   }
   has(entity, componentType) {
-    if (!this.#component[componentType]) {
-      this.#component[componentType] = {};
-    }
-    return this.#component[componentType][entity] != null;
+    return !!this.#component[componentType]?.[entity];
   }
   get(entity, componentType) {
-    if (!this.valid(entity) || !this.#component[componentType]) {
-      return;
-    }
-    return this.#component[componentType][entity] || null;
+    return this.#component[componentType]?.[entity] ?? null;
   }
   getAll(componentType) {
-    if (!this.#component[componentType]) {
-      return [];
-    }
-    return Object.values(this.#component[componentType]);
+    return this.#component[componentType] ? Object.values(this.#component[componentType]) : [];
   }
   getAllWithEntity(componentType) {
-    if (!this.#component[componentType]) {
-      return {};
-    }
-    return this.#component[componentType];
+    return this.#component[componentType] ?? {};
   }
   group() {
-    for (var _len = arguments.length, componentType = new Array(_len), _key = 0; _key < _len; _key++) {
-      componentType[_key] = arguments[_key];
+    for (var _len = arguments.length, componentTypes = new Array(_len), _key = 0; _key < _len; _key++) {
+      componentTypes[_key] = arguments[_key];
     }
-    const entities = this.#list.filter(entity => componentType.every(componentType => this.#component[componentType] && this.#component[componentType][entity]));
-    const groupedComponents = [];
-    for (let i = 0; i < entities.length; i++) {
-      groupedComponents.push([]);
-      for (let j = 0; j < componentType.length; j++) {
-        const component = this.get(entities[i], componentType[j]);
-        groupedComponents[i].push(component);
-      }
-    }
-    return groupedComponents;
+    const gameObjects = Array.from(this.#gameObjects).filter(entity => componentTypes.every(type => this.#component[type]?.[entity]));
+    return gameObjects.map(entity => componentTypes.map(type => this.#component[type][entity]));
   }
 }
 exports.ECS = ECS;

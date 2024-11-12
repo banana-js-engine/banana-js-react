@@ -1167,6 +1167,61 @@ export class TextComponent extends BaseComponent {
     }
 }
 
+export class UITextComponent extends BaseComponent {
+
+    #text;
+    #color;
+    #fontFamily;
+    #fontSize;
+    #position
+
+    constructor(gameObject, text, color, fontFamily, fontSize, x, y) {
+        super(gameObject);
+
+        this.#text = text ? text : '';
+        
+        this.#color = color ? color : Color.black;
+        this.#fontFamily = fontFamily ? fontFamily : 'sans-serif';
+        this.#fontSize = fontSize ? fontSize : 10;
+        this.#position = Vector2.zero;
+
+        if (x) {
+            this.#position.x = x;
+        }
+        if (y) {
+            this.#position.y = y;
+        }
+    }
+
+    get type() {
+        return ComponentType.UIText;
+    }
+
+    get text() {
+        return this.#text;
+    }
+
+    set text(newText) {
+        this.#text = newText;
+    }
+
+    get color() {
+        return this.#color;
+    }
+
+    get fontFamily() {
+        return this.#fontFamily;
+    }
+
+    get fontSize() {
+        return this.#fontSize;
+    }
+
+    get position() {
+        return this.#position; 
+    }
+}
+
 export class LightComponent extends BaseComponent {
 
     #direction;

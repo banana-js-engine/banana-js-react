@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
+exports.UITextComponent = exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
 var _Matrix = require("../math/Matrix");
 var _Vector = require("../math/Vector");
 var _AABB = require("../physics/AABB");
@@ -1020,6 +1020,49 @@ class TextComponent extends BaseComponent {
   }
 }
 exports.TextComponent = TextComponent;
+class UITextComponent extends BaseComponent {
+  #text;
+  #color;
+  #fontFamily;
+  #fontSize;
+  #position;
+  constructor(gameObject, text, color, fontFamily, fontSize, x, y) {
+    super(gameObject);
+    this.#text = text ? text : '';
+    this.#color = color ? color : _Color.Color.black;
+    this.#fontFamily = fontFamily ? fontFamily : 'sans-serif';
+    this.#fontSize = fontSize ? fontSize : 10;
+    this.#position = _Vector.Vector2.zero;
+    if (x) {
+      this.#position.x = x;
+    }
+    if (y) {
+      this.#position.y = y;
+    }
+  }
+  get type() {
+    return _Types.ComponentType.UIText;
+  }
+  get text() {
+    return this.#text;
+  }
+  set text(newText) {
+    this.#text = newText;
+  }
+  get color() {
+    return this.#color;
+  }
+  get fontFamily() {
+    return this.#fontFamily;
+  }
+  get fontSize() {
+    return this.#fontSize;
+  }
+  get position() {
+    return this.#position;
+  }
+}
+exports.UITextComponent = UITextComponent;
 class LightComponent extends BaseComponent {
   #direction;
   #color;

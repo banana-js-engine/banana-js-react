@@ -117,6 +117,14 @@ declare module "@mfkucuk/banana-js" {
         scale   : [number, number, number] | Vector3,
     }): void;
 
+    export function UIText(props: {
+        color: [number, number, number, number] | Color,
+        fontFamily: string,
+        fontSize: number,
+        x: number,
+        y: number
+    }): void;
+
     // Classes
     export class Input {
         // Properties
@@ -147,12 +155,77 @@ declare module "@mfkucuk/banana-js" {
         Animator = 7,
         Mesh = 8,
         Text = 9,
+        UIText = 10,
+        Light = 11,
     }
     
     export const enum ShapeType {
         Box = 0,
         Circle = 1,
     }
+
+    export const enum KeyCode {
+        UpArrow = 'arrowup',
+        DownArrow = 'arrowdown',
+        LeftArrow = 'arrowleft',
+        RightArrow = 'arrowright',
+        Space = ' ',
+        Escape = 'escape',
+        Enter = 'enter',
+        A = 'a',
+        B = 'b',
+        C = 'c',
+        D = 'd',
+        E = 'e',
+        F = 'f',
+        G = 'g',
+        H = 'h',
+        I = 'i',
+        J = 'j',
+        K = 'k',
+        L = 'l',
+        M = 'm',
+        N = 'n',
+        O = 'o',
+        P = 'p',
+        Q = 'q',
+        R = 'r',
+        S = 's',
+        T = 't',
+        U = 'u',
+        V = 'v',
+        W = 'w',
+        X = 'x',
+        Y = 'y',
+        Z = 'z',
+        Alpha0 = '0',
+        Alpha1 = '1',
+        Alpha2 = '2',
+        Alpha3 = '3',
+        Alpha4 = '4',
+        Alpha5 = '5',
+        Alpha6 = '6',
+        Alpha7 = '7',
+        Alpha8 = '8',
+        Alpha9 = '9',
+    }
+    
+    export const enum MouseButtonCode {
+        Left = 0,
+        Middle = 1,
+        Right = 2,
+    }
+    
+    export const enum GamepadButtonCode {
+        A = 0,
+        B = 1,
+        X = 2,
+        Y = 3,
+        DpadUp = 12 ,
+        DpadDown = 13,
+        DpadLeft = 14,
+        DpadRight = 15,
+    };
 
     export class BaseComponent {
 

@@ -6,7 +6,7 @@ export class FPSScript extends ScriptComponent {
     #text;
 
     ready() {
-        this.#text = this.getComponent(ComponentType.Text);
+        this.#text = this.getComponent(ComponentType.UIText);
     }
 
     step(dt) {

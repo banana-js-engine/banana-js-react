@@ -1,4 +1,4 @@
-import { ScriptComponent } from "../ecs/Component";
+import { ScriptComponent } from '@mfkucuk/banana-js';
 
 export class RotateScript extends ScriptComponent {
 

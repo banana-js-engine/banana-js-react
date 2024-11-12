@@ -9,7 +9,7 @@ var _Component = require("../ecs/Component");
 class FPSScript extends _Component.ScriptComponent {
   #text;
   ready() {
-    this.#text = this.getComponent(_Types.ComponentType.Text);
+    this.#text = this.getComponent(_Types.ComponentType.UIText);
   }
   step(dt) {
     const fps = 1 / dt;

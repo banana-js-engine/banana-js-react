@@ -57,12 +57,9 @@ class Engine {
     };
     this.#tick();
   }
-  #tick = () => {
-    const currentFrameTime = performance.now();
-    const deltaTimeMs = currentFrameTime - this.#previousFrameTime;
-    let deltaTimeS = deltaTimeMs / 1000;
-    this.#previousFrameTime = currentFrameTime;
-    deltaTimeS = (0, _bananaMath.clamp)(deltaTimeS, 0.01, 0.1);
+  #tick = timestamp => {
+    const deltaTimeS = (0, _bananaMath.clamp)((timestamp - this.#previousFrameTime) / 1000, 0.01, 0.1);
+    this.#previousFrameTime = timestamp;
     if (this.#running) {
       requestAnimationFrame(this.#tick);
     }
@@ -80,8 +77,8 @@ class Engine {
       this.#iteration++;
       return;
     }
+    const goAnimators = activeScene.getComponents(_Types.ComponentType.Animator);
     if (this.#firstUpdate) {
-      const goAnimators = activeScene.getComponents(_Types.ComponentType.Animator);
       for (let i = 0; i < goAnimators.length; i++) {
         if (goAnimators[i].startAnim) {
           goAnimators[i].playAnimation(goAnimators[i].startAnim);
@@ -98,8 +95,8 @@ class Engine {
         goScripts[i].step(dt);
       }
     }
-    const goBodies = activeScene.getComponents(_Types.ComponentType.Body2D);
     this.#world2d.clear();
+    const goBodies = activeScene.getComponents(_Types.ComponentType.Body2D);
     for (let i = 0; i < goBodies.length; i++) {
       if (goBodies[i].active) {
         this.#world2d.addBody(goBodies[i]);
@@ -155,7 +152,6 @@ class Engine {
     if (goLights.length == 0) {
       console.warn('No light in the scene');
     }
-    const goAnimators = activeScene.getComponents(_Types.ComponentType.Animator);
     for (let i = 0; i < goAnimators.length; i++) {
       if (goAnimators[i].active) {
         goAnimators[i].step(dt);
@@ -204,12 +200,18 @@ class Engine {
         this.#renderer.drawRect(point, _Vector.Vector2.one.mul(0.2), _Color.Color.orange);
       }
     }
-    this.#renderer.endScene();
+    this.#renderer.endScene(dt);
     this.#textRenderer.clear();
     const goTexts = activeScene.getComponents(_Types.ComponentType.Text);
     for (let i = 0; i < goTexts.length; i++) {
       if (goTexts[i].active) {
         this.#textRenderer.drawText(goTexts[i]);
+      }
+    }
+    const goUITexts = activeScene.getComponents(_Types.ComponentType.UIText);
+    for (let i = 0; i < goUITexts.length; i++) {
+      if (goUITexts[i].active) {
+        this.#textRenderer.drawUIText(goUITexts[i]);
       }
     }
     _Input.Input.mouseDelta.set(0, 0);

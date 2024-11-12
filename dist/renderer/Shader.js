@@ -17,8 +17,14 @@ class Shader {
   static get lineShaderPath() {
     return 'shader/line_shader.glsl';
   }
-  static get cubeShaderPath() {
+  static get meshShaderPath() {
     return 'shader/mesh_shader.glsl';
+  }
+  static get particleUpdateShaderPath() {
+    return 'shader/particle_update_shader.glsl';
+  }
+  static get particleRenderShaderPath() {
+    return 'shader/particle_render_shader.glsl';
   }
   #gl;
   #shaderId;
@@ -29,9 +35,9 @@ class Shader {
    * @param {WebGL2RenderingContext} gl the WebGL context
    * @param {string} source source to the shader
    */
-  constructor(gl, source) {
+  constructor(gl, source, tfv) {
     this.#gl = gl;
-    this.#shaderId = this.#compile(source);
+    this.#shaderId = this.#compile(source, tfv);
     this.#uniformLookupTable = {};
     this.bind();
   }
@@ -41,7 +47,7 @@ class Shader {
    * @param {string} source source to the shader 
    * @returns the program (or the shader) id
    */
-  #compile(source) {
+  #compile(source, tfv) {
     // load the source file
     const xhr = new XMLHttpRequest();
     xhr.open('GET', source, false);
@@ -72,6 +78,9 @@ class Shader {
     const program = this.#gl.createProgram();
     this.#gl.attachShader(program, vertexShader);
     this.#gl.attachShader(program, fragmentShader);
+    if (tfv) {
+      this.#gl.transformFeedbackVaryings(program, tfv, this.#gl.INTERLEAVED_ATTRIBS);
+    }
     this.#gl.linkProgram(program);
     if (!this.#gl.getProgramParameter(program, this.#gl.LINK_STATUS)) {
       alert(this.#gl.getProgramInfoLog(program));
@@ -118,6 +127,10 @@ class Shader {
     let transpose = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
     const uniformLocation = this.#getUniformLocation(name);
     this.#gl.uniformMatrix4fv(uniformLocation, transpose, value);
+  }
+  setUniform1f(name, value) {
+    const uniformLocation = this.#getUniformLocation(name);
+    this.#gl.uniform1f(uniformLocation, value);
   }
   setUniform1i(name, value) {
     const uniformLocation = this.#getUniformLocation(name);

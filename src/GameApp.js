@@ -14,8 +14,9 @@ import { useState } from "react";
 import { Cube } from "./components/Cube";
 import { Mesh } from "./components/Mesh";
 import { Light } from "./components/Light";
+import { UIText } from "./components/UIText";
 
-export default function App() {
+export default function GameApp() {
     const [count, setCount] = useState(0);
 
     const incrementCount = () => {
@@ -23,13 +24,19 @@ export default function App() {
     };
     
     return (
-        <Game name="Development" width={400} height={400}>
+        <Game name="Development" width={600} height={600}>
             <Scene>
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 0]}/>
-                    <Light/>
+                    <Light direction={[1, -1, 1]}/>
                     <OrthographicCamera/>   
                     <Script import={import('./scripts/OrthographicCameraController')}/>
+                </GameObject>
+
+                <GameObject name="FPS UI">
+                    <Transform position={[-4, -4, 0]}/>
+                    <UIText x={20} y={30} fontSize={30} color={Color.white}>FPS: 60</UIText>
+                    <Script import={import('./scripts/FPSScript')}/>
                 </GameObject>
                 {/* <GameObject name="Square">
                     <Transform position={[0, 3, 0]} scale={[0.5, 0.5, 1]}/>
@@ -43,17 +50,12 @@ export default function App() {
                     <Script import={import('./scripts/MovementScript')} speed={0.1} test={incrementCount}/>
                     <Text color={Color.red}>{count}</Text>
                 </GameObject> */}
-                <GameObject name="Book">
+                {/* <GameObject name="Book">
                     <Transform position={[0, 0, 0]} scale={[1, -1, 1]}/>
-                    <Mesh objSrc="TallBuilding01.obj" mtlSrc="TallBuilding01.mtl"/>
-                    <BoxBody2D isStatic gravityScale={0}/>
-                    <Script import={import('./scripts/RotateScript')}/>
-                </GameObject>
-                <GameObject>
-                    <Transform position={[-4, -4, 0]}/>
-                    <Text fontSize={30} color={Color.white}>FPS: 60</Text>
-                    <Script import={import('./scripts/FPSScript')}/>
-                </GameObject>
+                    <Mesh objSrc="defaultModels/Banana.obj" mtlSrc="defaultModels/Banana.mtl"/>
+                    <Script import={import('./scripts/RotateScript')} speed={100}/>
+                </GameObject> */}
+                
             </Scene>
         </Game>
     );

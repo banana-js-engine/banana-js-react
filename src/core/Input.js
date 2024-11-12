@@ -20,7 +20,6 @@ export class Input {
     // Touch
     static touchPosition = Vector2.zero;
 
-    static #isTouching;
     static #isTapping;
     static #touchStartTime = performance.now();
     static #touchStartPos = Vector2.zero;
@@ -69,7 +68,6 @@ export class Input {
         // Touch events
         this.#canvas.addEventListener('touchstart', (event) => {
             event.preventDefault();
-            this.#isTouching = true;
             const touch = event.touches[0];
 
             this.#touchStartTime = performance.now();
@@ -87,15 +85,14 @@ export class Input {
 
             this.#touchCurrentPos.set(touch.clientX, touch.clientY);
             
-            const moveDistance = this.#touchStartPos.distance(this.#touchCurrentPos);
-            if (moveDistance > this.TAP_MAX_MOVE) {
+            const moveDistanceSquared = this.#touchStartPos.distanceSquared(this.#touchCurrentPos);
+            if (moveDistanceSquared > this.TAP_MAX_MOVE * this.TAP_MAX_MOVE) {
                 this.#isTapping = false;
             }
         });
 
         this.#canvas.addEventListener('touchend', (event) => {
             event.preventDefault();
-            this.#isTouching = false;
 
             const touchDuration = performance.now() - this.#touchStartTime;
             if (this.#isTapping && touchDuration <= this.TAP_MAX_DURATION) {
@@ -125,12 +122,7 @@ export class Input {
      * @returns if a key is being held down
      */
     static getKey(key) {
-        key = key.toLowerCase();
-        if (!this.#keyStates[key]) {
-            return false;
-        }
-
-        return this.#keyStates[key];
+        return !!this.#keyStates[key.toLowerCase()];
     }
 
     /**
@@ -140,37 +132,19 @@ export class Input {
      */
     static getKeyDown(key) {
         key = key.toLowerCase();
-        if (!this.#keyStates[key]) {
-            return false;
-        }
-
-        if (this.#isKeyDown[key]) {
-            return false;
-        }
-
+        if (!this.#keyStates[key] || this.#isKeyDown[key]) return false;
         this.#isKeyDown[key] = true;
-        return this.#keyStates[key];
+        return true;
     }
 
     static getButton(button) {
-        if (!this.#buttonStates[button]) {
-            return false;
-        }
-
-        return this.#buttonStates[button];
+        return !!this.#buttonStates[button];
     }
 
     static getButtonDown(button) {
-        if (!this.#buttonStates[button]) {
-            return false;
-        }
-
-        if (this.#isButtonDown[button]) {
-            return false;
-        }
-
+        if (!this.#buttonStates[button] || this.#isButtonDown[button]) return false;
         this.#isButtonDown[button] = true;
-        return this.#buttonStates[button];
+        return true;
     }
 
     static getTap() {
@@ -180,16 +154,8 @@ export class Input {
     }
 
     static getGamepadButton(button, gamepad = 0) {
-        if (gamepad > navigator.getGamepads().length) {
-            return false;
-        }
-
-        if (this.isGamepadConnected()) {
-            return navigator.getGamepads()[gamepad].buttons[button].pressed;
-        }
-        else {
-            return false;
-        }
+        const gamepads = navigator.getGamepads();
+        return this.isGamepadConnected(gamepad) && gamepads[gamepad].buttons[button].pressed;
     }
 
     static isGamepadConnected(gamepad = 0) {
@@ -198,21 +164,5 @@ export class Input {
 
     static #onTap() {
         this.#isProperTap = true;
-    }
-
-    /**
-     * 
-     * @param {GamepadEvent} event 
-     */
-    static #onGamepadConnected(event) {
-        this.#numOfGamepads++;
-    }
-
-    /**
-     * 
-     * @param {GamepadEvent} event 
-     */
-    static #onGamepadDisconnected(event) {
-        this.#numOfGamepads--;
     }
 }
