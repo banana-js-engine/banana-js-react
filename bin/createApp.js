@@ -80,9 +80,14 @@ const createDesktopProject = (projectName) => {
             main: "src/index.js",
             scripts: {
                 start: "electron .",
+                "build": "babel src --out-dir build",
                 "package": "electron-packager . --out=dist --overwrite"
             },
             dependencies: {
+                "@babel/cli": "^7.25.7",
+                "@babel/core": "^7.25.8",
+                "@babel/preset-env": "^7.25.8",
+                "@babel/preset-react": "^7.25.7",
                 react: "^18.0.0",
                 "react-dom": "^18.0.0",
                 "@mfkucuk/banana-js": "latest"
