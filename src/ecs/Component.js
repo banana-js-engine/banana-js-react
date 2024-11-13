@@ -84,6 +84,18 @@ export class BaseComponent {
     }
 }
 
+export class UIComponent extends BaseComponent {
+    left;
+    top;
+
+    constructor(gameObject, left, top) {
+        super(gameObject);
+
+        this.left = left ? left : 0;
+        this.top = top ? top : 0;
+    }
+}
+
 export class NameComponent extends BaseComponent {
     #name;
 
@@ -1153,7 +1165,7 @@ export class TextComponent extends BaseComponent {
         this.#text = text ? text : '';
         
         this.#color = color ? color : Color.black;
-        this.#fontFamily = fontFamily ? fontFamily : 'sans-serif';
+        this.#fontFamily = fontFamily ? fontFamily : 'dejavu, monospace';
         this.#fontSize = fontSize ? fontSize : 10;
     }
 
@@ -1186,30 +1198,27 @@ export class TextComponent extends BaseComponent {
     }
 }
 
-export class UITextComponent extends BaseComponent {
+export class UITextComponent extends UIComponent {
 
     #text;
     #color;
     #fontFamily;
     #fontSize;
-    #position
 
-    constructor(gameObject, text, color, fontFamily, fontSize, x, y) {
-        super(gameObject);
+    constructor(gameObject, left, top, text, color, fontFamily, fontSize) {
+        super(gameObject, left, top);
 
         this.#text = text ? text : '';
         
-        this.#color = color ? color : Color.black;
-        this.#fontFamily = fontFamily ? fontFamily : 'sans-serif';
+        this.#color = Color.black;
+        this.#fontFamily = fontFamily ? fontFamily : 'dejavu, monospace';
         this.#fontSize = fontSize ? fontSize : 10;
-        this.#position = Vector2.zero;
 
-        if (x) {
-            this.#position.x = x;
+        if (color) {
+            const c = this._processParameterVector4(color);
+            this.#color.set(c.r, c.g, c.b, c.a);
         }
-        if (y) {
-            this.#position.y = y;
-        }
+
     }
 
     get type() {
@@ -1234,10 +1243,6 @@ export class UITextComponent extends BaseComponent {
 
     get fontSize() {
         return this.#fontSize;
-    }
-
-    get position() {
-        return this.#position; 
     }
 }
 
@@ -1299,11 +1304,12 @@ export class ParticleComponent extends BaseComponent {
     #minSpeed;
     #maxSpeed;
     #gravity;
+    #color;
 
     #playing;
     #initialParticleData
 
-    constructor(gameObject, count, minAge, maxAge, minTheta, maxTheta, minSpeed, maxSpeed, gravity) {
+    constructor(gameObject, count, minAge, maxAge, minTheta, maxTheta, minSpeed, maxSpeed, gravity, color) {
         super(gameObject);
 
         this.#read = 0;
@@ -1326,13 +1332,22 @@ export class ParticleComponent extends BaseComponent {
         this.#vaos.push(new VertexArray(this.gameObject.gl));
         this.#vaos.push(new VertexArray(this.gameObject.gl));
 
-
-
         this.#minTheta = minTheta ? minTheta : Math.PI / 2 - 0.5;
         this.#maxTheta = maxTheta ? maxTheta : Math.PI / 2 + 0.5;
         this.#minSpeed = minSpeed ? minSpeed : 0.5;
         this.#maxSpeed = maxSpeed ? maxSpeed : 1;
-        this.#gravity = gravity ? gravity : Vector3.down;
+        this.#gravity = Vector3.down;
+        this.#color = Vector3.one.div(2);
+
+        if (gravity) {
+            const g = this._processParameterVector3(gravity);
+            this.#gravity.set(g.x, g.y, g.z);
+        }
+
+        if (color) {
+            const c = this._processParameterVector3(color);
+            this.#color.set(c.x, c.y, c.z);
+        }
 
         this.#playing = true;
     }
@@ -1402,6 +1417,10 @@ export class ParticleComponent extends BaseComponent {
         return this.#gravity;
     }
 
+    get color() {
+        return this.#color;
+    }
+
     swapReadWrite() {
         this.#read = 1 - this.#read;
         this.#write = 1 - this.#write;
@@ -1431,6 +1450,21 @@ export class ParticleComponent extends BaseComponent {
 
 }
 
+export class DialogueComponent extends BaseComponent {
+
+    #texts;
+    #textRollSpeed;
+    #color;
+    #fontFamily;
+    #fontSize;
+
+    constructor(gameObject, textRollSpeed, color, fontFamily, fontSize) {
+        super(gameObject);
+        
+    }
+
+}
+
 export const ComponentMap = {}
 ComponentMap[ComponentType.Name] = NameComponent;
 ComponentMap[ComponentType.Transform] = TransformComponent;
@@ -1443,3 +1477,4 @@ ComponentMap[ComponentType.Animator] = AnimatorComponent;
 ComponentMap[ComponentType.Mesh] = MeshComponent;
 ComponentMap[ComponentType.Text] = TextComponent;
 ComponentMap[ComponentType.Light] = LightComponent;
+ComponentMap[ComponentType.Particle] = ParticleComponent;

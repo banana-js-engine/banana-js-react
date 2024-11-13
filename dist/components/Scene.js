@@ -9,10 +9,13 @@ var _react = _interopRequireWildcard(require("react"));
 var _ECS = require("../ecs/ECS");
 var _SceneManager = require("../ecs/SceneManager");
 var _SceneECS = require("../ecs/SceneECS");
+var _GameObject = require("./GameObject");
+var _UIText = require("./UIText");
+var _Script = require("./Script");
+var _Debug = require("../core/Debug");
 var _jsxRuntime = require("react/jsx-runtime");
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
-// gl context
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; } // gl context
 const SceneContext = /*#__PURE__*/(0, _react.createContext)(null);
 function useScene() {
   return (0, _react.useContext)(SceneContext);
@@ -35,6 +38,18 @@ function Scene(props) {
   }
   return /*#__PURE__*/(0, _jsxRuntime.jsxs)(SceneContext.Provider, {
     value: sceneRef.current,
-    children: [sceneRef.current && props.children, sceneRef.current && prefabs]
+    children: [sceneRef.current && props.children, sceneRef.current && prefabs, /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
+      name: "FPS_UI",
+      active: _Debug.Debug.showFps,
+      children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_UIText.UIText, {
+        x: 10,
+        y: 30,
+        fontSize: 30,
+        color: [1, 1, 1, 1],
+        children: "FPS: 60"
+      }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.Script, {
+        import: Promise.resolve().then(() => _interopRequireWildcard(require('../scripts/FPSScript')))
+      })]
+    })]
   });
 }

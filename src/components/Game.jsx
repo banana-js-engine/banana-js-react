@@ -50,10 +50,13 @@ export function Game(props) {
             height = width / (props.width / props.height);
         }
 
+        width = props.platform == PlatformType.Itchio ? width : props.width;
+        height = props.platform == PlatformType.Itchio ? height : props.height;
+
         // set canvas size
         const canvas = document.getElementById('banana-canvas');
-        canvas.width = props.platform == PlatformType.Desktop ? props.width : width;
-        canvas.height = props.platform == PlatformType.Desktop ? props.height : height;
+        canvas.width = width;
+        canvas.height = height;
         canvas.addEventListener('contextmenu', event => {
             event.preventDefault();
         });
@@ -66,8 +69,8 @@ export function Game(props) {
 
         // 2d context
         const textCanvas = document.getElementById('banana-text');
-        textCanvas.width = props.platform == PlatformType.Desktop ? props.width : width;
-        textCanvas.height = props.platform == PlatformType.Desktop ? props.height : height;
+        textCanvas.width = width;
+        textCanvas.height = height;
         textCanvas.addEventListener('contextmenu', event => {
             event.preventDefault();
         });
@@ -93,26 +96,44 @@ export function Game(props) {
     } 
 
     const onTouchStart = function(event) {
+        event.preventDefault();
         document.getElementById('banana-canvas').focus();
+    }
+
+    const divStyle = props.platform == PlatformType.Itchio ? {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: props.width,
+        height: props.height
+    } : {
+        position: 'relative', 
+        width: props.width, 
+        height: props.height
     }
 
     return (
         <EngineContext.Provider value={engineRef.current}>
             <GLContext.Provider value={gl}>
                 <AudioContextContext.Provider value={audioRef.current}>
-                    <div style={{ position: 'absolute', top: 0, left: 0, width: props.width, height: props.height }}
-                        onMouseDown={onMouseDown} onTouchStart={onTouchStart}>
+                    <div 
+                        id="banana-container" 
+                        style={divStyle}
+                        onMouseDown={onMouseDown}
+                        onTouchStart={onTouchStart}
+                    >
                         <canvas
-                            id='banana-canvas'
-                            style={{ userSelect: 'none', WebkitUserSelect: 'none', outlineStyle: 'none' }}
-                            tabIndex={1}>
+                            id="banana-canvas"
+                            style={{ position: 'absolute', top: 0, left: 0, userSelect: 'none', outline: 'none' }}
+                            tabIndex={1}
+                        >
                             {initialized && props.children}
                         </canvas>
-                        <canvas 
-                            id='banana-text'
-                            style={{ position: 'absolute', top: 0, left: 0, outlineStyle: 'none', pointerEvents: 'none' }}
-                            tabIndex={-1}>
-                        </canvas>
+                        <canvas
+                            id="banana-text"
+                            style={{ position: 'absolute', top: 0, left: 0, outline: 'none', pointerEvents: 'none' }}
+                            tabIndex={-1}
+                        />
                     </div>
                 </AudioContextContext.Provider>
             </GLContext.Provider>

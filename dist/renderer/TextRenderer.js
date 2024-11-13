@@ -32,8 +32,7 @@ class TextRenderer {
   drawUIText(uiTextComponent) {
     this.#ctx.font = `${uiTextComponent.fontSize}px ${uiTextComponent.fontFamily}`;
     this.#ctx.fillStyle = uiTextComponent.color.hex;
-    const position = uiTextComponent.position;
-    this.#ctx.fillText(uiTextComponent.text, position.x, position.y);
+    this.#ctx.fillText(uiTextComponent.text, uiTextComponent.left, uiTextComponent.top);
   }
   clear() {
     this.#ctx.clearRect(0, 0, this.#ctx.canvas.width, this.#ctx.canvas.height);

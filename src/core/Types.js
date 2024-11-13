@@ -1,6 +1,7 @@
 export const PlatformType = {
     Web: 'web',
-    Desktop: 'desktop'
+    Desktop: 'desktop',
+    Itchio: 'itchio',
 };
 
 /**

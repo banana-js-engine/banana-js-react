@@ -36,7 +36,7 @@ export { Vector2, Vector3, Vector4 } from './math/Vector';
 
 export { Color } from './renderer/Color';
 
-// const App = require('./GameApp');
+// const App = require('./App');
 // require('react-dom/client').createRoot(document.getElementById('root')).render(<App.default/>);
 
 // electron.js

@@ -4,7 +4,7 @@ import { useGameObject } from "./GameObject"
 
 /**
  * 
- * @param {{ count, minAge, maxAge, minTheta, maxTheta, minSpeed, maxSpeed, gravity }} props 
+ * @param {{ count, minAge, maxAge, minTheta, maxTheta, minSpeed, maxSpeed, gravity, color }} props 
  */
 export function Particle(props) {
 
@@ -20,7 +20,8 @@ export function Particle(props) {
             props.maxTheta,
             props.minSpeed,
             props.maxSpeed,
-            props.gravity
+            props.gravity,
+            props.color
         ));
     }
 

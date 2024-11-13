@@ -19,13 +19,13 @@ export function UIText(props) {
     if (!gameObject.hasComponent(ComponentType.Text)) {
         const textComponent = new UITextComponent(
             gameObject,
+            props.x,
+            props.y,
             props.children,
             props.color,
             props.fontFamily,
-            props.fontSize,
-            props.x,
-            props.y
-        ) 
+            props.fontSize
+        ); 
     
         gameObject.addComponent(textComponent);
     } 

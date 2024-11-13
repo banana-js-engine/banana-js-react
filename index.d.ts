@@ -89,7 +89,8 @@ declare module "@mfkucuk/banana-js" {
         maxTheta: number,
         minSpeed: number,
         maxSpeed: number,
-        gravity: [number, number, number] | Vector3
+        gravity: [number, number, number] | Vector3,
+        color: [number, number, number] | Vector3
     }): void;
 
     export function PerspectiveCamera(props: {

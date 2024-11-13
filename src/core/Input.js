@@ -56,8 +56,10 @@ export class Input {
         });
 
         this.#canvas.addEventListener('mousemove', (event) => {
-            this.mousePosition.x = event.x;
-            this.mousePosition.y = event.y;
+            const rect = this.#canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            this.mousePosition.set(x, y);
         });
 
         this.#canvas.addEventListener('wheel', (event) => {

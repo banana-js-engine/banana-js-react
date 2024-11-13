@@ -14,6 +14,7 @@ function Cursor(props) {
   const canvas = document.getElementById('banana-canvas');
   (0, _react.useEffect)(() => {
     if (!props.src) {
+      canvas.style.cursor = 'none';
       return;
     }
     canvas.style.cursor = `url(${props.src}), auto`;

@@ -756,6 +756,7 @@ export class Renderer {
         particle.writeBuffer.unbindBase();
         
         this.#renderData.particleRenderShader.bind();
+        this.#renderData.particleRenderShader.setUniform3fv('u_Color', particle.color.data);
         particle.vaos[particle.read + 2].bind();
         this.#gl.drawArrays(this.#gl.POINTS, 0, particle.bornParticleCount);
         particle.swapReadWrite();

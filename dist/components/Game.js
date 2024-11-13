@@ -55,11 +55,13 @@ function Game(props) {
     } else {
       height = width / (props.width / props.height);
     }
+    width = props.platform == _Types.PlatformType.Itchio ? width : props.width;
+    height = props.platform == _Types.PlatformType.Itchio ? height : props.height;
 
     // set canvas size
     const canvas = document.getElementById('banana-canvas');
-    canvas.width = props.platform == _Types.PlatformType.Desktop ? props.width : width;
-    canvas.height = props.platform == _Types.PlatformType.Desktop ? props.height : height;
+    canvas.width = width;
+    canvas.height = height;
     canvas.addEventListener('contextmenu', event => {
       event.preventDefault();
     });
@@ -73,8 +75,8 @@ function Game(props) {
 
     // 2d context
     const textCanvas = document.getElementById('banana-text');
-    textCanvas.width = props.platform == _Types.PlatformType.Desktop ? props.width : width;
-    textCanvas.height = props.platform == _Types.PlatformType.Desktop ? props.height : height;
+    textCanvas.width = width;
+    textCanvas.height = height;
     textCanvas.addEventListener('contextmenu', event => {
       event.preventDefault();
     });
@@ -96,7 +98,19 @@ function Game(props) {
     document.getElementById('banana-canvas').focus();
   };
   const onTouchStart = function (event) {
+    event.preventDefault();
     document.getElementById('banana-canvas').focus();
+  };
+  const divStyle = props.platform == _Types.PlatformType.Itchio ? {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: props.width,
+    height: props.height
+  } : {
+    position: 'relative',
+    width: props.width,
+    height: props.height
   };
   return /*#__PURE__*/(0, _jsxRuntime.jsx)(EngineContext.Provider, {
     value: engineRef.current,
@@ -105,21 +119,18 @@ function Game(props) {
       children: /*#__PURE__*/(0, _jsxRuntime.jsx)(AudioContextContext.Provider, {
         value: audioRef.current,
         children: /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
-          style: {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: props.width,
-            height: props.height
-          },
+          id: "banana-container",
+          style: divStyle,
           onMouseDown: onMouseDown,
           onTouchStart: onTouchStart,
           children: [/*#__PURE__*/(0, _jsxRuntime.jsx)("canvas", {
             id: "banana-canvas",
             style: {
+              position: 'absolute',
+              top: 0,
+              left: 0,
               userSelect: 'none',
-              WebkitUserSelect: 'none',
-              outlineStyle: 'none'
+              outline: 'none'
             },
             tabIndex: 1,
             children: initialized && props.children
@@ -129,7 +140,7 @@ function Game(props) {
               position: 'absolute',
               top: 0,
               left: 0,
-              outlineStyle: 'none',
+              outline: 'none',
               pointerEvents: 'none'
             },
             tabIndex: -1

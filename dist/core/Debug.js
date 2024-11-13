@@ -9,6 +9,7 @@ var _Types = require("./Types");
 class Debug {
   static showCollisionShapes = false;
   static showContactPoints = false;
+  static showFps = true;
 
   /**
    * take a snapshot of the given scene.

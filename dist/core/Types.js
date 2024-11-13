@@ -6,7 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.ShapeType = exports.PlatformType = exports.MouseButtonCode = exports.KeyCode = exports.GamepadButtonCode = exports.ComponentType = void 0;
 const PlatformType = exports.PlatformType = {
   Web: 'web',
-  Desktop: 'desktop'
+  Desktop: 'desktop',
+  Itchio: 'itchio'
 };
 
 /**

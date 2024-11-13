@@ -17,6 +17,7 @@ import { Light } from "./components/Light";
 import { UIText } from "./components/UIText";
 import { Particle } from "./components/Particle";
 import { PlatformType } from "./core/Types";
+import { Cursor } from "./components/Cursor";
 
 export default function GameApp() {
     const [count, setCount] = useState(0);
@@ -26,19 +27,14 @@ export default function GameApp() {
     };
     
     return (
-        <Game name="Development" width={600} height={600} platform={PlatformType.Desktop}>
+        <Game name="Development" width={600} height={600} platform={PlatformType.Web}>
+            <Cursor/>
             <Scene>
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 0]}/>
                     <Light direction={[1, -1, 1]}/>
                     <OrthographicCamera/>   
                     <Script import={import('./scripts/OrthographicCameraController')}/>
-                </GameObject>
-
-                <GameObject name="FPS UI">
-                    <Transform position={[-4, -4, 0]}/>
-                    <UIText x={20} y={30} fontSize={30} color={Color.white}>FPS: 60</UIText>
-                    <Script import={import('./scripts/FPSScript')}/>
                 </GameObject>
                 {/* <GameObject name="Square">
                     <Transform/>
@@ -57,14 +53,9 @@ export default function GameApp() {
                 </GameObject> */}
 
                 <GameObject name="Particle">
-                    <Transform position={[3, 0, 0]}/>
+                    <Transform position={[0, 0, 0]}/>
                     <Particle/>
                     <Script import={import('./scripts/ParticleScript')}/>
-                </GameObject>
-
-                <GameObject name="Particle">
-                    <Transform position={[-1, 0, 0]}/>
-                    <Particle/>
                 </GameObject>
                 
                 {/* <GameObject name="Building">

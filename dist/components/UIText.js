@@ -20,7 +20,7 @@ var _Types = require("../core/Types");
 function UIText(props) {
   const gameObject = (0, _GameObject.useGameObject)();
   if (!gameObject.hasComponent(_Types.ComponentType.Text)) {
-    const textComponent = new _Component.UITextComponent(gameObject, props.children, props.color, props.fontFamily, props.fontSize, props.x, props.y);
+    const textComponent = new _Component.UITextComponent(gameObject, props.x, props.y, props.children, props.color, props.fontFamily, props.fontSize);
     gameObject.addComponent(textComponent);
   }
   (0, _react.useEffect)(() => {

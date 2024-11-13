@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.UITextComponent = exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.ParticleComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
+exports.UITextComponent = exports.UIComponent = exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.ParticleComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.DialogueComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
 var _Matrix = require("../math/Matrix");
 var _Vector = require("../math/Vector");
 var _AABB = require("../physics/AABB");
@@ -94,6 +94,16 @@ class BaseComponent {
   }
 }
 exports.BaseComponent = BaseComponent;
+class UIComponent extends BaseComponent {
+  left;
+  top;
+  constructor(gameObject, left, top) {
+    super(gameObject);
+    this.left = left ? left : 0;
+    this.top = top ? top : 0;
+  }
+}
+exports.UIComponent = UIComponent;
 class NameComponent extends BaseComponent {
   #name;
   constructor(gameObject, name) {
@@ -1008,7 +1018,7 @@ class TextComponent extends BaseComponent {
     super(gameObject);
     this.#text = text ? text : '';
     this.#color = color ? color : _Color.Color.black;
-    this.#fontFamily = fontFamily ? fontFamily : 'sans-serif';
+    this.#fontFamily = fontFamily ? fontFamily : 'dejavu, monospace';
     this.#fontSize = fontSize ? fontSize : 10;
   }
   get type() {
@@ -1034,24 +1044,20 @@ class TextComponent extends BaseComponent {
   }
 }
 exports.TextComponent = TextComponent;
-class UITextComponent extends BaseComponent {
+class UITextComponent extends UIComponent {
   #text;
   #color;
   #fontFamily;
   #fontSize;
-  #position;
-  constructor(gameObject, text, color, fontFamily, fontSize, x, y) {
-    super(gameObject);
+  constructor(gameObject, left, top, text, color, fontFamily, fontSize) {
+    super(gameObject, left, top);
     this.#text = text ? text : '';
-    this.#color = color ? color : _Color.Color.black;
-    this.#fontFamily = fontFamily ? fontFamily : 'sans-serif';
+    this.#color = _Color.Color.black;
+    this.#fontFamily = fontFamily ? fontFamily : 'dejavu, monospace';
     this.#fontSize = fontSize ? fontSize : 10;
-    this.#position = _Vector.Vector2.zero;
-    if (x) {
-      this.#position.x = x;
-    }
-    if (y) {
-      this.#position.y = y;
+    if (color) {
+      const c = this._processParameterVector4(color);
+      this.#color.set(c.r, c.g, c.b, c.a);
     }
   }
   get type() {
@@ -1071,9 +1077,6 @@ class UITextComponent extends BaseComponent {
   }
   get fontSize() {
     return this.#fontSize;
-  }
-  get position() {
-    return this.#position;
   }
 }
 exports.UITextComponent = UITextComponent;
@@ -1126,9 +1129,10 @@ class ParticleComponent extends BaseComponent {
   #minSpeed;
   #maxSpeed;
   #gravity;
+  #color;
   #playing;
   #initialParticleData;
-  constructor(gameObject, count, minAge, maxAge, minTheta, maxTheta, minSpeed, maxSpeed, gravity) {
+  constructor(gameObject, count, minAge, maxAge, minTheta, maxTheta, minSpeed, maxSpeed, gravity, color) {
     super(gameObject);
     this.#read = 0;
     this.#write = 1;
@@ -1150,7 +1154,16 @@ class ParticleComponent extends BaseComponent {
     this.#maxTheta = maxTheta ? maxTheta : Math.PI / 2 + 0.5;
     this.#minSpeed = minSpeed ? minSpeed : 0.5;
     this.#maxSpeed = maxSpeed ? maxSpeed : 1;
-    this.#gravity = gravity ? gravity : _Vector.Vector3.down;
+    this.#gravity = _Vector.Vector3.down;
+    this.#color = _Vector.Vector3.one.div(2);
+    if (gravity) {
+      const g = this._processParameterVector3(gravity);
+      this.#gravity.set(g.x, g.y, g.z);
+    }
+    if (color) {
+      const c = this._processParameterVector3(color);
+      this.#color.set(c.x, c.y, c.z);
+    }
     this.#playing = true;
   }
   get type() {
@@ -1202,6 +1215,9 @@ class ParticleComponent extends BaseComponent {
   get gravity() {
     return this.#gravity;
   }
+  get color() {
+    return this.#color;
+  }
   swapReadWrite() {
     this.#read = 1 - this.#read;
     this.#write = 1 - this.#write;
@@ -1228,6 +1244,17 @@ class ParticleComponent extends BaseComponent {
   }
 }
 exports.ParticleComponent = ParticleComponent;
+class DialogueComponent extends BaseComponent {
+  #texts;
+  #textRollSpeed;
+  #color;
+  #fontFamily;
+  #fontSize;
+  constructor(gameObject, textRollSpeed, color, fontFamily, fontSize) {
+    super(gameObject);
+  }
+}
+exports.DialogueComponent = DialogueComponent;
 const ComponentMap = exports.ComponentMap = {};
 ComponentMap[_Types.ComponentType.Name] = NameComponent;
 ComponentMap[_Types.ComponentType.Transform] = TransformComponent;
@@ -1240,3 +1267,4 @@ ComponentMap[_Types.ComponentType.Animator] = AnimatorComponent;
 ComponentMap[_Types.ComponentType.Mesh] = MeshComponent;
 ComponentMap[_Types.ComponentType.Text] = TextComponent;
 ComponentMap[_Types.ComponentType.Light] = LightComponent;
+ComponentMap[_Types.ComponentType.Particle] = ParticleComponent;
