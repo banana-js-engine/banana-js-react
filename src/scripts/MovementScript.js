@@ -14,7 +14,7 @@ export class MovementScript extends ScriptComponent {
     step(dt) {
         if (Input.getKey(KeyCode.W)) {
             //this.body.addForce(Vector2.down.mul(this.speed));
-            this.transform.moveBy(0, 0, -this.speed);
+            this.transform.moveBy(0, -this.speed, 0);
         }
         if (Input.getKey(KeyCode.A)) {
             //this.body.addForce(Vector2.left.mul(this.speed));
@@ -22,7 +22,7 @@ export class MovementScript extends ScriptComponent {
         } 
         if (Input.getKey(KeyCode.S)) {
             //this.body.addForce(Vector2.up.mul(this.speed));
-            this.transform.moveBy(0, 0, this.speed);
+            this.transform.moveBy(0, this.speed, 0);
         } 
         if (Input.getKey(KeyCode.D)) {
             //this.body.addForce(Vector2.right.mul(this.speed));

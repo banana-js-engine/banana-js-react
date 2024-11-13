@@ -1081,7 +1081,6 @@ class UITextComponent extends UIComponent {
 }
 exports.UITextComponent = UITextComponent;
 class LightComponent extends BaseComponent {
-  #direction;
   #color;
 
   /**
@@ -1090,14 +1089,9 @@ class LightComponent extends BaseComponent {
    * @param {Vector3} direction 
    * @param {Vector4} color 
    */
-  constructor(gameObject, direction, color) {
+  constructor(gameObject, color) {
     super(gameObject);
-    this.#direction = _Vector.Vector3.one;
     this.#color = _Vector.Vector3.one;
-    if (direction) {
-      const d = this._processParameterVector3(direction);
-      this.#direction.set(d.x, d.y, d.z);
-    }
     if (color) {
       const c = this._processParameterVector3(color);
       this.#color.set(c.x, c.y, c.z);
@@ -1106,8 +1100,8 @@ class LightComponent extends BaseComponent {
   get type() {
     return _Types.ComponentType.Light;
   }
-  get direction() {
-    return this.#direction;
+  get position() {
+    return this.transform.position;
   }
   get color() {
     return this.#color;

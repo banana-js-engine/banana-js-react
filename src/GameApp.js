@@ -32,7 +32,6 @@ export default function GameApp() {
             <Scene>
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 0]}/>
-                    <Light direction={[1, -1, 1]}/>
                     <OrthographicCamera/>   
                     <Script import={import('./scripts/OrthographicCameraController')}/>
                 </GameObject>
@@ -40,12 +39,12 @@ export default function GameApp() {
                     <Transform/>
                     <Sprite color={Color.orange}/>
                 </GameObject> */}
-                {/* <GameObject>
+                <GameObject>
                     <Transform/>
-                    <Cube/>
+                    <Sprite/>
                     <BoxBody2D isStatic={false} gravityScale={0}/>
                     <Script import={import('./scripts/MovementScript')} speed={0.1} test={incrementCount}/>
-                </GameObject> */}
+                </GameObject>
                 {/* <GameObject name="Book">
                     <Transform position={[0, 0, 0]} scale={[1, -1, 1]}/>
                     <Mesh objSrc="defaultModels/Banana.obj" mtlSrc="defaultModels/Banana.mtl"/>
@@ -54,6 +53,7 @@ export default function GameApp() {
 
                 <GameObject name="Particle">
                     <Transform position={[0, 0, 0]}/>
+                    <Light color={Color.red}/>
                     <Particle/>
                     <Script import={import('./scripts/ParticleScript')}/>
                 </GameObject>

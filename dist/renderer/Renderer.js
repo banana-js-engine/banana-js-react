@@ -471,7 +471,7 @@ class Renderer {
     this.#renderData.largeMeshShader.setUniform3fv('u_CameraPosition', this.#sceneData.cameraPos.data);
     this.#renderData.largeMeshShader.setUniform1i('u_LightCount', this.#sceneData.lights.length);
     for (let i = 0; i < this.#sceneData.lights.length; i++) {
-      this.#renderData.largeMeshShader.setUniform3fv(`u_Lights[${i}].position`, this.#sceneData.lights[i].direction.data);
+      this.#renderData.largeMeshShader.setUniform3fv(`u_Lights[${i}].position`, this.#sceneData.lights[i].position.data);
       this.#renderData.largeMeshShader.setUniform3fv(`u_Lights[${i}].color`, this.#sceneData.lights[i].color.data);
     }
     if (mesh.VAO) {
@@ -582,6 +582,11 @@ class Renderer {
       this.#renderData.quadVAO.VB.setData();
       this.#renderData.quadShader.bind();
       this.#renderData.quadShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
+      this.#renderData.quadShader.setUniform1i('u_LightCount', this.#sceneData.lights.length);
+      for (let i = 0; i < this.#sceneData.lights.length; i++) {
+        this.#renderData.quadShader.setUniform3fv(`u_Lights[${i}].position`, this.#sceneData.lights[i].position.data);
+        this.#renderData.quadShader.setUniform3fv(`u_Lights[${i}].color`, this.#sceneData.lights[i].color.data);
+      }
       this.#gl.drawElements(this.#gl.TRIANGLES, this.#renderData.quadIndexCount, this.#gl.UNSIGNED_SHORT, 0);
     }
     if (this.#renderData.lineVertexCount > 0) {
@@ -601,7 +606,7 @@ class Renderer {
       this.#renderData.meshShader.setUniform3fv('u_CameraPosition', this.#sceneData.cameraPos.data);
       this.#renderData.meshShader.setUniform1i('u_LightCount', this.#sceneData.lights.length);
       for (let i = 0; i < this.#sceneData.lights.length; i++) {
-        this.#renderData.meshShader.setUniform3fv(`u_Lights[${i}].position`, this.#sceneData.lights[i].direction.data);
+        this.#renderData.meshShader.setUniform3fv(`u_Lights[${i}].position`, this.#sceneData.lights[i].position.data);
         this.#renderData.meshShader.setUniform3fv(`u_Lights[${i}].color`, this.#sceneData.lights[i].color.data);
       }
       this.#gl.drawArrays(this.#gl.TRIANGLES, 0, this.#renderData.meshVertexCount);

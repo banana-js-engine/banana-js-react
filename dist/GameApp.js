@@ -42,15 +42,24 @@ function GameApp() {
         name: "Camera",
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
           position: [0, 0, 0]
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Light.Light, {
-          direction: [1, -1, 1]
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_OrthographicCamera.OrthographicCamera, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.Script, {
           import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/OrthographicCameraController')))
+        })]
+      }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.Sprite, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_BoxBody2D.BoxBody2D, {
+          isStatic: false,
+          gravityScale: 0
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.Script, {
+          import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/MovementScript'))),
+          speed: 0.1,
+          test: incrementCount
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
         name: "Particle",
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
           position: [0, 0, 0]
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Light.Light, {
+          color: _Color.Color.red
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Particle.Particle, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.Script, {
           import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/ParticleScript')))
         })]
