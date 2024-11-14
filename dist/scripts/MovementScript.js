@@ -16,21 +16,21 @@ class MovementScript extends _Component.ScriptComponent {
     this.text = this.getComponent(_Types.ComponentType.Text);
   }
   step(dt) {
-    if (_Input.Input.getKey(_Types.KeyCode.W)) {
+    if (_Input.Input.getKeyDown(_Types.KeyCode.W)) {
       //this.body.addForce(Vector2.down.mul(this.speed));
-      this.transform.moveBy(0, -this.speed, 0);
+      this.transform.moveBy(0, -1, 0);
     }
-    if (_Input.Input.getKey(_Types.KeyCode.A)) {
+    if (_Input.Input.getKeyDown(_Types.KeyCode.A)) {
       //this.body.addForce(Vector2.left.mul(this.speed));
-      this.transform.moveBy(-this.speed, 0, 0);
+      this.transform.moveBy(-1, 0, 0);
     }
-    if (_Input.Input.getKey(_Types.KeyCode.S)) {
+    if (_Input.Input.getKeyDown(_Types.KeyCode.S)) {
       //this.body.addForce(Vector2.up.mul(this.speed));
-      this.transform.moveBy(0, this.speed, 0);
+      this.transform.moveBy(0, 1, 0);
     }
-    if (_Input.Input.getKey(_Types.KeyCode.D)) {
+    if (_Input.Input.getKeyDown(_Types.KeyCode.D)) {
       //this.body.addForce(Vector2.right.mul(this.speed));
-      this.transform.moveBy(this.speed, 0, 0);
+      this.transform.moveBy(1, 0, 0);
     }
     if (_Input.Input.getKeyDown(_Types.KeyCode.C)) {
       // const gameObject = this.createGameObject('TEST');

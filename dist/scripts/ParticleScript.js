@@ -9,18 +9,20 @@ var _Types = require("../core/Types");
 var _Component = require("../ecs/Component");
 class ParticleScript extends _Component.ScriptComponent {
   #particle;
+  #light;
   ready() {
     this.#particle = this.getComponent(_Types.ComponentType.Particle);
+    this.#light = this.getComponent(_Types.ComponentType.Light);
   }
   step(dt) {
     if (_Input.Input.getButtonDown(_Types.MouseButtonCode.Left)) {
+      this.#light.toggle();
       if (this.#particle.playing) {
         this.#particle.stop();
       } else {
         this.#particle.play();
       }
     }
-    this.transform.position.set(this.mainCamera.screenToWorldSpace(_Input.Input.mousePosition));
   }
 }
 exports.ParticleScript = ParticleScript;

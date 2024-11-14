@@ -12,11 +12,6 @@ class SpriteSheet {
   #cellHeight;
 
   /**
-   * @type {Vector2[]} #texCoords
-   */
-  #texCoords;
-
-  /**
    * 
    * @param {Texture} texture 
    * @param {Vector2} cellSize 
@@ -25,7 +20,6 @@ class SpriteSheet {
     this.#texture = texture;
     this.#cellWidth = cellWidth;
     this.#cellHeight = cellHeight;
-    this.#texCoords = [_Vector.Vector2.zero, _Vector.Vector2.right, _Vector.Vector2.up, _Vector.Vector2.one];
   }
   get maxRow() {
     return this.#texture.height / this.#cellHeight;
@@ -41,11 +35,19 @@ class SpriteSheet {
     const minY = this.#cellHeight * row / this.#texture.height;
     const maxX = this.#cellWidth * (column + 1) / this.#texture.width;
     const maxY = this.#cellHeight * (row + 1) / this.#texture.height;
-    this.#texCoords[0].set(minX, minY);
-    this.#texCoords[1].set(maxX, minY);
-    this.#texCoords[2].set(minX, maxY);
-    this.#texCoords[3].set(maxX, maxY);
-    return this.#texCoords;
+    return [{
+      x: minX,
+      y: minY
+    }, {
+      x: maxX,
+      y: minY
+    }, {
+      x: minX,
+      y: maxY
+    }, {
+      x: maxX,
+      y: maxY
+    }];
   }
 }
 exports.SpriteSheet = SpriteSheet;

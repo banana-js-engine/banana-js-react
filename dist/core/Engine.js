@@ -153,16 +153,32 @@ class Engine {
       return;
     }
     const goLights = activeScene.getComponents(_Types.ComponentType.Light);
-    if (goLights.length == 0) {
-      console.warn('No light in the scene');
+    const activeLights = [];
+    for (let i = 0; i < goLights.length; i++) {
+      if (goLights[i].on) {
+        activeLights.push(goLights[i]);
+      }
     }
     for (let i = 0; i < goAnimators.length; i++) {
       if (goAnimators[i].active) {
         goAnimators[i].step(dt);
       }
     }
-    this.#renderer.beginScene(cameraTransform, cameraComponent, goLights);
+    this.#renderer.beginScene(cameraTransform, cameraComponent, activeLights);
     this.#renderer.clear();
+    for (let i = 0; i < goParticles.length; i++) {
+      if (!goParticles[i].active) {
+        continue;
+      }
+      this.#renderer.drawParticle(goParticles[i], dt);
+    }
+    const goTilemaps = activeScene.getComponents(_Types.ComponentType.Tilemap);
+    for (let i = 0; i < goTilemaps.length; i++) {
+      if (!goTilemaps[i].active) {
+        continue;
+      }
+      this.#renderer.drawTilemap(goTilemaps[i]);
+    }
     const goSprites = activeScene.getComponents(_Types.ComponentType.Sprite);
     for (let i = 0; i < goSprites.length; i++) {
       if (!goSprites[i].active) {
@@ -183,12 +199,6 @@ class Engine {
         continue;
       }
       this.#renderer.drawMesh(goMeshes[i]);
-    }
-    for (let i = 0; i < goParticles.length; i++) {
-      if (!goParticles[i].active) {
-        continue;
-      }
-      this.#renderer.drawParticle(goParticles[i], dt);
     }
     if (_Debug.Debug.showCollisionShapes) {
       const goBodies = activeScene.getAll(_Types.ComponentType.Body2D);

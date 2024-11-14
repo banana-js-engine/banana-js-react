@@ -24,6 +24,9 @@ var _UIText = require("./components/UIText");
 var _Particle = require("./components/Particle");
 var _Types = require("./core/Types");
 var _Cursor = require("./components/Cursor");
+var _Tilemap = require("./components/Tilemap");
+var _Animator = require("./components/Animator");
+var _Animation = require("./components/Animation");
 var _jsxRuntime = require("react/jsx-runtime");
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
@@ -34,21 +37,41 @@ function GameApp() {
   };
   return /*#__PURE__*/(0, _jsxRuntime.jsxs)(_Game.Game, {
     name: "Development",
-    width: 600,
-    height: 600,
+    width: 400,
+    height: 400,
     platform: _Types.PlatformType.Web,
     children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Cursor.Cursor, {}), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_Scene.Scene, {
       children: [/*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
         name: "Camera",
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
           position: [0, 0, 0]
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_OrthographicCamera.OrthographicCamera, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.Script, {
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_OrthographicCamera.OrthographicCamera, {
+          bgColor: [0, 0, 0, 1]
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.Script, {
           import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/OrthographicCameraController')))
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
-        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.Sprite, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_BoxBody2D.BoxBody2D, {
-          isStatic: false,
-          gravityScale: 0
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
+          position: [-4, -4, 0]
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Tilemap.Tilemap, {
+          src: "dungeon.png",
+          dataSrc: "tilemap.data",
+          cellWidth: 13,
+          cellHeight: 13
+        })]
+      }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
+          position: [0, 0, 1]
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.Sprite, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Animator.Animator, {
+          startAnim: "Idle",
+          children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_Animation.Animation, {
+            src: "dungeon.png",
+            name: "Idle",
+            firstFrame: 27,
+            frames: 0,
+            cellWidth: 13,
+            cellHeight: 13
+          })
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.Script, {
           import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/MovementScript'))),
           speed: 0.1,
@@ -57,11 +80,36 @@ function GameApp() {
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
         name: "Particle",
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
-          position: [0, 0, 0]
+          position: [2.1, -1.3, 2]
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Particle.Particle, {
+          color: _Color.Color.red,
+          count: 10,
+          minAge: 0.3,
+          maxAge: 0.5
+        })]
+      }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
+        name: "Light",
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
+          position: [2.1, -1.3, 0]
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Light.Light, {
-          color: _Color.Color.red
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Particle.Particle, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Script.Script, {
-          import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/ParticleScript')))
+          intensity: 4
+        })]
+      }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
+        name: "Particle",
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
+          position: [-1.9, 1.8, 2]
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Particle.Particle, {
+          color: _Color.Color.red,
+          count: 10,
+          minAge: 0.3,
+          maxAge: 0.5
+        })]
+      }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
+        name: "Light",
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
+          position: [-1.9, 1.8, 0]
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Light.Light, {
+          intensity: 4
         })]
       })]
     })]

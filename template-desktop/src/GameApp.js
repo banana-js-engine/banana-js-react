@@ -7,9 +7,13 @@ export default function GameApp() {
             <Scene>
                 <GameObject name="Camera">
                     <Transform/>
-                    <Light/>
                     <OrthographicCamera/>
                     <Script import={import('./scripts/HelloWorldScript')}/>   
+                </GameObject>
+
+                <GameObject name="Light">
+                    <Transform position={[1, -1, 1]}/>
+                    <Light/>
                 </GameObject>
 
                 <Banana/>

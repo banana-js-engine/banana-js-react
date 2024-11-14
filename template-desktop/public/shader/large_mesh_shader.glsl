@@ -49,6 +49,7 @@ precision mediump float;
 struct Light {
     vec3 position;
     vec3 color;
+    float intensity;
 };
 
 in vec3 v_Color;
@@ -102,7 +103,7 @@ void main() {
     // Loop through each light in the scene
     for (int i = 0; i < u_LightCount; i++) {
         vec3 lightDirection = normalize(u_Lights[i].position - v_SurfaceToView);
-        vec3 lightColor = u_Lights[i].color;
+        vec3 lightColor = u_Lights[i].color * u_Lights[i].intensity;
 
         // Ambient lighting, affected by light color
         ambient += lightColor * v_Ambient * 0.2;

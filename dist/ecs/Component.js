@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.UITextComponent = exports.UIComponent = exports.TransformComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.ParticleComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.DialogueComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
+exports.UITextComponent = exports.UIComponent = exports.TransformComponent = exports.TilemapComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.ParticleComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.DialogueComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
 var _Matrix = require("../math/Matrix");
 var _Vector = require("../math/Vector");
 var _AABB = require("../physics/AABB");
@@ -16,6 +16,8 @@ var _AnimationClip = require("../renderer/AnimationClip");
 var _WavefrontParser = require("../renderer/WavefrontParser");
 var _GO = require("./GO");
 var _VertexArray = require("../renderer/VertexArray");
+var _SpriteSheet = require("../renderer/SpriteSheet");
+var _file = require("../utils/file");
 class BaseComponent {
   gameObject;
 
@@ -933,7 +935,11 @@ class AnimatorComponent extends BaseComponent {
     this.#animations[animationName].play();
     this.#playing = true;
     this.#spriteRenderer.texture = this.#animations[animationName].texture;
-    this.#spriteRenderer.texCoords = this.#animations[animationName].currentFrame;
+    const currentFrame = this.#animations[animationName].currentFrame;
+    this.#spriteRenderer.texCoords[0].set(currentFrame[0].x, currentFrame[0].y);
+    this.#spriteRenderer.texCoords[1].set(currentFrame[1].x, currentFrame[1].y);
+    this.#spriteRenderer.texCoords[2].set(currentFrame[2].x, currentFrame[2].y);
+    this.#spriteRenderer.texCoords[3].set(currentFrame[3].x, currentFrame[3].y);
     this.#currentAnimation = animationName;
   }
 
@@ -958,7 +964,11 @@ class AnimatorComponent extends BaseComponent {
       return;
     }
     if (this.#animations[this.#currentAnimation].step(dt)) {
-      this.#spriteRenderer.texCoords = this.#animations[this.#currentAnimation].currentFrame;
+      const currentFrame = this.#animations[this.#currentAnimation].currentFrame;
+      this.#spriteRenderer.texCoords[0].set(currentFrame[0].x, currentFrame[0].y);
+      this.#spriteRenderer.texCoords[1].set(currentFrame[1].x, currentFrame[1].y);
+      this.#spriteRenderer.texCoords[2].set(currentFrame[2].x, currentFrame[2].y);
+      this.#spriteRenderer.texCoords[3].set(currentFrame[3].x, currentFrame[3].y);
     }
   }
 }
@@ -1082,6 +1092,8 @@ class UITextComponent extends UIComponent {
 exports.UITextComponent = UITextComponent;
 class LightComponent extends BaseComponent {
   #color;
+  #intensity;
+  #on;
 
   /**
    * 
@@ -1089,9 +1101,11 @@ class LightComponent extends BaseComponent {
    * @param {Vector3} direction 
    * @param {Vector4} color 
    */
-  constructor(gameObject, color) {
+  constructor(gameObject, color, intensity) {
     super(gameObject);
     this.#color = _Vector.Vector3.one;
+    this.#intensity = intensity ? intensity : 1.0;
+    this.#on = true;
     if (color) {
       const c = this._processParameterVector3(color);
       this.#color.set(c.x, c.y, c.z);
@@ -1105,6 +1119,15 @@ class LightComponent extends BaseComponent {
   }
   get color() {
     return this.#color;
+  }
+  get intensity() {
+    return this.#intensity;
+  }
+  get on() {
+    return this.#on;
+  }
+  toggle() {
+    this.#on = !this.#on;
   }
 }
 exports.LightComponent = LightComponent;
@@ -1218,7 +1241,7 @@ class ParticleComponent extends BaseComponent {
   }
   #initializeParticleData() {
     var data = [];
-    for (var i = 0; i < this.#particleCount; ++i) {
+    for (var i = 0; i < this.#particleCount; i++) {
       // position
       data.push(0.0);
       data.push(0.0);
@@ -1237,6 +1260,8 @@ class ParticleComponent extends BaseComponent {
     return data;
   }
 }
+
+// TODO
 exports.ParticleComponent = ParticleComponent;
 class DialogueComponent extends BaseComponent {
   #texts;
@@ -1249,6 +1274,58 @@ class DialogueComponent extends BaseComponent {
   }
 }
 exports.DialogueComponent = DialogueComponent;
+class TilemapComponent extends BaseComponent {
+  #spriteSheet;
+  #tileTexCoordMap;
+  #tilemap;
+  constructor(gameObject, src, data, cellWidth, cellHeight) {
+    super(gameObject);
+    const tilemapTexture = new _Texture.Texture(this.gameObject.gl, src);
+    this.#spriteSheet = new _SpriteSheet.SpriteSheet(tilemapTexture, cellWidth, cellHeight);
+    this.#tileTexCoordMap = new Map();
+    this.#tilemap = [];
+    (0, _file.readFileAsText)(data).then(text => {
+      const lines = text.split('\n');
+      let readChars = true;
+      for (let line of lines) {
+        const words = line.trim().split(/\s+/);
+        if (words[0] == '') {
+          continue;
+        }
+        if (words[0] == '.data') {
+          readChars = true;
+          continue;
+        } else if (words[0] == '.tilemap') {
+          readChars = false;
+          continue;
+        }
+        if (readChars) {
+          line = line.trim();
+          let [symbol, value] = line.split(':');
+          symbol = symbol.trim();
+          const [x, y] = value.split(',');
+          const texCoords = this.#spriteSheet.getTexCoords(parseInt(y.trim()), parseInt(x.trim()));
+          this.#tileTexCoordMap.set(symbol, texCoords);
+        } else {
+          this.#tilemap.push(line.trim());
+        }
+      }
+    });
+  }
+  get type() {
+    return _Types.ComponentType.Tilemap;
+  }
+  get spriteSheet() {
+    return this.#spriteSheet;
+  }
+  get texCoordsMap() {
+    return this.#tileTexCoordMap;
+  }
+  get tilemap() {
+    return this.#tilemap;
+  }
+}
+exports.TilemapComponent = TilemapComponent;
 const ComponentMap = exports.ComponentMap = {};
 ComponentMap[_Types.ComponentType.Name] = NameComponent;
 ComponentMap[_Types.ComponentType.Transform] = TransformComponent;

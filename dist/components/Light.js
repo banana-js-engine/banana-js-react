@@ -9,11 +9,11 @@ var _Component = require("../ecs/Component");
 var _GameObject = require("./GameObject");
 /**
  * 
- * @param {{ color }} props 
+ * @param {{ color, intensity }} props 
  */
 function Light(props) {
   const gameObject = (0, _GameObject.useGameObject)();
   if (!gameObject.hasComponent(_Types.ComponentType.Light)) {
-    gameObject.addComponent(new _Component.LightComponent(gameObject, props.color));
+    gameObject.addComponent(new _Component.LightComponent(gameObject, props.color, props.intensity));
   }
 }

@@ -5,9 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.WavefrontParser = void 0;
 var _Vector = require("../math/Vector");
+var _file = require("../utils/file");
 class WavefrontParser {
   static async parseObj(src) {
-    const text = await this.#readFileAsText(src);
+    const text = await (0, _file.readFileAsText)(src);
     const vertices = [];
     const positions = [];
     const texCoords = [];
@@ -16,8 +17,7 @@ class WavefrontParser {
     let currentMaterial = "";
     const lines = text.split('\n');
     for (const line of lines) {
-      const words = line.trim().split(/\s+/); // Trim and handle multiple spaces
-
+      const words = line.trim().split(/\s+/);
       switch (words[0]) {
         case 'v':
           {
@@ -64,7 +64,7 @@ class WavefrontParser {
     return vertices;
   }
   static async parseMtl(src) {
-    const text = await this.#readFileAsText(src);
+    const text = await (0, _file.readFileAsText)(src);
     const materials = {};
     const lines = text.split('\n');
     let currentMaterial = "";
@@ -93,16 +93,6 @@ class WavefrontParser {
       }
     }
     return materials;
-  }
-  static async #readFileAsText(src) {
-    try {
-      const response = await fetch(src);
-      if (!response.ok) throw new Error(`Failed to fetch ${src}: ${response.statusText}`);
-      return await response.text();
-    } catch (error) {
-      console.error(`Error reading file: ${error.message}`);
-      return "";
-    }
   }
 }
 exports.WavefrontParser = WavefrontParser;
