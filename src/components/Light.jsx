@@ -4,7 +4,7 @@ import { useGameObject } from "./GameObject";
 
 /**
  * 
- * @param {{ color }} props 
+ * @param {{ color, intensity }} props 
  */
 export function Light(props) {
 
@@ -13,7 +13,8 @@ export function Light(props) {
     if (!gameObject.hasComponent(ComponentType.Light)) {
         gameObject.addComponent(new LightComponent(
             gameObject,
-            props.color
+            props.color,
+            props.intensity
         ));
     }
 }

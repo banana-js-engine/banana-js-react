@@ -12,21 +12,21 @@ export class MovementScript extends ScriptComponent {
     }
 
     step(dt) {
-        if (Input.getKey(KeyCode.W)) {
+        if (Input.getKeyDown(KeyCode.W)) {
             //this.body.addForce(Vector2.down.mul(this.speed));
-            this.transform.moveBy(0, -this.speed, 0);
+            this.transform.moveBy(0, -1, 0);
         }
-        if (Input.getKey(KeyCode.A)) {
+        if (Input.getKeyDown(KeyCode.A)) {
             //this.body.addForce(Vector2.left.mul(this.speed));
-            this.transform.moveBy(-this.speed, 0, 0);
+            this.transform.moveBy(-1, 0, 0);
         } 
-        if (Input.getKey(KeyCode.S)) {
+        if (Input.getKeyDown(KeyCode.S)) {
             //this.body.addForce(Vector2.up.mul(this.speed));
-            this.transform.moveBy(0, this.speed, 0);
+            this.transform.moveBy(0, 1, 0);
         } 
-        if (Input.getKey(KeyCode.D)) {
+        if (Input.getKeyDown(KeyCode.D)) {
             //this.body.addForce(Vector2.right.mul(this.speed));
-            this.transform.moveBy(this.speed, 0, 0);
+            this.transform.moveBy(1, 0, 0);
         }
 
         if (Input.getKeyDown(KeyCode.C)) {

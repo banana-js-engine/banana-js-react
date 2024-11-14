@@ -186,8 +186,12 @@ export class Engine {
         }
 
         const goLights = activeScene.getComponents(ComponentType.Light);
-        if (goLights.length == 0) {
-            console.warn('No light in the scene');
+
+        const activeLights = [];
+        for (let i = 0; i < goLights.length; i++) {
+            if (goLights[i].on) {
+                activeLights.push(goLights[i]);
+            }
         }
 
         for (let i = 0; i < goAnimators.length; i++) {
@@ -196,10 +200,28 @@ export class Engine {
             }
         }
         
-        this.#renderer.beginScene(cameraTransform, cameraComponent, goLights);
+        this.#renderer.beginScene(cameraTransform, cameraComponent, activeLights);
 
         this.#renderer.clear();
+
+        for (let i = 0; i < goParticles.length; i++) {
+            if (!goParticles[i].active) {
+                continue;
+            }
+
+            this.#renderer.drawParticle(goParticles[i], dt);
+        }
         
+        const goTilemaps = activeScene.getComponents(ComponentType.Tilemap);
+
+        for (let i = 0; i < goTilemaps.length; i++) {
+            if (!goTilemaps[i].active) {
+                continue;
+            }
+
+            this.#renderer.drawTilemap(goTilemaps[i]);
+        }
+
         const goSprites = activeScene.getComponents(ComponentType.Sprite);
 
         for (let i = 0; i < goSprites.length; i++) {
@@ -226,14 +248,6 @@ export class Engine {
             }
 
             this.#renderer.drawMesh(goMeshes[i]);
-        }
-
-        for (let i = 0; i < goParticles.length; i++) {
-            if (!goParticles[i].active) {
-                continue;
-            }
-
-            this.#renderer.drawParticle(goParticles[i], dt);
         }
 
         if (Debug.showCollisionShapes) {

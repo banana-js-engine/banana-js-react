@@ -1,9 +1,10 @@
 import { Vector2, Vector3 } from "../math/Vector";
+import { readFileAsText } from "../utils/file";
 
 export class WavefrontParser {
     
     static async parseObj(src) {
-        const text = await this.#readFileAsText(src);
+        const text = await readFileAsText(src);
         const vertices = [];
         const positions = [];
         const texCoords = [];
@@ -14,7 +15,7 @@ export class WavefrontParser {
         const lines = text.split('\n');
 
         for (const line of lines) {
-            const words = line.trim().split(/\s+/); // Trim and handle multiple spaces
+            const words = line.trim().split(/\s+/);
             
             switch (words[0]) {
                 case 'v': {
@@ -68,7 +69,7 @@ export class WavefrontParser {
     }
 
     static async parseMtl(src) {
-        const text = await this.#readFileAsText(src);
+        const text = await readFileAsText(src);
         const materials = {};
         
         const lines = text.split('\n');
@@ -109,14 +110,5 @@ export class WavefrontParser {
         return materials;
     }
 
-    static async #readFileAsText(src) {
-        try {
-            const response = await fetch(src);
-            if (!response.ok) throw new Error(`Failed to fetch ${src}: ${response.statusText}`);
-            return await response.text();
-        } catch (error) {
-            console.error(`Error reading file: ${error.message}`);
-            return "";
-        }
-    }
+    
 }

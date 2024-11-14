@@ -1,7 +1,8 @@
-import { CameraComponent, MeshComponent, SpriteComponent, TransformComponent, LightComponent, ParticleComponent } from "../ecs/Component";
+import { CameraComponent, MeshComponent, SpriteComponent, TransformComponent, LightComponent, ParticleComponent, TilemapComponent } from "../ecs/Component";
 import { Matrix4 } from "../math/Matrix";
 import { Vector2, Vector3, Vector4 } from "../math/Vector";
 import { IndexBuffer, VertexBuffer } from "./Buffer";
+import { Color } from "./Color";
 import { Shader } from "./Shader";
 import { Texture } from "./Texture";
 import { VertexArray } from "./VertexArray";
@@ -14,7 +15,6 @@ class QuadVertex {
 
     get flat() {
         if (!this.position || !this.color || !this.texCoords || this.texIndex === -1) {
-            console.error('assign all properties before calling flat()!');
             return [];
         }
 
@@ -762,6 +762,68 @@ export class Renderer {
         particle.swapReadWrite();
     }
 
+    /**
+     * 
+     * @param {TilemapComponent} tilemapComponent 
+     */
+    drawTilemap(tilemapComponent) {
+        const tilemap = tilemapComponent.tilemap;
+        const texCoordMap = tilemapComponent.texCoordsMap;
+        const spriteSheet = tilemapComponent.spriteSheet;
+
+        let useTextureSlot = -1;
+
+        if (spriteSheet.texture) {
+            
+            for (let i = 2; i < this.#renderData.textureSlotIndex; i++) {
+                if (this.#renderData.textureSlots[i] == spriteSheet.texture) {
+                    useTextureSlot = i;
+                    break;
+                }
+            }
+    
+            if (this.#renderData.textureSlotIndex >= this.#renderData.maxTextureSlotCount) {
+                this.#flush();
+            }
+    
+            if (useTextureSlot === -1) {
+                useTextureSlot = this.#renderData.textureSlotIndex;
+                this.#renderData.textureSlots[this.#renderData.textureSlotIndex++] = spriteSheet.texture;
+            }
+        } else {
+            useTextureSlot = 0;
+        }
+        
+        const t = tilemapComponent.transform.transformMatrix;
+        const currentPosition = Vector3.zero;
+        const white = Color.white;
+
+        for (let i = 0; i < tilemap.length; i++) {
+            for (let j = 0; j < tilemap[i].length; j++) {
+                if (tilemap[i][j] != ' ') {
+                    const tile = tilemap[i][j];
+                    const texCoords = texCoordMap.get(tile);
+
+                    for (let k = 0; k < 4; k++) {
+                        currentPosition.x = this.#renderData.initialVertexPositions[k].x + j;
+                        currentPosition.y = this.#renderData.initialVertexPositions[k].y + i;
+
+                        this.#quadVertex.position = t.multiplyVector3(currentPosition);
+                        this.#quadVertex.color = white;
+                        this.#quadVertex.texCoords = texCoords[k];
+                        this.#quadVertex.texIndex = useTextureSlot;
+
+                        this.#renderData.quadVB.addVertex(this.#renderData.quadVertexCount, this.#quadVertex.flat);
+
+                        this.#renderData.quadVertexCount++;
+                    }
+
+                    this.#renderData.quadIndexCount += 6;
+                }
+            }
+        }
+    }
+    
     #flush() {
         for (let i = 0; i < this.#renderData.textureSlotIndex; i++) {
             this.#renderData.textureSlots[i].bind(i);
@@ -778,6 +840,7 @@ export class Renderer {
             for (let i = 0; i < this.#sceneData.lights.length; i++) {
                 this.#renderData.quadShader.setUniform3fv(`u_Lights[${i}].position`, this.#sceneData.lights[i].position.data);
                 this.#renderData.quadShader.setUniform3fv(`u_Lights[${i}].color`, this.#sceneData.lights[i].color.data);
+                this.#renderData.quadShader.setUniform1f(`u_Lights[${i}].intensity`, this.#sceneData.lights[i].intensity);
             }
             this.#gl.drawElements(this.#gl.TRIANGLES, this.#renderData.quadIndexCount, this.#gl.UNSIGNED_SHORT, 0);
         }
@@ -829,7 +892,7 @@ export class Renderer {
 
     #settings2d() {
         // this.#gl.disable(this.#gl.CULL_FACE);
-        this.#gl.disable(this.#gl.DEPTH_TEST);
+        this.#gl.enable(this.#gl.DEPTH_TEST);
     }
 
     #settings3d() {

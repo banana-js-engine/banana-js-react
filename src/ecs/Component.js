@@ -10,6 +10,8 @@ import { AnimationClip } from "../renderer/AnimationClip";
 import { WavefrontParser } from "../renderer/WavefrontParser";
 import { GO } from "./GO";
 import { VertexArray } from "../renderer/VertexArray";
+import { SpriteSheet } from "../renderer/SpriteSheet";
+import { readFileAsText } from "../utils/file";
 
 
 export class BaseComponent {
@@ -570,7 +572,7 @@ export class CameraComponent extends BaseComponent {
         return new Vector3(
             (vector.x - this.#canvas.clientWidth / 2) / (this.#canvas.clientHeight / this.#size),
             (vector.y - this.#canvas.clientHeight / 2) / (this.#canvas.clientHeight / this.#size),
-            0
+            0,
         );
     }
     
@@ -1055,7 +1057,11 @@ export class AnimatorComponent extends BaseComponent {
         this.#playing = true;
         
         this.#spriteRenderer.texture = this.#animations[animationName].texture;
-        this.#spriteRenderer.texCoords = this.#animations[animationName].currentFrame;
+        const currentFrame = this.#animations[animationName].currentFrame;
+        this.#spriteRenderer.texCoords[0].set(currentFrame[0].x, currentFrame[0].y);
+        this.#spriteRenderer.texCoords[1].set(currentFrame[1].x, currentFrame[1].y);
+        this.#spriteRenderer.texCoords[2].set(currentFrame[2].x, currentFrame[2].y);
+        this.#spriteRenderer.texCoords[3].set(currentFrame[3].x, currentFrame[3].y);
 
         this.#currentAnimation = animationName;
     }
@@ -1084,7 +1090,11 @@ export class AnimatorComponent extends BaseComponent {
         }
         
         if (this.#animations[this.#currentAnimation].step(dt)) {
-            this.#spriteRenderer.texCoords = this.#animations[this.#currentAnimation].currentFrame;
+            const currentFrame = this.#animations[this.#currentAnimation].currentFrame;
+            this.#spriteRenderer.texCoords[0].set(currentFrame[0].x, currentFrame[0].y);
+            this.#spriteRenderer.texCoords[1].set(currentFrame[1].x, currentFrame[1].y);
+            this.#spriteRenderer.texCoords[2].set(currentFrame[2].x, currentFrame[2].y);
+            this.#spriteRenderer.texCoords[3].set(currentFrame[3].x, currentFrame[3].y);
         }
     }
 }
@@ -1249,6 +1259,8 @@ export class UITextComponent extends UIComponent {
 export class LightComponent extends BaseComponent {
 
     #color;
+    #intensity
+    #on;
 
     /**
      * 
@@ -1256,9 +1268,11 @@ export class LightComponent extends BaseComponent {
      * @param {Vector3} direction 
      * @param {Vector4} color 
      */
-    constructor(gameObject, color) {
+    constructor(gameObject, color, intensity) {
         super(gameObject);
         this.#color = Vector3.one;
+        this.#intensity = intensity ? intensity : 1.0;
+        this.#on = true;
 
         if (color) {
             const c = this._processParameterVector3(color);
@@ -1276,6 +1290,18 @@ export class LightComponent extends BaseComponent {
 
     get color() {
         return this.#color;
+    }
+
+    get intensity() {
+        return this.#intensity;
+    }
+
+    get on() {
+        return this.#on;
+    }
+
+    toggle() {
+        this.#on = !this.#on;
     }
 }
 
@@ -1421,7 +1447,7 @@ export class ParticleComponent extends BaseComponent {
 
     #initializeParticleData() {
         var data = [];
-        for (var i = 0; i < this.#particleCount; ++i) {
+        for (var i = 0; i < this.#particleCount; i++) {
             // position
             data.push(0.0);
             data.push(0.0);
@@ -1443,6 +1469,7 @@ export class ParticleComponent extends BaseComponent {
 
 }
 
+// TODO
 export class DialogueComponent extends BaseComponent {
 
     #texts;
@@ -1456,6 +1483,72 @@ export class DialogueComponent extends BaseComponent {
 
     }
 
+}
+
+export class TilemapComponent extends BaseComponent {
+
+    #spriteSheet;
+    #tileTexCoordMap;
+    #tilemap;
+
+    constructor(gameObject, src, data, cellWidth, cellHeight) {
+        super(gameObject);
+
+        const tilemapTexture = new Texture(this.gameObject.gl, src);
+        this.#spriteSheet = new SpriteSheet(tilemapTexture, cellWidth, cellHeight);
+        this.#tileTexCoordMap = new Map();
+        this.#tilemap = [];
+
+        readFileAsText(data)
+        .then(text => {
+            const lines = text.split('\n');
+            let readChars = true;
+
+            for (let line of lines) {
+                const words = line.trim().split(/\s+/);
+
+                if (words[0] == '') {
+                    continue;
+                }
+                
+                if (words[0] == '.data') {
+                    readChars = true;
+                    continue;
+                } else if (words[0] == '.tilemap') {
+                    readChars = false;
+                    continue;
+                }
+
+                if (readChars) {
+                    line = line.trim();
+                    let [symbol, value] = line.split(':');
+                    symbol = symbol.trim();
+                    const [x, y] = value.split(',');
+
+                    const texCoords = this.#spriteSheet.getTexCoords(parseInt(y.trim()), parseInt(x.trim()));
+                    this.#tileTexCoordMap.set(symbol, texCoords);
+                } else {
+                    this.#tilemap.push(line.trim());
+                }
+            }
+        });
+    }
+
+    get type() {
+        return ComponentType.Tilemap;
+    }
+
+    get spriteSheet() {
+        return this.#spriteSheet;
+    }
+
+    get texCoordsMap() {
+        return this.#tileTexCoordMap;
+    }
+
+    get tilemap() {
+        return this.#tilemap;
+    }
 }
 
 export const ComponentMap = {}

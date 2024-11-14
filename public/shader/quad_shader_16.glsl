@@ -3,6 +3,7 @@
 struct Light {
     vec3 position;
     vec3 color;
+    float intensity;
 };
 
 in vec3 a_Position;
@@ -24,15 +25,24 @@ void main() {
     v_TexIndex = a_TexIndex;
 
     float totalDistance = 0.0;
-    vec3 totalColor = vec3(1.0);
+    vec3 totalColor = vec3(0.0);
     for (int i = 0; i < u_LightCount; i++) {
         float distanceToLight = distance(u_Lights[i].position, a_Position);
         totalDistance += distanceToLight;
-        totalColor *= u_Lights[i].color * (1.0 / distanceToLight);
+        totalColor += u_Lights[i].color * u_Lights[i].intensity * (1.0 / distanceToLight);
     }
 
-    v_Distance = totalDistance / float(u_LightCount);
-    v_Color = a_Color * vec4(totalColor, 1.0);
+    if (u_LightCount > 0) {
+        v_Distance = totalDistance / float(u_LightCount);
+    } else {
+        v_Distance = 0.0;
+    }
+
+    if (u_LightCount > 0) {
+        v_Color = a_Color * vec4(totalColor, 1.0);
+    } else {
+        v_Color = a_Color;
+    }
 
     gl_Position = u_ViewProjectionMatrix * vec4(a_Position, 1.0);
     gl_Position /= gl_Position.w;
@@ -76,6 +86,11 @@ void main() {
     }
 
     float lightIntensity = (1.0 / v_Distance);
+    
+    if (v_Distance == 0.0) {
+        lightIntensity = 1.0;
+    }
+
 
     fragColor = l_Texture * v_Color * lightIntensity;
     fragColor.a = v_Color.a;
