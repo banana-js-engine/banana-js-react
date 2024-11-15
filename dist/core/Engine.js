@@ -232,6 +232,12 @@ class Engine {
         this.#textRenderer.drawUIText(goUITexts[i]);
       }
     }
+    const goDialogues = activeScene.getComponents(_Types.ComponentType.Dialogue);
+    for (let i = 0; i < goDialogues.length; i++) {
+      if (goDialogues[i].active && goDialogues[i].isDialogueRunning) {
+        this.#textRenderer.drawDialogue(goDialogues[i], dt);
+      }
+    }
     _Input.Input.mouseDelta.set(0, 0);
     this.#firstUpdate = false;
   }

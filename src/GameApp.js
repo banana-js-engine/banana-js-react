@@ -21,6 +21,7 @@ import { Cursor } from "./components/Cursor";
 import { Tilemap } from "./components/Tilemap";
 import { Animator } from "./components/Animator";
 import { Animation } from "./components/Animation";
+import { Dialogue } from "./components/Dialogue";
 
 export default function GameApp() {
     const [count, setCount] = useState(0);
@@ -82,6 +83,16 @@ export default function GameApp() {
                 <GameObject name="Light">
                     <Transform position={[-1.9, 1.8, 0]}/>
                     <Light intensity={4}/>
+                </GameObject>
+
+                <GameObject>
+                    <Transform position={[0, 4, 0]}/>
+                    <Dialogue color={[1, 1, 1, 1]} fontSize={20} playOnStart>
+                        <div>Got the dialogue system working</div>
+                        <div>So cool!!!</div>
+                        <div>Better than Bora's</div>
+                        <div>I love sucking dick also</div>
+                    </Dialogue>
                 </GameObject>
             </Scene>
         </Game>

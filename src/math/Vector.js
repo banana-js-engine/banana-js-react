@@ -361,8 +361,8 @@ export class Vector4 extends Vector3 {
         let hexRepresentation = '#';
         for (let i = 0; i < 3; i++) {
             const digit = Math.round(this.data[i] * 255).toString(16);
-            if (digit == '0') {
-                hexRepresentation += '00';
+            if (digit.length == 1) {
+                hexRepresentation += `0${digit}`;
             } else {
                 hexRepresentation += digit;
             }

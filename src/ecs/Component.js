@@ -4,7 +4,7 @@ import { AABB } from "../physics/AABB";
 import { Texture } from "../renderer/Texture";
 import { Color } from "../renderer/Color";
 import { VertexBuffer } from "../renderer/Buffer";
-import { ComponentType, ShapeType } from "../core/Types";
+import { ComponentType, KeyCode, ShapeType } from "../core/Types";
 import { clamp01, toDegrees } from "../math/bananaMath";
 import { AnimationClip } from "../renderer/AnimationClip";
 import { WavefrontParser } from "../renderer/WavefrontParser";
@@ -1469,20 +1469,94 @@ export class ParticleComponent extends BaseComponent {
 
 }
 
-// TODO
 export class DialogueComponent extends BaseComponent {
 
-    #texts;
-    #textRollSpeed;
+    #dialogue;
+    #textRollDuration;
     #color;
     #fontFamily;
     #fontSize;
 
-    constructor(gameObject, textRollSpeed, color, fontFamily, fontSize) {
+    currentTime;
+    currentIndex;
+    currentChar;
+    currentText;
+    skipToNext;
+    skipKey;
+    isDialogueRunning;
+
+    constructor(gameObject, dialogue, textRollSpeed, color, fontFamily, fontSize, skipKey, playOnStart) {
         super(gameObject);
 
+        this.#dialogue = [];
+        for (const text of dialogue) {
+            this.#dialogue.push(text);
+        }
+
+        this.#textRollDuration = textRollSpeed ? textRollSpeed : 0.1;
+        this.#color = Color.black;
+        this.#fontFamily = fontFamily ? fontFamily : 'dejavu, monospace';
+        this.#fontSize = fontSize ? fontSize : 10;
+
+        if (color) {
+            const c = this._processParameterVector4(color);
+            this.#color.set(c.r, c.g, c.b, c.a);
+        }
+
+        this.currentTime = 0;
+        this.currentIndex = 0;
+        this.currentChar = 0;
+        this.currentText = '';
+        this.skipToNext = false;
+        this.skipKey = skipKey ? skipKey : KeyCode.Space;
+    
+        if (typeof playOnStart == 'undefined') {
+            playOnStart = false;
+        }
+
+        this.isDialogueRunning = playOnStart ? true : false;
     }
 
+    get type() {
+        return ComponentType.Dialogue;
+    }
+
+    get currentDialogue() {
+        return this.#dialogue[this.currentIndex];
+    }
+
+    get textRollDuration() {
+        return this.#textRollDuration;
+    }
+
+    get color() {
+        return this.#color;
+    }
+
+    get fontFamily() {
+        return this.#fontFamily;
+    }
+
+    get fontSize() {
+        return this.#fontSize;
+    }
+
+    get position() {
+        return this.mainCamera.worldToScreenSpace(this.transform.position);
+    }
+
+    startDialogue() {
+        this.isDialogueRunning = true;
+    }
+
+    stopDialogue() {
+        this.isDialogueRunning = false;
+        this.currentTime = 0;
+        this.currentIndex = 0;
+        this.currentChar = 0;
+        this.currentText = '';
+        this.skipToNext = false;
+    }
 }
 
 export class TilemapComponent extends BaseComponent {

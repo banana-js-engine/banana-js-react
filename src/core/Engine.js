@@ -293,6 +293,14 @@ export class Engine {
             }
         }
 
+        const goDialogues = activeScene.getComponents(ComponentType.Dialogue);
+
+        for (let i = 0; i < goDialogues.length; i++) {
+            if (goDialogues[i].active && goDialogues[i].isDialogueRunning) {
+                this.#textRenderer.drawDialogue(goDialogues[i], dt);
+            }
+        }
+
         Input.mouseDelta.set(0, 0);
 
         this.#firstUpdate = false;

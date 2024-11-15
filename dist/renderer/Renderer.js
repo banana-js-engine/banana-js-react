@@ -473,6 +473,7 @@ class Renderer {
     for (let i = 0; i < this.#sceneData.lights.length; i++) {
       this.#renderData.largeMeshShader.setUniform3fv(`u_Lights[${i}].position`, this.#sceneData.lights[i].position.data);
       this.#renderData.largeMeshShader.setUniform3fv(`u_Lights[${i}].color`, this.#sceneData.lights[i].color.data);
+      this.#renderData.largeMeshShader.setUniform1f(`u_Lights[${i}].intensity`, this.#sceneData.lights[i].intensity);
     }
     if (mesh.VAO) {
       mesh.VAO.bind();
@@ -659,6 +660,7 @@ class Renderer {
       for (let i = 0; i < this.#sceneData.lights.length; i++) {
         this.#renderData.meshShader.setUniform3fv(`u_Lights[${i}].position`, this.#sceneData.lights[i].position.data);
         this.#renderData.meshShader.setUniform3fv(`u_Lights[${i}].color`, this.#sceneData.lights[i].color.data);
+        this.#renderData.meshShader.setUniform1f(`u_Lights[${i}].intensity`, this.#sceneData.lights[i].intensity);
       }
       this.#gl.drawArrays(this.#gl.TRIANGLES, 0, this.#renderData.meshVertexCount);
     }

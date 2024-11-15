@@ -174,6 +174,9 @@ declare module "@mfkucuk/banana-js" {
         Text = 9,
         UIText = 10,
         Light = 11,
+        Particle = 12,
+        Dialogue = 13,
+        Tilemap = 14,
     }
     
     export const enum ShapeType {
