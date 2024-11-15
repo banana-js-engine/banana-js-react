@@ -605,7 +605,8 @@ class Renderer {
     const white = _Color.Color.white;
     for (let i = 0; i < tilemap.length; i++) {
       for (let j = 0; j < tilemap[i].length; j++) {
-        if (tilemap[i][j] != ' ') {
+        const tile = texCoordMap.get(tilemap[i][j]);
+        if (tile) {
           const tile = tilemap[i][j];
           const texCoords = texCoordMap.get(tile);
           for (let k = 0; k < 4; k++) {

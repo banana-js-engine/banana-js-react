@@ -51,6 +51,15 @@ declare module "@mfkucuk/banana-js" {
 
     export function Cylinder(props: { }): React.JSX.Element;
 
+    export function Dialogue(props: {
+        rollDuration: number,
+        color: [number, number, number, number] | Color,
+        fontFamily: string,
+        fontSize: number,
+        skipKey: KeyCode,
+        playOnStart: boolean
+    }): void;
+
     export function Game(props: {
         name: string,
         width: number,
@@ -119,6 +128,13 @@ declare module "@mfkucuk/banana-js" {
         color: [number, number, number, number] | Color,
         fontFamily: string,
         fontSize: number
+    }): void;
+
+    export function Tilemap(props: {
+        src: string,
+        dataSrc: string,
+        cellWidth: number,
+        cellHeight: number
     }): void;
 
     export function Torus(props: { }): React.JSX.Element;
@@ -346,6 +362,16 @@ declare module "@mfkucuk/banana-js" {
     export class ParticleComponent extends BaseComponent {
         play(): void;
         stop(): void;   
+    }
+
+    export class DialogueComponent extends BaseComponent {
+        startDialogue(): void;
+        stopDialogue(): void;
+    }
+
+    export class TilemapComponent extends BaseComponent {
+        setData(data: string): void;
+        setSpriteSheet(textureSrc: string, cellWidth: number, cellHeight: number): void;
     }
 
     export class GO {

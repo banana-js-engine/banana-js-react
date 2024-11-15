@@ -1,5 +1,6 @@
 import { ComponentType } from "../core/Types";
 import { TilemapComponent } from "../ecs/Component";
+import { readFileAsText } from "../utils/file";
 import { useGameObject } from "./GameObject";
 
 /**
@@ -19,5 +20,4 @@ export function Tilemap(props) {
             props.cellHeight
         ));
     }
-
 }

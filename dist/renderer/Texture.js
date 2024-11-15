@@ -64,6 +64,9 @@ class Texture {
   get src() {
     return this.#image.src;
   }
+  get image() {
+    return this.#image;
+  }
   bind() {
     let unit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
     this.#gl.activeTexture(this.#gl.TEXTURE0 + unit);

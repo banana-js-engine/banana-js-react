@@ -1568,44 +1568,15 @@ export class TilemapComponent extends BaseComponent {
     constructor(gameObject, src, data, cellWidth, cellHeight) {
         super(gameObject);
 
-        const tilemapTexture = new Texture(this.gameObject.gl, src);
-        this.#spriteSheet = new SpriteSheet(tilemapTexture, cellWidth, cellHeight);
-        this.#tileTexCoordMap = new Map();
-        this.#tilemap = [];
-
-        readFileAsText(data)
-        .then(text => {
-            const lines = text.split('\n');
-            let readChars = true;
-
-            for (let line of lines) {
-                const words = line.trim().split(/\s+/);
-
-                if (words[0] == '') {
-                    continue;
-                }
-                
-                if (words[0] == '.data') {
-                    readChars = true;
-                    continue;
-                } else if (words[0] == '.tilemap') {
-                    readChars = false;
-                    continue;
-                }
-
-                if (readChars) {
-                    line = line.trim();
-                    let [symbol, value] = line.split(':');
-                    symbol = symbol.trim();
-                    const [x, y] = value.split(',');
-
-                    const texCoords = this.#spriteSheet.getTexCoords(parseInt(y.trim()), parseInt(x.trim()));
-                    this.#tileTexCoordMap.set(symbol, texCoords);
-                } else {
-                    this.#tilemap.push(line.trim());
-                }
-            }
-        });
+        this.setSpriteSheet(src, cellWidth, cellHeight);
+        if (data.startsWith('.data')) {
+            this.setData(data);
+        } else [
+            readFileAsText(data)
+            .then(text => {
+                this.setData(text);
+            })
+        ]
     }
 
     get type() {
@@ -1622,6 +1593,47 @@ export class TilemapComponent extends BaseComponent {
 
     get tilemap() {
         return this.#tilemap;
+    }
+
+    setData(newData) {
+        this.#tileTexCoordMap = new Map();
+        this.#tilemap = [];
+
+        const lines = newData.split('\n');
+        let readChars = true;
+
+        for (let line of lines) {
+            const words = line.trim().split(/\s+/);
+
+            if (words[0] == '') {
+                continue;
+            }
+            
+            if (words[0] == '.data') {
+                readChars = true;
+                continue;
+            } else if (words[0] == '.tilemap') {
+                readChars = false;
+                continue;
+            }
+
+            if (readChars) {
+                line = line.trim();
+                let [symbol, value] = line.split(':');
+                symbol = symbol.trim();
+                const [x, y] = value.split(',');
+
+                const texCoords = this.#spriteSheet.getTexCoords(parseInt(y.trim()), parseInt(x.trim()));
+                this.#tileTexCoordMap.set(symbol, texCoords);
+            } else {
+                this.#tilemap.push(line.trim());
+            }
+        }
+    }
+
+    setSpriteSheet(textureSrc, cellWidth, cellHeight) {
+        const tilemapTexture = new Texture(this.gameObject.gl, textureSrc);
+        this.#spriteSheet = new SpriteSheet(tilemapTexture, cellWidth, cellHeight);
     }
 }
 

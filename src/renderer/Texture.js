@@ -77,6 +77,10 @@ export class Texture {
         return this.#image.src;
     }
 
+    get image() {
+        return this.#image;
+    }
+
     bind(unit = 0) {
         this.#gl.activeTexture(this.#gl.TEXTURE0 + unit);
         this.#gl.bindTexture(this.#gl.TEXTURE_2D, this.#textureId);

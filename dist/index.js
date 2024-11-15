@@ -13,6 +13,7 @@ var _exportNames = {
   Cube: true,
   Cursor: true,
   Cylinder: true,
+  Dialogue: true,
   Game: true,
   GameObject: true,
   Icosphere: true,
@@ -26,6 +27,7 @@ var _exportNames = {
   Sphere: true,
   Sprite: true,
   Text: true,
+  Tilemap: true,
   Torus: true,
   Transform: true,
   UIText: true,
@@ -96,6 +98,12 @@ Object.defineProperty(exports, "Cylinder", {
   enumerable: true,
   get: function () {
     return _Cylinder.Cylinder;
+  }
+});
+Object.defineProperty(exports, "Dialogue", {
+  enumerable: true,
+  get: function () {
+    return _Dialogue.Dialogue;
   }
 });
 Object.defineProperty(exports, "Game", {
@@ -200,6 +208,12 @@ Object.defineProperty(exports, "Text", {
     return _Text.Text;
   }
 });
+Object.defineProperty(exports, "Tilemap", {
+  enumerable: true,
+  get: function () {
+    return _Tilemap.Tilemap;
+  }
+});
 Object.defineProperty(exports, "Torus", {
   enumerable: true,
   get: function () {
@@ -245,6 +259,7 @@ var _CircleBody2D = require("./components/CircleBody2D");
 var _Cube = require("./components/Cube");
 var _Cursor = require("./components/Cursor");
 var _Cylinder = require("./components/Cylinder");
+var _Dialogue = require("./components/Dialogue");
 var _Game = require("./components/Game");
 var _GameObject = require("./components/GameObject");
 var _Icosphere = require("./components/Icosphere");
@@ -258,6 +273,7 @@ var _Script = require("./components/Script");
 var _Sphere = require("./components/Sphere");
 var _Sprite = require("./components/Sprite");
 var _Text = require("./components/Text");
+var _Tilemap = require("./components/Tilemap");
 var _Torus = require("./components/Torus");
 var _Transform = require("./components/Transform");
 var _UIText = require("./components/UIText");

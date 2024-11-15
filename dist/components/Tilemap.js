@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.Tilemap = Tilemap;
 var _Types = require("../core/Types");
 var _Component = require("../ecs/Component");
+var _file = require("../utils/file");
 var _GameObject = require("./GameObject");
 /**
  * 
