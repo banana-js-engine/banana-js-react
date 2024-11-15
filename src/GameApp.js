@@ -91,7 +91,6 @@ export default function GameApp() {
                         <div>Got the dialogue system working</div>
                         <div>So cool!!!</div>
                         <div>Better than Bora's</div>
-                        <div>I love sucking dick also</div>
                     </Dialogue>
                 </GameObject>
             </Scene>

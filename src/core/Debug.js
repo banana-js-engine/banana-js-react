@@ -5,7 +5,7 @@ export class Debug {
 
     static showCollisionShapes = false;
     static showContactPoints = false;
-    static showFps = true;
+    static showFps = false;
 
     /**
      * take a snapshot of the given scene.
