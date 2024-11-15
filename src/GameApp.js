@@ -22,6 +22,7 @@ import { Tilemap } from "./components/Tilemap";
 import { Animator } from "./components/Animator";
 import { Animation } from "./components/Animation";
 import { Dialogue } from "./components/Dialogue";
+import { DebugSettings } from "./components/DebugSettings";
 
 export default function GameApp() {
     const [count, setCount] = useState(0);
@@ -33,6 +34,7 @@ export default function GameApp() {
     return (
         <Game name="Development" width={400} height={400} platform={PlatformType.Web}>
             <Cursor/>
+            <DebugSettings showFps/>
             <Scene>
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 0]}/>

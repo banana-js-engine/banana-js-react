@@ -2,7 +2,7 @@ import { Debug } from "../core/Debug";
 
 /**
  * 
- * @param {{ showCollisionShapes, showContactPoints, shopFps }} props 
+ * @param {{ showCollisionShapes: boolean, showContactPoints: boolean, showFps: boolean }} props 
  */
 export function DebugSettings(props) {
     if (typeof props.showCollisionShapes != 'undefined') {
@@ -13,7 +13,7 @@ export function DebugSettings(props) {
         Debug.showContactPoints = props.showContactPoints;
     }
 
-    if (typeof props.shopFps != 'undefined') {
-        Debug.shopFps = props.shopFps;
+    if (typeof props.showFps != 'undefined') {
+        Debug.showFps = props.showFps;
     }
 }

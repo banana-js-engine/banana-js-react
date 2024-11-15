@@ -13,6 +13,7 @@ var _exportNames = {
   Cube: true,
   Cursor: true,
   Cylinder: true,
+  DebugSettings: true,
   Dialogue: true,
   Game: true,
   GameObject: true,
@@ -98,6 +99,12 @@ Object.defineProperty(exports, "Cylinder", {
   enumerable: true,
   get: function () {
     return _Cylinder.Cylinder;
+  }
+});
+Object.defineProperty(exports, "DebugSettings", {
+  enumerable: true,
+  get: function () {
+    return _DebugSettings.DebugSettings;
   }
 });
 Object.defineProperty(exports, "Dialogue", {
@@ -259,6 +266,7 @@ var _CircleBody2D = require("./components/CircleBody2D");
 var _Cube = require("./components/Cube");
 var _Cursor = require("./components/Cursor");
 var _Cylinder = require("./components/Cylinder");
+var _DebugSettings = require("./components/DebugSettings");
 var _Dialogue = require("./components/Dialogue");
 var _Game = require("./components/Game");
 var _GameObject = require("./components/GameObject");
