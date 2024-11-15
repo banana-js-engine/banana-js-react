@@ -51,6 +51,12 @@ declare module "@mfkucuk/banana-js" {
 
     export function Cylinder(props: { }): React.JSX.Element;
 
+    export function DebugSettings(props: {
+        showCollisionShapes: boolean,
+        showContactPoints: boolean,
+        showFps: boolean
+    }): void;
+
     export function Dialogue(props: {
         rollDuration: number,
         color: [number, number, number, number] | Color,

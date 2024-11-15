@@ -7,6 +7,7 @@ export { CircleBody2D }  from './components/CircleBody2D';
 export { Cube }  from './components/Cube';
 export { Cursor }  from './components/Cursor';
 export { Cylinder }  from './components/Cylinder';
+export { DebugSettings }  from './components/DebugSettings';
 export { Dialogue }  from './components/Dialogue';
 export { Game } from './components/Game';
 export { GameObject } from './components/GameObject';
