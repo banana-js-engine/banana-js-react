@@ -15,18 +15,35 @@ class GO {
   active;
 
   /**
+   * @type {GO}
+   */
+  parent;
+
+  /**
+   * @type {GO[]}
+   */
+  children;
+
+  /**
    * 
    * @param {SceneECS} scene 
    * @param {string} handle 
    * @param {WebGL2RenderingContext} gl 
+   * @param {GO} parent 
    */
-  constructor(scene, handle, gl, active) {
+  constructor(scene, handle, gl, active, parent) {
     this.#scene = scene;
     this.#handle = handle;
     this.#gl = gl;
     this.active = true;
     if (typeof active != 'undefined') {
       this.active = active;
+    }
+    this.children = [];
+    if (parent) {
+      parent.addChild(this);
+    } else {
+      this.parent = null;
     }
   }
   get scene() {
@@ -48,6 +65,24 @@ class GO {
     }
     this.#transform = this.getComponent(_Types.ComponentType.Transform);
     return this.#transform;
+  }
+
+  /**
+   * 
+   * @param {GO} child 
+   */
+  addChild(child) {
+    child.parent = this;
+    this.children.push(child);
+  }
+
+  /**
+   * 
+   * @param {GO} child 
+   */
+  removeChild(child) {
+    this.children = this.children.filter(c => c !== child);
+    child.parent = null;
   }
   createPrefab(prefab) {
     this.#scene.createPrefab(prefab);

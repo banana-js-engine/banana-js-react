@@ -2,7 +2,7 @@ import { createContext, useContext, useRef } from "react";
 import { useScene } from "./Scene";
 import { GO } from "../ecs/GO";
 import { useGL } from "./Game";
-import { NameComponent, TransformComponent } from "../ecs/Component";
+import { NameComponent } from "../ecs/Component";
 import { SceneECS } from "../ecs/SceneECS";
 
 const GameObjectContext = createContext(null);
@@ -21,6 +21,8 @@ export function GameObject(props) {
 
     const gameObjectRef = useRef();
 
+    const parent = useGameObject();
+
     // Only initialize once
     if (!gameObjectRef.current) {
 
@@ -32,7 +34,7 @@ export function GameObject(props) {
         const gl = useGL();
 
         
-        gameObjectRef.current = new GO(scene, handle, gl, props.active);
+        gameObjectRef.current = new GO(scene, handle, gl, props.active, parent);
         gameObjectRef.current.addComponent(new NameComponent(gameObjectRef.current, props.name));
     }
 

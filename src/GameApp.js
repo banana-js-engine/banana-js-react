@@ -54,7 +54,7 @@ export default function GameApp() {
 
                 <GameObject>
                     <Transform/>
-                    <Audio src="Track01.wav" playOnStart/>
+                    <Audio src="Track01.wav" playOnStart volume={0}/>
                 </GameObject>
 
                 <GameObject>
@@ -63,7 +63,7 @@ export default function GameApp() {
                 </GameObject>
 
                 <GameObject>
-                    <Transform position={[0, 0, 1]}/>
+                    <Transform position={[0, 0, 1]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <Sprite/>
 
                     <Animator startAnim="Idle">
@@ -71,6 +71,16 @@ export default function GameApp() {
                     </Animator>
 
                     <Script import={import('./scripts/MovementScript')} speed={0.1} test={incrementCount}/>
+
+                    <GameObject>
+                        <Transform position={[1, 0, 0]} rotation={[0, 0, 45]}/>
+                        <Sprite/>
+
+                        <GameObject>
+                            <Transform position={[2, 0, 0]} rotation={[0, 0, 30]}/>
+                            <Sprite/>
+                        </GameObject>
+                    </GameObject>
                 </GameObject>
 
                 <GameObject name="Particle">

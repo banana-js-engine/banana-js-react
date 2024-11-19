@@ -58,7 +58,8 @@ function GameApp() {
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Audio.Audio, {
           src: "Track01.wav",
-          playOnStart: true
+          playOnStart: true,
+          volume: 0
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
@@ -71,7 +72,9 @@ function GameApp() {
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
-          position: [0, 0, 1]
+          position: [0, 0, 1],
+          rotation: [0, 0, 0],
+          scale: [1, 1, 1]
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.Sprite, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Animator.Animator, {
           startAnim: "Idle",
           children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_Animation.Animation, {
@@ -86,6 +89,16 @@ function GameApp() {
           import: Promise.resolve().then(() => _interopRequireWildcard(require('./scripts/MovementScript'))),
           speed: 0.1,
           test: incrementCount
+        }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
+          children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
+            position: [1, 0, 0],
+            rotation: [0, 0, 45]
+          }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.Sprite, {}), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
+            children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_Transform.Transform, {
+              position: [2, 0, 0],
+              rotation: [0, 0, 30]
+            }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.Sprite, {})]
+          })]
         })]
       }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_GameObject.GameObject, {
         name: "Particle",

@@ -182,6 +182,9 @@ class TransformComponent extends BaseComponent {
     this.#transform.multiply(this.#rotationYMat);
     this.#transform.multiply(this.#rotationZMat);
     this.#transform.multiply(this.#positionMat);
+    if (this.gameObject.parent) {
+      this.#transform.multiply(this.gameObject.parent.transform.transformMatrix);
+    }
     return this.#transform;
   }
   get position() {
@@ -594,6 +597,7 @@ class AudioComponent extends BaseComponent {
     this.#playing = false;
     this.#gainNode = this.#audioContext.createGain();
     this.#gainNode.connect(this.#audioContext.destination);
+    this.setVolume(volume);
     if (this.#playOnStart) {
       this.play();
     }
@@ -678,7 +682,7 @@ class AudioComponent extends BaseComponent {
    */
   setVolume(volume) {
     this.#volume = volume;
-    this.#gainNode.gain.volume = this.#volume;
+    this.#gainNode.gain.value = this.#volume;
   }
 }
 exports.AudioComponent = AudioComponent;
