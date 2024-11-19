@@ -29,6 +29,7 @@ var _exportNames = {
   Sprite: true,
   Text: true,
   Tilemap: true,
+  Timer: true,
   Torus: true,
   Transform: true,
   UIText: true,
@@ -221,6 +222,12 @@ Object.defineProperty(exports, "Tilemap", {
     return _Tilemap.Tilemap;
   }
 });
+Object.defineProperty(exports, "Timer", {
+  enumerable: true,
+  get: function () {
+    return _Timer.Timer;
+  }
+});
 Object.defineProperty(exports, "Torus", {
   enumerable: true,
   get: function () {
@@ -282,6 +289,7 @@ var _Sphere = require("./components/Sphere");
 var _Sprite = require("./components/Sprite");
 var _Text = require("./components/Text");
 var _Tilemap = require("./components/Tilemap");
+var _Timer = require("./components/Timer");
 var _Torus = require("./components/Torus");
 var _Transform = require("./components/Transform");
 var _UIText = require("./components/UIText");

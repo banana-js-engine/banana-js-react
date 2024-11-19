@@ -29,7 +29,8 @@ const ComponentType = exports.ComponentType = {
   Light: 11,
   Particle: 12,
   Dialogue: 13,
-  Tilemap: 14
+  Tilemap: 14,
+  Timer: 15
 };
 
 /**

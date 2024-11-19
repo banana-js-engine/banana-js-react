@@ -143,6 +143,12 @@ declare module "@mfkucuk/banana-js" {
         cellHeight: number
     }): void;
 
+    export function Timer(props: {
+        duration: number,
+        oneShot: boolean,
+        onTimerEnd: Function;
+    }): void;
+
     export function Torus(props: { }): React.JSX.Element;
 
     export function Transform(props: {
@@ -282,6 +288,11 @@ declare module "@mfkucuk/banana-js" {
         addComponent<T extends BaseComponent>(component: T): T;
     }
 
+    export class UIComponent extends BaseComponent {
+        left: number;
+        top: number;
+    }
+
     export class NameComponent extends BaseComponent {
         get name(): string;
         set name(newName: string): void;
@@ -360,9 +371,16 @@ declare module "@mfkucuk/banana-js" {
         get color(): Vector4;
     }
 
+    export class UITextComponent extends UIComponent {
+        get text(): string;
+        set text(newText: string): void;
+        get color(): Vector4;
+    }
+
     export class LightComponent extends BaseComponent {
         get direction(): Vector3;
         get color(): Color;
+        toggle(): void;
     }
 
     export class ParticleComponent extends BaseComponent {
@@ -378,6 +396,13 @@ declare module "@mfkucuk/banana-js" {
     export class TilemapComponent extends BaseComponent {
         setData(data: string): void;
         setSpriteSheet(textureSrc: string, cellWidth: number, cellHeight: number): void;
+    }
+
+    export class TimerComponent extends BaseComponent {
+        duration: void;
+        oneShot: boolean;
+
+        setCallback(callback: Function): void;
     }
 
     export class GO {

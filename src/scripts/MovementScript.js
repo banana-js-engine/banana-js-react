@@ -10,6 +10,11 @@ export class MovementScript extends ScriptComponent {
         this.body = this.getComponent(ComponentType.Body2D);
         this.text = this.getComponent(ComponentType.Text);
         this.audio = this.getComponent(ComponentType.Audio);
+        this.timer = this.getComponent(ComponentType.Timer);
+
+        this.timer.setCallback(() => {
+            console.log('hello, world!' );
+        })
     }
 
     step(dt) {
@@ -44,6 +49,8 @@ export class MovementScript extends ScriptComponent {
         if (Input.getKeyDown(KeyCode.O)) {
             this.audio.resume();
         }
+
+
     }
 
     onExitViewport() {

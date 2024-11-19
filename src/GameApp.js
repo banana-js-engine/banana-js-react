@@ -24,6 +24,7 @@ import { Animation } from "./components/Animation";
 import { Dialogue } from "./components/Dialogue";
 import { DebugSettings } from "./components/DebugSettings";
 import { Audio } from "./components/Audio";
+import { Timer } from "./components/Timer";
 
 export default function GameApp() {
     const [count, setCount] = useState(0);
@@ -60,7 +61,8 @@ export default function GameApp() {
                 <GameObject>
                     <Transform position={[0, 0, 1]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <Sprite/>
-                    <Audio src="Track01.wav" playOnStart volume={1}/>
+                    <Audio src="Track01.wav" playOnStart loop volume={0.1}/>
+                    <Timer/>
 
                     <Animator startAnim="Idle">
                         <Animation src="dungeon.png" name="Idle" firstFrame={27} frames={0} cellWidth={13} cellHeight={13}/>

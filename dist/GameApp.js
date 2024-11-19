@@ -30,6 +30,7 @@ var _Animation = require("./components/Animation");
 var _Dialogue = require("./components/Dialogue");
 var _DebugSettings = require("./components/DebugSettings");
 var _Audio = require("./components/Audio");
+var _Timer = require("./components/Timer");
 var _jsxRuntime = require("react/jsx-runtime");
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
@@ -72,8 +73,9 @@ function GameApp() {
         }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Sprite.Sprite, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Audio.Audio, {
           src: "Track01.wav",
           playOnStart: true,
-          volume: 1
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Animator.Animator, {
+          loop: true,
+          volume: 0.1
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Timer.Timer, {}), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Animator.Animator, {
           startAnim: "Idle",
           children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_Animation.Animation, {
             src: "dungeon.png",

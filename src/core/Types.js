@@ -24,6 +24,7 @@ export const ComponentType = {
     Particle: 12,
     Dialogue: 13,
     Tilemap: 14,
+    Timer: 15
 };
 
 /**

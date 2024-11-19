@@ -88,7 +88,7 @@ void main() {
     float lightIntensity = (1.0 / v_Distance);
     
     if (v_Distance == 0.0) {
-        lightIntensity = 1.0;
+        lightIntensity = 20.0;
     }
 
 

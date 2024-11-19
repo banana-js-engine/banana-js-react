@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.UITextComponent = exports.UIComponent = exports.TransformComponent = exports.TilemapComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.ParticleComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.DialogueComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
+exports.UITextComponent = exports.UIComponent = exports.TransformComponent = exports.TimerComponent = exports.TilemapComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.ParticleComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.DialogueComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
 var _Matrix = require("../math/Matrix");
 var _Vector = require("../math/Vector");
 var _AABB = require("../physics/AABB");
@@ -1410,6 +1410,39 @@ class TilemapComponent extends BaseComponent {
   }
 }
 exports.TilemapComponent = TilemapComponent;
+class TimerComponent extends BaseComponent {
+  duration;
+  oneShot;
+  #onTimerReachZero;
+  #elapsedTime;
+  #firedOnce;
+  constructor(gameObject, duration, oneShot, onTimerReachZero) {
+    super(gameObject);
+    this.duration = duration ? duration : 1;
+    this.oneShot = typeof oneShot != 'undefined' ? oneShot : true;
+    this.#onTimerReachZero = onTimerReachZero ? onTimerReachZero : () => {};
+    this.#elapsedTime = 0;
+    this.#firedOnce = false;
+  }
+  get type() {
+    return _Types.ComponentType.Timer;
+  }
+  step(dt) {
+    if (this.#firedOnce && this.oneShot) {
+      return;
+    }
+    this.#elapsedTime += dt;
+    if (this.#elapsedTime > this.duration) {
+      this.#onTimerReachZero();
+      this.#elapsedTime = 0;
+      this.#firedOnce = true;
+    }
+  }
+  setCallback(callback) {
+    this.#onTimerReachZero = callback;
+  }
+}
+exports.TimerComponent = TimerComponent;
 const ComponentMap = exports.ComponentMap = {};
 ComponentMap[_Types.ComponentType.Name] = NameComponent;
 ComponentMap[_Types.ComponentType.Transform] = TransformComponent;
@@ -1423,3 +1456,6 @@ ComponentMap[_Types.ComponentType.Mesh] = MeshComponent;
 ComponentMap[_Types.ComponentType.Text] = TextComponent;
 ComponentMap[_Types.ComponentType.Light] = LightComponent;
 ComponentMap[_Types.ComponentType.Particle] = ParticleComponent;
+ComponentMap[_Types.ComponentType.Dialogue] = DialogueComponent;
+ComponentMap[_Types.ComponentType.Tilemap] = TilemapComponent;
+ComponentMap[_Types.ComponentType.Timer] = TimerComponent;

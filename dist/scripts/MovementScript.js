@@ -15,6 +15,10 @@ class MovementScript extends _Component.ScriptComponent {
     this.body = this.getComponent(_Types.ComponentType.Body2D);
     this.text = this.getComponent(_Types.ComponentType.Text);
     this.audio = this.getComponent(_Types.ComponentType.Audio);
+    this.timer = this.getComponent(_Types.ComponentType.Timer);
+    this.timer.setCallback(() => {
+      console.log('hello, world!');
+    });
   }
   step(dt) {
     if (_Input.Input.getKeyDown(_Types.KeyCode.W)) {

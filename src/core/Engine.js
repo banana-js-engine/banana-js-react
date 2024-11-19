@@ -109,6 +109,32 @@ export class Engine {
             this.#renderer.particlesInit(goParticles);
         }
 
+        this.#textRenderer.clear();
+
+        const goTexts = activeScene.getComponents(ComponentType.Text);
+
+        for (let i = 0; i < goTexts.length; i++) {
+            if (goTexts[i].active) {
+                this.#textRenderer.drawText(goTexts[i]);
+            }
+        }
+
+        const goUITexts = activeScene.getComponents(ComponentType.UIText);
+
+        for (let i = 0; i < goUITexts.length; i++) {
+            if (goUITexts[i].active) {
+                this.#textRenderer.drawUIText(goUITexts[i]);
+            }
+        }
+
+        const goDialogues = activeScene.getComponents(ComponentType.Dialogue);
+
+        for (let i = 0; i < goDialogues.length; i++) {
+            if (goDialogues[i].active && goDialogues[i].isDialogueRunning) {
+                this.#textRenderer.drawDialogue(goDialogues[i], dt);
+            }
+        }
+
         const goScripts = activeScene.getComponents(ComponentType.Script);
 
         for (let i = 0; i < goScripts.length; i++) {
@@ -119,6 +145,14 @@ export class Engine {
                 }
 
                 goScripts[i].step(dt);
+            }
+        }
+
+        const goTimers = activeScene.getComponents(ComponentType.Timer);
+
+        for (let i = 0; i < goTimers.length; i++) {
+            if (goTimers[i].active) {
+                goTimers[i].step(dt);
             }
         }
 
@@ -279,32 +313,6 @@ export class Engine {
         }
         
         this.#renderer.endScene(dt);
-
-        this.#textRenderer.clear();
-
-        const goTexts = activeScene.getComponents(ComponentType.Text);
-
-        for (let i = 0; i < goTexts.length; i++) {
-            if (goTexts[i].active) {
-                this.#textRenderer.drawText(goTexts[i]);
-            }
-        }
-
-        const goUITexts = activeScene.getComponents(ComponentType.UIText);
-
-        for (let i = 0; i < goUITexts.length; i++) {
-            if (goUITexts[i].active) {
-                this.#textRenderer.drawUIText(goUITexts[i]);
-            }
-        }
-
-        const goDialogues = activeScene.getComponents(ComponentType.Dialogue);
-
-        for (let i = 0; i < goDialogues.length; i++) {
-            if (goDialogues[i].active && goDialogues[i].isDialogueRunning) {
-                this.#textRenderer.drawDialogue(goDialogues[i], dt);
-            }
-        }
 
         Input.mouseDelta.set(0, 0);
 

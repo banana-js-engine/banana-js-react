@@ -1657,6 +1657,51 @@ export class TilemapComponent extends BaseComponent {
     }
 }
 
+export class TimerComponent extends BaseComponent {
+
+    duration;
+    oneShot;
+    
+    #onTimerReachZero;
+    #elapsedTime;
+    #firedOnce;
+
+    constructor(gameObject, duration, oneShot, onTimerReachZero) {
+        super(gameObject);
+
+        this.duration = duration ? duration : 1;
+
+        this.oneShot = typeof oneShot != 'undefined' ? oneShot : true;
+        this.#onTimerReachZero = onTimerReachZero ? onTimerReachZero : () => {};
+
+        this.#elapsedTime = 0;
+        this.#firedOnce = false;
+    }
+
+    get type() {
+        return ComponentType.Timer;
+    }
+
+    step(dt) {
+        if (this.#firedOnce && this.oneShot) {
+            return;
+        }
+
+        this.#elapsedTime += dt;
+
+        if (this.#elapsedTime > this.duration) {
+            this.#onTimerReachZero();
+            this.#elapsedTime = 0;
+
+            this.#firedOnce = true;
+        }
+    }
+
+    setCallback(callback) {
+        this.#onTimerReachZero = callback;
+    }
+}
+
 export const ComponentMap = {}
 ComponentMap[ComponentType.Name] = NameComponent;
 ComponentMap[ComponentType.Transform] = TransformComponent;
@@ -1670,3 +1715,6 @@ ComponentMap[ComponentType.Mesh] = MeshComponent;
 ComponentMap[ComponentType.Text] = TextComponent;
 ComponentMap[ComponentType.Light] = LightComponent;
 ComponentMap[ComponentType.Particle] = ParticleComponent;
+ComponentMap[ComponentType.Dialogue] = DialogueComponent;
+ComponentMap[ComponentType.Tilemap] = TilemapComponent;
+ComponentMap[ComponentType.Timer] = TimerComponent;

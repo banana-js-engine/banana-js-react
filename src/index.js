@@ -23,6 +23,7 @@ export { Sphere } from './components/Sphere';
 export { Sprite } from './components/Sprite';
 export { Text } from './components/Text';
 export { Tilemap } from './components/Tilemap';
+export { Timer } from './components/Timer';
 export { Torus } from './components/Torus';
 export { Transform } from './components/Transform';
 export { UIText } from './components/UIText';
