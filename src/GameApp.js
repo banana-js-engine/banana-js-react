@@ -53,11 +53,6 @@ export default function GameApp() {
                 </GameObject> */}
 
                 <GameObject>
-                    <Transform/>
-                    <Audio src="Track01.wav" playOnStart volume={0}/>
-                </GameObject>
-
-                <GameObject>
                     <Transform position={[-4, -4, 0]}/>
                     <Tilemap src="dungeon.png" dataSrc="tilemap.data" cellWidth={13} cellHeight={13}/>
                 </GameObject>
@@ -65,6 +60,7 @@ export default function GameApp() {
                 <GameObject>
                     <Transform position={[0, 0, 1]} rotation={[0, 0, 0]} scale={[1, 1, 1]}/>
                     <Sprite/>
+                    <Audio src="Track01.wav" playOnStart volume={1}/>
 
                     <Animator startAnim="Idle">
                         <Animation src="dungeon.png" name="Idle" firstFrame={27} frames={0} cellWidth={13} cellHeight={13}/>

@@ -14,6 +14,7 @@ class MovementScript extends _Component.ScriptComponent {
   ready() {
     this.body = this.getComponent(_Types.ComponentType.Body2D);
     this.text = this.getComponent(_Types.ComponentType.Text);
+    this.audio = this.getComponent(_Types.ComponentType.Audio);
   }
   step(dt) {
     if (_Input.Input.getKeyDown(_Types.KeyCode.W)) {
@@ -38,6 +39,12 @@ class MovementScript extends _Component.ScriptComponent {
       // gameObject.addEmptyComponent(ComponentType.Body2D);
 
       this.createPrefab(/*#__PURE__*/(0, _jsxRuntime.jsx)(_Test.Test, {}));
+    }
+    if (_Input.Input.getKeyDown(_Types.KeyCode.P)) {
+      this.audio.pause();
+    }
+    if (_Input.Input.getKeyDown(_Types.KeyCode.O)) {
+      this.audio.resume();
     }
   }
   onExitViewport() {

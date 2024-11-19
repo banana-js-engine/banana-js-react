@@ -9,6 +9,7 @@ export class MovementScript extends ScriptComponent {
     ready() {
         this.body = this.getComponent(ComponentType.Body2D);
         this.text = this.getComponent(ComponentType.Text);
+        this.audio = this.getComponent(ComponentType.Audio);
     }
 
     step(dt) {
@@ -35,6 +36,13 @@ export class MovementScript extends ScriptComponent {
             // gameObject.addEmptyComponent(ComponentType.Body2D);
 
             this.createPrefab(<Test/>);
+        }
+
+        if (Input.getKeyDown(KeyCode.P)) {
+            this.audio.pause();
+        }
+        if (Input.getKeyDown(KeyCode.O)) {
+            this.audio.resume();
         }
     }
 

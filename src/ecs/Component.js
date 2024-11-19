@@ -703,9 +703,9 @@ export class AudioComponent extends BaseComponent {
      */
     play() {
         const canvas = document.getElementById('banana-canvas');
-        canvas.removeEventListener('click', this.#resume);
+        canvas.removeEventListener('focus', this.#resume);
         canvas.removeEventListener('blur', this.#pause);
-        canvas.addEventListener('click', this.#resume);
+        canvas.addEventListener('focus', this.#resume);
         canvas.addEventListener('blur', this.#pause);
     
         this.#startTime = this.#audioContext.currentTime;
@@ -717,7 +717,7 @@ export class AudioComponent extends BaseComponent {
     stop() {
         if (this.#source) {
             const canvas = document.getElementById('banana-canvas');
-            canvas.removeEventListener('click', this.#resume);
+            canvas.removeEventListener('focus', this.#resume);
             canvas.removeEventListener('blur', this.#pause);
     
             this.#source.stop(0);
@@ -742,9 +742,21 @@ export class AudioComponent extends BaseComponent {
      * pause the audio
      */
     pause() {
+        this.#pauseTime = this.#audioContext.currentTime - this.#startTime;
         this.#source.stop(0);
         this.#source.disconnect();
         this.#playing = false;
+    }
+
+    resume = () => {
+        if (!this.#playing) {
+            this.#source = this.#audioContext.createBufferSource();
+            this.#source.buffer = this.#buffer;
+            this.#source.loop = this.#loop;
+            this.#source.connect(this.#gainNode);
+            this.#source.start(0, this.#pauseTime);
+            this.#playing = true;
+        } 
     }
 
     /**
