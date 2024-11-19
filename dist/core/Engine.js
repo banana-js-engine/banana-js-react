@@ -21,7 +21,7 @@ var _Matrix = require("../math/Matrix");
  * The class that controls the game-loop
  */
 class Engine {
-  #running;
+  running;
   #previousFrameTime;
   #renderer;
   #textRenderer;
@@ -41,7 +41,7 @@ class Engine {
    * @param {TextRenderer} textRenderer 
    */
   constructor(renderer, textRenderer) {
-    this.#running = true;
+    this.running = false;
     this.#previousFrameTime = 0;
     this.#renderer = renderer;
     this.#textRenderer = textRenderer;
@@ -57,14 +57,14 @@ class Engine {
       this.#firstUpdate = true;
       this.#iteration = 0;
     };
+    this.#renderer.setClearColor(0, 0, 0, 1);
+    this.#renderer.clear();
     this.#tick();
   }
   #tick = timestamp => {
     const deltaTimeS = (0, _bananaMath.clamp)((timestamp - this.#previousFrameTime) / 1000, 0.01, 0.1);
     this.#previousFrameTime = timestamp;
-    if (this.#running) {
-      requestAnimationFrame(this.#tick);
-    }
+    requestAnimationFrame(this.#tick);
     this.#update(deltaTimeS);
   };
   #update(dt) {
@@ -77,6 +77,9 @@ class Engine {
     }
     if (this.#iteration < 60) {
       this.#iteration++;
+      return;
+    }
+    if (!this.running) {
       return;
     }
     const goAnimators = activeScene.getComponents(_Types.ComponentType.Animator);

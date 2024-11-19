@@ -607,6 +607,8 @@ class AudioComponent extends BaseComponent {
    */
   play() {
     const canvas = document.getElementById('banana-canvas');
+    canvas.removeEventListener('click', this.#resume);
+    canvas.removeEventListener('blur', this.#pause);
     canvas.addEventListener('click', this.#resume);
     canvas.addEventListener('blur', this.#pause);
     this.#startTime = this.#audioContext.currentTime;

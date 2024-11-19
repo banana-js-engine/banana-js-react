@@ -697,9 +697,11 @@ export class AudioComponent extends BaseComponent {
      */
     play() {
         const canvas = document.getElementById('banana-canvas');
+        canvas.removeEventListener('click', this.#resume);
+        canvas.removeEventListener('blur', this.#pause);
         canvas.addEventListener('click', this.#resume);
         canvas.addEventListener('blur', this.#pause);
-
+    
         this.#startTime = this.#audioContext.currentTime;
     }
 
@@ -711,7 +713,7 @@ export class AudioComponent extends BaseComponent {
             const canvas = document.getElementById('banana-canvas');
             canvas.removeEventListener('click', this.#resume);
             canvas.removeEventListener('blur', this.#pause);
-
+    
             this.#source.stop(0);
             this.#source.disconnect();
             this.#source = null;

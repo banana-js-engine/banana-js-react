@@ -95,10 +95,17 @@ function Game(props) {
   }, []);
   const onMouseDown = function (event) {
     event.preventDefault();
+    engineRef.current.running = true;
     document.getElementById('banana-canvas').focus();
+  };
+  const onBlur = function (event) {
+    event.preventDefault();
+    engineRef.current.running = false;
+    document.getElementById('banana-canvas').blur();
   };
   const onTouchStart = function (event) {
     event.preventDefault();
+    engineRef.current.running = true;
     document.getElementById('banana-canvas').focus();
   };
   const divStyle = props.platform == _Types.PlatformType.Itchio ? {
@@ -122,6 +129,7 @@ function Game(props) {
           id: "banana-container",
           style: divStyle,
           onMouseDown: onMouseDown,
+          onBlur: onBlur,
           onTouchStart: onTouchStart,
           children: [/*#__PURE__*/(0, _jsxRuntime.jsx)("canvas", {
             id: "banana-canvas",

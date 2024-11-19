@@ -23,6 +23,7 @@ import { Animator } from "./components/Animator";
 import { Animation } from "./components/Animation";
 import { Dialogue } from "./components/Dialogue";
 import { DebugSettings } from "./components/DebugSettings";
+import { Audio } from "./components/Audio";
 
 export default function GameApp() {
     const [count, setCount] = useState(0);
@@ -50,6 +51,11 @@ export default function GameApp() {
                     <Mesh objSrc="defaultModels/Banana.obj" mtlSrc="defaultModels/Banana.mtl"/>
                     <Script import={import('./scripts/RotateScript')} speed={100}/>
                 </GameObject> */}
+
+                <GameObject>
+                    <Transform/>
+                    <Audio src="Track01.wav" playOnStart/>
+                </GameObject>
 
                 <GameObject>
                     <Transform position={[-4, -4, 0]}/>

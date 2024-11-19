@@ -87,16 +87,23 @@ export function Game(props) {
 
         // Set initialized to true
         setInitialized(true);
-
     }, []);
 
     const onMouseDown = function(event) {
         event.preventDefault();
+        engineRef.current.running = true;
         document.getElementById('banana-canvas').focus();
     } 
+    
+    const onBlur = function(event) {
+        event.preventDefault();
+        engineRef.current.running = false;
+        document.getElementById('banana-canvas').blur();
+    }
 
     const onTouchStart = function(event) {
         event.preventDefault();
+        engineRef.current.running = true;
         document.getElementById('banana-canvas').focus();
     }
 
@@ -120,6 +127,7 @@ export function Game(props) {
                         id="banana-container" 
                         style={divStyle}
                         onMouseDown={onMouseDown}
+                        onBlur={onBlur}
                         onTouchStart={onTouchStart}
                     >
                         <canvas
