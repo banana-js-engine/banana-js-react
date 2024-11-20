@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Color } from "../renderer/Color";
 import { useGameObject } from "./GameObject";
-import { UITextComponent } from "../ecs/Component";
+import { UIButtonComponent } from "../ecs/Component";
 import { ComponentType } from "../core/Types";
 
 /**
@@ -10,28 +10,34 @@ import { ComponentType } from "../core/Types";
  *           fontFamily: string,
  *           fontSize: number,
  *           x: number,
- *           y: number }} props 
+ *           y: number,
+ *           width: number,
+ *           height: number,
+ *           onClick: Function }} props 
  */
-export function UIText(props) {
+export function UIButton(props) {
 
     const gameObject = useGameObject();
 
-    if (!gameObject.hasComponent(ComponentType.UIText)) {
-        const textComponent = new UITextComponent(
+    if (!gameObject.hasComponent(ComponentType.UIButton)) {
+        const buttonComponent = new UIButtonComponent(
             gameObject,
             props.x,
             props.y,
             props.children,
             props.color,
             props.fontFamily,
-            props.fontSize
+            props.fontSize,
+            props.width,
+            props.height,
+            props.onClick
         ); 
     
-        gameObject.addComponent(textComponent);
+        gameObject.addComponent(buttonComponent);
     } 
 
     useEffect(() => {
-        gameObject.getComponent(ComponentType.UIText).text = props.children;
+        gameObject.getComponent(ComponentType.UIButton).text = props.children;
     }, [props.children]);
 
 

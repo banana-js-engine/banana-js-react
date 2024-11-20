@@ -1,5 +1,5 @@
 import { Input } from "../core/Input";
-import { ComponentType, KeyCode } from "../core/Types";
+import { ComponentType, KeyCode, MouseButtonCode } from "../core/Types";
 import { ScriptComponent } from "../ecs/Component";
 import { Vector2 } from "../math/Vector";
 import { Test } from "../prefabs/Test";
@@ -51,6 +51,13 @@ export class MovementScript extends ScriptComponent {
         }
 
 
+        if (Input.getKeyDown(KeyCode.Space)) {
+            console.log('space pressed');
+        }
+
+        if (Input.getButtonDown(MouseButtonCode.Left)) {
+            console.log('left click');
+        }
     }
 
     onExitViewport() {

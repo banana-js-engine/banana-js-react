@@ -135,6 +135,15 @@ export class Engine {
             }
         }
 
+        const goUIButtons = activeScene.getComponents(ComponentType.UIButton);
+
+        for (let i = 0; i < goUIButtons.length; i++) {
+            if (goUIButtons[i].active) {
+                goUIButtons[i].step();
+                this.#textRenderer.drawButton(goUIButtons[i]);
+            }
+        }
+
         const goScripts = activeScene.getComponents(ComponentType.Script);
 
         for (let i = 0; i < goScripts.length; i++) {

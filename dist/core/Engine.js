@@ -111,6 +111,13 @@ class Engine {
         this.#textRenderer.drawDialogue(goDialogues[i], dt);
       }
     }
+    const goUIButtons = activeScene.getComponents(_Types.ComponentType.UIButton);
+    for (let i = 0; i < goUIButtons.length; i++) {
+      if (goUIButtons[i].active) {
+        goUIButtons[i].step();
+        this.#textRenderer.drawButton(goUIButtons[i]);
+      }
+    }
     const goScripts = activeScene.getComponents(_Types.ComponentType.Script);
     for (let i = 0; i < goScripts.length; i++) {
       if (goScripts[i].active) {

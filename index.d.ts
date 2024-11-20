@@ -165,6 +165,17 @@ declare module "@mfkucuk/banana-js" {
         y: number
     }): void;
 
+    export function UIButton(props: {
+        color: [number, number, number, number] | Color,
+        fontFamily: string,
+        fontSize: number,
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        onClick: number
+    }): void;
+
     // Classes
     export class Input {
         // Properties
@@ -205,6 +216,8 @@ declare module "@mfkucuk/banana-js" {
         Particle = 12,
         Dialogue = 13,
         Tilemap = 14,
+        Timer = 15,
+        UIButton = 16
     }
     
     export const enum ShapeType {

@@ -26,6 +26,7 @@ export { Tilemap } from './components/Tilemap';
 export { Timer } from './components/Timer';
 export { Torus } from './components/Torus';
 export { Transform } from './components/Transform';
+export { UIButton } from './components/UIButton';
 export { UIText } from './components/UIText';
 
 export { Input } from './core/Input';

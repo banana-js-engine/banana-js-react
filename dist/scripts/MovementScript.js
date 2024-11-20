@@ -50,6 +50,12 @@ class MovementScript extends _Component.ScriptComponent {
     if (_Input.Input.getKeyDown(_Types.KeyCode.O)) {
       this.audio.resume();
     }
+    if (_Input.Input.getKeyDown(_Types.KeyCode.Space)) {
+      console.log('space pressed');
+    }
+    if (_Input.Input.getButtonDown(_Types.MouseButtonCode.Left)) {
+      console.log('left click');
+    }
   }
   onExitViewport() {
     console.log('viewport exit');

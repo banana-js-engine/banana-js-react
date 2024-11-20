@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.UITextComponent = exports.UIComponent = exports.TransformComponent = exports.TimerComponent = exports.TilemapComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.ParticleComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.DialogueComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
+exports.UITextComponent = exports.UIComponent = exports.UIButtonComponent = exports.TransformComponent = exports.TimerComponent = exports.TilemapComponent = exports.TextComponent = exports.SpriteComponent = exports.ScriptComponent = exports.ParticleComponent = exports.NameComponent = exports.MeshComponent = exports.LightComponent = exports.DialogueComponent = exports.ComponentMap = exports.CameraComponent = exports.Body2DComponent = exports.BaseComponent = exports.AudioComponent = exports.AnimatorComponent = void 0;
 var _Matrix = require("../math/Matrix");
 var _Vector = require("../math/Vector");
 var _AABB = require("../physics/AABB");
@@ -18,6 +18,7 @@ var _GO = require("./GO");
 var _VertexArray = require("../renderer/VertexArray");
 var _SpriteSheet = require("../renderer/SpriteSheet");
 var _file = require("../utils/file");
+var _Input = require("../core/Input");
 class BaseComponent {
   gameObject;
 
@@ -1044,9 +1045,9 @@ class TextComponent extends BaseComponent {
   constructor(gameObject, text, color, fontFamily, fontSize) {
     super(gameObject);
     this.#text = text ? text : '';
-    this.#color = color ? color : _Color.Color.black;
+    this.#color = color ? color : _Color.Color.white;
     this.#fontFamily = fontFamily ? fontFamily : 'dejavu, monospace';
-    this.#fontSize = fontSize ? fontSize : 10;
+    this.#fontSize = fontSize ? fontSize : 16;
   }
   get type() {
     return _Types.ComponentType.Text;
@@ -1079,9 +1080,9 @@ class UITextComponent extends UIComponent {
   constructor(gameObject, left, top, text, color, fontFamily, fontSize) {
     super(gameObject, left, top);
     this.#text = text ? text : '';
-    this.#color = _Color.Color.black;
+    this.#color = _Color.Color.white;
     this.#fontFamily = fontFamily ? fontFamily : 'dejavu, monospace';
-    this.#fontSize = fontSize ? fontSize : 10;
+    this.#fontSize = fontSize ? fontSize : 16;
     if (color) {
       const c = this._processParameterVector4(color);
       this.#color.set(c.r, c.g, c.b, c.a);
@@ -1443,6 +1444,47 @@ class TimerComponent extends BaseComponent {
   }
 }
 exports.TimerComponent = TimerComponent;
+class UIButtonComponent extends UITextComponent {
+  width;
+  height;
+  buttonColor;
+  #onClick;
+  constructor(gameObject, left, top, text, color, fontFamily, fontSize, width, height, onClick) {
+    super(gameObject, left, top, text, color, fontFamily, fontSize);
+    this.width = width ? width : 50;
+    this.height = height ? height : 50;
+    this.#onClick = onClick ? onClick : () => {};
+  }
+  get type() {
+    return _Types.ComponentType.UIButton;
+  }
+
+  /**
+   * @param {Function} callback
+   */
+  set onClick(callback) {
+    this.#onClick = callback;
+  }
+  step() {
+    if (this.#isMouseHovering()) {
+      this.buttonColor = 'lightgrey';
+    } else {
+      this.buttonColor = 'grey';
+    }
+    if (_Input.Input.getButtonDown(_Types.MouseButtonCode.Left)) {
+      if (this.#isMouseHovering()) {
+        this.#onClick();
+      } else {
+        _Input.Input.resetButton(_Types.MouseButtonCode.Left);
+      }
+    }
+  }
+  #isMouseHovering() {
+    const mousePos = _Input.Input.mousePosition;
+    return mousePos.x > this.left && mousePos.x < this.left + this.width && mousePos.y > this.top && mousePos.y < this.top + this.height;
+  }
+}
+exports.UIButtonComponent = UIButtonComponent;
 const ComponentMap = exports.ComponentMap = {};
 ComponentMap[_Types.ComponentType.Name] = NameComponent;
 ComponentMap[_Types.ComponentType.Transform] = TransformComponent;

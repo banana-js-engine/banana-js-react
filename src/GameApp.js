@@ -25,6 +25,7 @@ import { Dialogue } from "./components/Dialogue";
 import { DebugSettings } from "./components/DebugSettings";
 import { Audio } from "./components/Audio";
 import { Timer } from "./components/Timer";
+import { UIButton } from "./components/UIButton";
 
 export default function GameApp() {
     const [count, setCount] = useState(0);
@@ -35,7 +36,6 @@ export default function GameApp() {
     
     return (
         <Game name="Development" width={400} height={400} platform={PlatformType.Web}>
-            <Cursor/>
             <DebugSettings showFps/>
             <Scene>
                 <GameObject name="Camera">
@@ -54,8 +54,24 @@ export default function GameApp() {
                 </GameObject> */}
 
                 <GameObject>
+                    <UIButton x={40} y={40} width={100} height={40}>PRESS</UIButton>
+                </GameObject>
+
+                <GameObject>
+                    <UIButton x={200} y={40} width={60} height={40}>PRESS</UIButton>
+                </GameObject>
+
+                <GameObject>
                     <Transform position={[-4, -4, 0]}/>
                     <Tilemap src="dungeon.png" dataSrc="tilemap.data" cellWidth={13} cellHeight={13}/>
+                </GameObject>
+
+                <GameObject>
+                    <Transform position={[-1, 1, 1]}/>
+                    <Sprite/>
+                    <Animator startAnim="Idle">
+                        <Animation src="Dino.png" name="Idle" firstFrame={0} frames={4} cellHeight={24} cellWidth={24} length={0.6}/>
+                    </Animator>
                 </GameObject>
 
                 <GameObject>

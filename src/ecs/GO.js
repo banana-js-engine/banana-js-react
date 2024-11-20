@@ -9,7 +9,7 @@ export class GO {
     #gl
 
     #transform;
-    active;
+    #active;
 
     /**
      * @type {GO}
@@ -33,9 +33,9 @@ export class GO {
         this.#handle = handle;
         this.#gl = gl;
         
-        this.active = true;
+        this.#active = true;
         if (typeof active != 'undefined') {
-            this.active = active;
+            this.#active = active;
         }
 
         this.children = [];
@@ -57,6 +57,14 @@ export class GO {
 
     get gl() {
         return this.#gl;
+    }
+
+    get active() {
+        if (this.parent != null) {
+            return this.#active && this.parent.active;
+        }
+
+        return this.#active;
     }
 
     /**

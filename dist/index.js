@@ -32,6 +32,7 @@ var _exportNames = {
   Timer: true,
   Torus: true,
   Transform: true,
+  UIButton: true,
   UIText: true,
   Input: true,
   ScriptComponent: true,
@@ -240,6 +241,12 @@ Object.defineProperty(exports, "Transform", {
     return _Transform.Transform;
   }
 });
+Object.defineProperty(exports, "UIButton", {
+  enumerable: true,
+  get: function () {
+    return _UIButton.UIButton;
+  }
+});
 Object.defineProperty(exports, "UIText", {
   enumerable: true,
   get: function () {
@@ -292,6 +299,7 @@ var _Tilemap = require("./components/Tilemap");
 var _Timer = require("./components/Timer");
 var _Torus = require("./components/Torus");
 var _Transform = require("./components/Transform");
+var _UIButton = require("./components/UIButton");
 var _UIText = require("./components/UIText");
 var _Input = require("./core/Input");
 var _Types = require("./core/Types");

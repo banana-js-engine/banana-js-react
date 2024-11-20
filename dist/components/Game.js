@@ -81,6 +81,7 @@ function Game(props) {
       event.preventDefault();
     });
     const ctx = textCanvas.getContext('2d');
+    ctx.textBaseline = 'middle';
 
     // initialize renderer(s)
     const renderer = new _Renderer.Renderer(context);

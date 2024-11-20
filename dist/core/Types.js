@@ -30,7 +30,8 @@ const ComponentType = exports.ComponentType = {
   Particle: 12,
   Dialogue: 13,
   Tilemap: 14,
-  Timer: 15
+  Timer: 15,
+  UIButton: 16
 };
 
 /**

@@ -126,5 +126,8 @@ void main() {
 
 
     fragColor = l_Texture * v_Color * lightIntensity;
+    if (fragColor.a == 0.0) {
+        discard;
+    }
     fragColor.a = v_Color.a;
 }

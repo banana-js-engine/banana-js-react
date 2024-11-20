@@ -12,7 +12,7 @@ class GO {
   #handle;
   #gl;
   #transform;
-  active;
+  #active;
 
   /**
    * @type {GO}
@@ -35,9 +35,9 @@ class GO {
     this.#scene = scene;
     this.#handle = handle;
     this.#gl = gl;
-    this.active = true;
+    this.#active = true;
     if (typeof active != 'undefined') {
-      this.active = active;
+      this.#active = active;
     }
     this.children = [];
     if (parent) {
@@ -54,6 +54,12 @@ class GO {
   }
   get gl() {
     return this.#gl;
+  }
+  get active() {
+    if (this.parent != null) {
+      return this.#active && this.parent.active;
+    }
+    return this.#active;
   }
 
   /**

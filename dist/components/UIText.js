@@ -19,7 +19,7 @@ var _Types = require("../core/Types");
  */
 function UIText(props) {
   const gameObject = (0, _GameObject.useGameObject)();
-  if (!gameObject.hasComponent(_Types.ComponentType.Text)) {
+  if (!gameObject.hasComponent(_Types.ComponentType.UIText)) {
     const textComponent = new _Component.UITextComponent(gameObject, props.x, props.y, props.children, props.color, props.fontFamily, props.fontSize);
     gameObject.addComponent(textComponent);
   }

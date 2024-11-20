@@ -4,7 +4,7 @@ import { AABB } from "../physics/AABB";
 import { Texture } from "../renderer/Texture";
 import { Color } from "../renderer/Color";
 import { VertexBuffer } from "../renderer/Buffer";
-import { ComponentType, KeyCode, ShapeType } from "../core/Types";
+import { ComponentType, KeyCode, MouseButtonCode, ShapeType } from "../core/Types";
 import { clamp01, toDegrees } from "../math/bananaMath";
 import { AnimationClip } from "../renderer/AnimationClip";
 import { WavefrontParser } from "../renderer/WavefrontParser";
@@ -12,6 +12,7 @@ import { GO } from "./GO";
 import { VertexArray } from "../renderer/VertexArray";
 import { SpriteSheet } from "../renderer/SpriteSheet";
 import { readFileAsText } from "../utils/file";
+import { Input } from "../core/Input";
 
 
 export class BaseComponent {
@@ -1194,9 +1195,9 @@ export class TextComponent extends BaseComponent {
 
         this.#text = text ? text : '';
         
-        this.#color = color ? color : Color.black;
+        this.#color = color ? color : Color.white;
         this.#fontFamily = fontFamily ? fontFamily : 'dejavu, monospace';
-        this.#fontSize = fontSize ? fontSize : 10;
+        this.#fontSize = fontSize ? fontSize : 16;
     }
 
     get type() {
@@ -1240,9 +1241,9 @@ export class UITextComponent extends UIComponent {
 
         this.#text = text ? text : '';
         
-        this.#color = Color.black;
+        this.#color = Color.white;
         this.#fontFamily = fontFamily ? fontFamily : 'dejavu, monospace';
-        this.#fontSize = fontSize ? fontSize : 10;
+        this.#fontSize = fontSize ? fontSize : 16;
 
         if (color) {
             const c = this._processParameterVector4(color);
@@ -1699,6 +1700,59 @@ export class TimerComponent extends BaseComponent {
 
     setCallback(callback) {
         this.#onTimerReachZero = callback;
+    }
+}
+
+export class UIButtonComponent extends UITextComponent {
+
+    width;
+    height;
+    buttonColor;
+    #onClick;
+
+    constructor(gameObject, left, top, text, color, fontFamily, fontSize, width, height, onClick) {
+        super(gameObject, left, top, text, color, fontFamily, fontSize);
+
+        this.width = width ? width : 50;
+        this.height = height ? height : 50;
+        this.#onClick = onClick ? onClick : () => {};
+    }
+
+    get type() {
+        return ComponentType.UIButton;
+    }
+
+    /**
+     * @param {Function} callback
+     */
+    set onClick(callback) {
+        this.#onClick = callback;
+    }
+
+    step() {
+        
+        if (this.#isMouseHovering()) {
+            this.buttonColor = 'lightgrey';
+        } else {
+            this.buttonColor = 'grey';
+        }
+
+        if (Input.getButtonDown(MouseButtonCode.Left)) {
+            if (this.#isMouseHovering()) {
+                this.#onClick();
+            } else {
+                Input.resetButton(MouseButtonCode.Left);
+            }
+        }
+    }
+
+    #isMouseHovering() {
+        const mousePos = Input.mousePosition;
+
+        return mousePos.x > this.left &&
+               mousePos.x < this.left + this.width &&
+               mousePos.y > this.top &&
+               mousePos.y < this.top + this.height
     }
 }
 

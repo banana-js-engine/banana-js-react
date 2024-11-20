@@ -1,5 +1,5 @@
 import { Input } from "../core/Input";
-import { DialogueComponent, TextComponent, UITextComponent } from "../ecs/Component";
+import { DialogueComponent, TextComponent, UIButtonComponent, UITextComponent } from "../ecs/Component";
 
 export class TextRenderer {
 
@@ -62,16 +62,42 @@ export class TextRenderer {
             dialogueComponent.currentTime = 0;
         }
 
-        if (Input.getKeyDown(dialogueComponent.skipKey) && dialogueComponent.skipToNext) {
-            dialogueComponent.currentIndex++;
-            dialogueComponent.currentChar = 0;
-            dialogueComponent.currentText = '';
-            dialogueComponent.skipToNext = false;   
-
-            if (!dialogueComponent.currentDialogue) {
-                dialogueComponent.stopDialogue();
+        if (Input.getKeyDown(dialogueComponent.skipKey)) {
+            if (dialogueComponent.skipToNext) {
+                dialogueComponent.currentIndex++;
+                dialogueComponent.currentChar = 0;
+                dialogueComponent.currentText = '';
+                dialogueComponent.skipToNext = false;   
+    
+                if (!dialogueComponent.currentDialogue) {
+                    dialogueComponent.stopDialogue();
+                }
+            } else {
+                Input.resetKey(dialogueComponent.skipKey);
             }
-        }
+        } 
+        
+    }
+
+    /**
+     * 
+     * @param {UIButtonComponent} uiButtonComponent 
+     */
+    drawButton(uiButtonComponent) {
+        this.#ctx.fillStyle = uiButtonComponent.buttonColor;
+
+        const x = uiButtonComponent.left;
+        const y = uiButtonComponent.top;
+        const width = uiButtonComponent.width;
+        const height = uiButtonComponent.height;
+
+        this.#ctx.fillRect(x, y, width, height);
+
+        this.#ctx.font = `${uiButtonComponent.fontSize}px ${uiButtonComponent.fontFamily}`;
+        this.#ctx.fillStyle = uiButtonComponent.color.hex;
+        this.#ctx.textAlign = 'center';
+
+        this.#ctx.fillText(uiButtonComponent.text, ((2*x)+width)/2, ((2*y)+height)/2);
     }
 
     clear() {

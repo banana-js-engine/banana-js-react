@@ -104,6 +104,12 @@ class Input {
       }
     });
   }
+  static resetKey(key) {
+    this.#isKeyDown[key] = false;
+  }
+  static resetButton(button) {
+    this.#isButtonDown[button] = false;
+  }
 
   /**
    * 

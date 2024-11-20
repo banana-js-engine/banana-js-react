@@ -58,15 +58,36 @@ class TextRenderer {
       dialogueComponent.currentChar++;
       dialogueComponent.currentTime = 0;
     }
-    if (_Input.Input.getKeyDown(dialogueComponent.skipKey) && dialogueComponent.skipToNext) {
-      dialogueComponent.currentIndex++;
-      dialogueComponent.currentChar = 0;
-      dialogueComponent.currentText = '';
-      dialogueComponent.skipToNext = false;
-      if (!dialogueComponent.currentDialogue) {
-        dialogueComponent.stopDialogue();
+    if (_Input.Input.getKeyDown(dialogueComponent.skipKey)) {
+      if (dialogueComponent.skipToNext) {
+        dialogueComponent.currentIndex++;
+        dialogueComponent.currentChar = 0;
+        dialogueComponent.currentText = '';
+        dialogueComponent.skipToNext = false;
+        if (!dialogueComponent.currentDialogue) {
+          dialogueComponent.stopDialogue();
+        }
+      } else {
+        _Input.Input.resetKey(dialogueComponent.skipKey);
       }
     }
+  }
+
+  /**
+   * 
+   * @param {UIButtonComponent} uiButtonComponent 
+   */
+  drawButton(uiButtonComponent) {
+    this.#ctx.fillStyle = uiButtonComponent.buttonColor;
+    const x = uiButtonComponent.left;
+    const y = uiButtonComponent.top;
+    const width = uiButtonComponent.width;
+    const height = uiButtonComponent.height;
+    this.#ctx.fillRect(x, y, width, height);
+    this.#ctx.font = `${uiButtonComponent.fontSize}px ${uiButtonComponent.fontFamily}`;
+    this.#ctx.fillStyle = uiButtonComponent.color.hex;
+    this.#ctx.textAlign = 'center';
+    this.#ctx.fillText(uiButtonComponent.text, (2 * x + width) / 2, (2 * y + height) / 2);
   }
   clear() {
     this.#ctx.clearRect(0, 0, this.#ctx.canvas.width, this.#ctx.canvas.height);

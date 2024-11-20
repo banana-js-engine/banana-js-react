@@ -76,6 +76,7 @@ export function Game(props) {
         });
 
         const ctx = textCanvas.getContext('2d');
+        ctx.textBaseline = 'middle';
 
         // initialize renderer(s)
         const renderer = new Renderer(context);
