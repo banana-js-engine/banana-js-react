@@ -78,6 +78,11 @@ export function Game(props) {
         const ctx = textCanvas.getContext('2d');
         ctx.textBaseline = 'middle';
 
+        ctx.fillStyle = 'white';
+        ctx.font = '16px dejavu, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('[CLICK TO START]', textCanvas.width / 2, textCanvas.height / 2);
+
         // initialize renderer(s)
         const renderer = new Renderer(context);
         const textRenderer = new TextRenderer(ctx);
