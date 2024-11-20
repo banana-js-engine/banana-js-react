@@ -34,6 +34,10 @@ export class BaseComponent {
         return this.gameObject.active;
     }
 
+    set active(value) {
+        this.gameObject.active = value;
+    }
+
     get transform() {
         return this.gameObject.transform;
     }
@@ -1588,16 +1592,20 @@ export class TilemapComponent extends BaseComponent {
 
     constructor(gameObject, src, data, cellWidth, cellHeight) {
         super(gameObject);
+        this.active = false;
 
         this.setSpriteSheet(src, cellWidth, cellHeight);
-        if (data.startsWith('.data')) {
-            this.setData(data);
-        } else [
-            readFileAsText(data)
-            .then(text => {
-                this.setData(text);
-            })
-        ]
+        this.#spriteSheet.texture.onTextureCreated = () => {
+            if (data.startsWith('.data')) {
+                this.setData(data);
+            } else {
+                readFileAsText(data)
+                .then(text => {
+                    this.setData(text);
+                    this.active = true;
+                });
+            }
+        }
     }
 
     get type() {
@@ -1645,6 +1653,7 @@ export class TilemapComponent extends BaseComponent {
                 const [x, y] = value.split(',');
 
                 const texCoords = this.#spriteSheet.getTexCoords(parseInt(y.trim()), parseInt(x.trim()));
+
                 this.#tileTexCoordMap.set(symbol, texCoords);
             } else {
                 this.#tilemap.push(line.trim());

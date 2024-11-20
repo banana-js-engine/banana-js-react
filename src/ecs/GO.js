@@ -67,6 +67,10 @@ export class GO {
         return this.#active;
     }
 
+    set active(value) {
+        this.#active = value;
+    }
+
     /**
      * @returns {TransformComponent}
      */

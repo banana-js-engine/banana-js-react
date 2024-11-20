@@ -35,7 +35,7 @@ export default function GameApp() {
     };
     
     return (
-        <Game name="Development" width={400} height={400} platform={PlatformType.Web}>
+        <Game name="Development" width={800} height={400} platform={PlatformType.Web}>
             <DebugSettings showFps/>
             <Scene>
                 <GameObject name="Camera">

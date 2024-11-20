@@ -198,7 +198,7 @@ export class Renderer {
 
         // texture data
         maxTextureSlotCount: -1,
-        textureSlotIndex: 1,
+        textureSlotIndex: 2,
 
         /**
          * @type {Texture[]}

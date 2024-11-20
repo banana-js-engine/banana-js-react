@@ -35,7 +35,7 @@ export class Texture {
         
         this.#image = new Image();
         this.#image.src = src;
-        this.#image.addEventListener('load', this.#onImageLoaded)
+        this.#image.addEventListener('load', this.#onImageLoaded);
 
         Texture.#textureCache.set(src, this);
     }
@@ -102,6 +102,9 @@ export class Texture {
 
         this.unbind();
 
-        this.#image.removeEventListener('load', this.#onImageLoaded)
+        this.#image.removeEventListener('load', this.#onImageLoaded);
+        this.onTextureCreated();
     }
+
+    onTextureCreated = () => {}
 }
