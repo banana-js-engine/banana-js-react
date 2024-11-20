@@ -1739,6 +1739,7 @@ export class UIButtonComponent extends UITextComponent {
 
         if (Input.getButtonDown(MouseButtonCode.Left)) {
             if (this.#isMouseHovering()) {
+                this.buttonColor = '#333';
                 this.#onClick();
             } else {
                 Input.resetButton(MouseButtonCode.Left);

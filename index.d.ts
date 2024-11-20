@@ -418,6 +418,12 @@ declare module "@mfkucuk/banana-js" {
         setCallback(callback: Function): void;
     }
 
+    export class UIButtonComponent extends UITextComponent {
+        width: number;
+        height: number;
+        set onClick(callback: Function): void;
+    }
+
     export class GO {
         active: boolean;
 
