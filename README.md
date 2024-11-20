@@ -20,4 +20,18 @@ This will create and start the template project, and will be greeted by this scr
 
 # Reference
 ## Components
-### <Transform/>
+### < Transform />
+Defines the orientation of the GameObject in the scene.
+```jsx
+<GameObject>
+    <Transform/> /* position=[0, 0, 0,] rotation=[0, 0, 0] scale=[1, 1, 1] */
+</GameObject>
+```
+Alternatively, you can pass in props to change the default values:
+```jsx
+<GameObject>
+    <Transform position={[2, 1, 0]} rotation={[0, 0, 30]} scale={[0.5, 2, 1]}/>
+    <Sprite/>
+</GameObject>
+```
+![alt text](ReadmeAssets/transform.png)
