@@ -18,26 +18,24 @@ export function Audio(props) {
     const audioContext = useAudioContext();
 
     if (!gameObject.hasComponent(ComponentType.Audio)) {
-        fetch(props.src)
-            .then(response => response.arrayBuffer())
-            .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-            .then(buffer => {
-                gameObject.addComponent(new AudioComponent(
-                    gameObject,
-                    audioContext, 
-                    buffer, 
-                    props.volume,
-                    props.playOnStart, 
-                    props.loop
-                ));
-            });
+        gameObject.addComponent(new AudioComponent(
+            gameObject,
+            audioContext, 
+            props.src,
+            props.volume,
+            props.playOnStart, 
+            props.loop
+        ));
     }
 
     useEffect(() => {
-        if (gameObject.hasComponent(ComponentType.Audio)) {
-            const audio = gameObject.getComponent(ComponentType.Audio);
-            const volume = props.volume ? props.volume : 0.5;
-            audio.setVolume(volume);
+        const audio = gameObject.getComponent(ComponentType.Audio);
+
+        if (!audio.gainNode) {
+            return;
         }
+
+        const volume = props.volume ? props.volume : 0.5;
+        audio.setVolume(volume);
     }, [props.volume]);
 }

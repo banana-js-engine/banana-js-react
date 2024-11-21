@@ -634,6 +634,9 @@ export class AudioComponent extends BaseComponent {
      */
     #gainNode;
 
+    #bufferReadyPromise;
+    #resolveBufferReady;
+
     /**
      * Create a audio source
      * @param {AudioContext} audioContext 
@@ -642,21 +645,35 @@ export class AudioComponent extends BaseComponent {
      * @param {boolean} playOnStart 
      * @param {boolean} loop 
      */
-    constructor(gameObject, audioContext, buffer, volume = 0.5, playOnStart = false, loop = false) {
+    constructor(gameObject, audioContext, src, volume = 0.5, playOnStart = false, loop = false) {
         super(gameObject);
 
-        this.#audioContext = audioContext;
-        this.#buffer = buffer;
         this.#volume = volume;
         this.#playOnStart = playOnStart;
         this.#loop = loop;
         this.#pauseTime = 0;
         this.#playing = false;
+        this.#audioContext = audioContext;
 
-        this.#gainNode = this.#audioContext.createGain();
-        this.#gainNode.connect(this.#audioContext.destination);
+        // Initialize the buffer-ready promise
+        this.#bufferReadyPromise = new Promise(resolve => {
+            this.#resolveBufferReady = resolve;
+        });
 
-        this.setVolume(volume)
+        fetch(src)
+            .then(response => response.arrayBuffer())
+            .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+            .then(buffer => {
+                this.#buffer = buffer;
+
+                this.#gainNode = this.#audioContext.createGain();
+                this.#gainNode.connect(this.#audioContext.destination);
+
+                this.setVolume(volume);
+
+                // Resolve the buffer-ready promise
+                this.#resolveBufferReady();
+            });
 
         if (this.#playOnStart) {
             this.play();
@@ -667,13 +684,15 @@ export class AudioComponent extends BaseComponent {
         return ComponentType.Audio;
     }
 
+    get gainNode() {
+        return this.#gainNode;
+    }
+
     /**
      * starts playing the selected audio
      */
     play() {
         const canvas = document.getElementById('banana-canvas');
-        canvas.removeEventListener('focus', this.#resume);
-        canvas.removeEventListener('blur', this.#pause);
         canvas.addEventListener('focus', this.#resume);
         canvas.addEventListener('blur', this.#pause);
     
@@ -711,6 +730,10 @@ export class AudioComponent extends BaseComponent {
      * pause the audio
      */
     pause() {
+        if (!this.#source) {
+            return;
+        }
+
         this.#pauseTime = this.#audioContext.currentTime - this.#startTime;
         this.#source.stop(0);
         this.#source.disconnect();
@@ -731,7 +754,9 @@ export class AudioComponent extends BaseComponent {
     /**
      * resumes audio, (private arrow function version)
      */
-    #resume = () => {
+    #resume = async () => {
+        await this.#bufferReadyPromise; // Wait for the buffer to be ready
+
         if (!this.#playing) {
             this.#source = this.#audioContext.createBufferSource();
             this.#source.buffer = this.#buffer;
@@ -739,13 +764,17 @@ export class AudioComponent extends BaseComponent {
             this.#source.connect(this.#gainNode);
             this.#source.start(0, this.#pauseTime);
             this.#playing = true;
-        } 
-    }
+        }
+    };
 
     /**
      * pause the audio, (private arrow function version)
      */
     #pause = () => {
+        if (!this.#source) {
+            return;
+        }
+
         this.#pauseTime = this.#audioContext.currentTime - this.#startTime;
         this.#source.stop(0);
         this.#source.disconnect();
