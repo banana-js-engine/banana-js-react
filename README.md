@@ -1,4 +1,6 @@
-# 🍌 banana-js 🍌
+# 🍌 banana.js 🍌
+Check out [projects](https://github.com/banana-js-engine/banana-js-examples) made with banana.js
+
 ## ⬇️ Installation
 Download the npm package using: ```npm install -g @mfkucuk/banana-js``` <br />
 
@@ -35,3 +37,29 @@ Alternatively, you can pass in props to change the default values:
 </GameObject>
 ```
 ![alt text](ReadmeAssets/transform.png)
+### < Sprite />
+Defines the how the GameObject will be rendered.
+```jsx
+<GameObject>
+    <Transform/>
+    <Sprite/> /* Renders the default white square */
+</GameObject>
+```
+You can change the color of the sprite using the color prop:
+```jsx
+<GameObject>
+    <Transform/>
+    <Sprite color={[1, 0, 0, 1]}/> /* Renders a red square */
+</GameObject>
+```
+You can set a texture as well, (png, jpg, etc.) by giving a src path:
+```jsx
+<GameObject>
+    <Transform/>
+    <Sprite src="tree.png"/> /* Renders a sprite with a tree texture */
+</GameObject>
+```
+
+
+
+
