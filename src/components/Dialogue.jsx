@@ -11,8 +11,12 @@ export function Dialogue(props) {
     const gameObject = useGameObject();
 
     const dialogue = [];
-    for (const child of props.children) {
-        dialogue.push(child.props.children);
+    if (!props.children[0]) {
+        dialogue.push(props.children.props.children);
+    } else {
+        for (const child of props.children) {
+            dialogue.push(child.props.children);
+        }
     }
 
     if (!gameObject.hasComponent(ComponentType.Dialogue)) {

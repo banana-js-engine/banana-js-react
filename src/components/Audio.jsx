@@ -2,6 +2,7 @@ import { useGameObject } from "./GameObject";
 import { AudioComponent } from "../ecs/Component";
 import { useAudioContext } from "./Game";
 import { ComponentType } from "../core/Types";
+import { useEffect } from "react";
 
 /**
  * 
@@ -25,10 +26,18 @@ export function Audio(props) {
                     gameObject,
                     audioContext, 
                     buffer, 
-                    props.volume, 
+                    props.volume,
                     props.playOnStart, 
                     props.loop
                 ));
             });
     }
+
+    useEffect(() => {
+        if (gameObject.hasComponent(ComponentType.Audio)) {
+            const audio = gameObject.getComponent(ComponentType.Audio);
+            const volume = props.volume ? props.volume : 0.5;
+            audio.setVolume(volume);
+        }
+    }, [props.volume]);
 }

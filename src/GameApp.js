@@ -121,8 +121,6 @@ export default function GameApp() {
                     <Transform position={[0, 4, 0]}/>
                     <Dialogue color={[1, 1, 1, 1]} fontSize={20} playOnStart>
                         <div>Got the dialogue system working</div>
-                        <div>So cool!!!</div>
-                        <div>Better than Bora's</div>
                     </Dialogue>
                 </GameObject>
             </Scene>

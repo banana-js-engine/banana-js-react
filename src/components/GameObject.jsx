@@ -1,4 +1,4 @@
-import { createContext, useContext, useRef } from "react";
+import { createContext, useContext, useEffect, useRef } from "react";
 import { useScene } from "./Scene";
 import { GO } from "../ecs/GO";
 import { useGL } from "./Game";
@@ -37,6 +37,10 @@ export function GameObject(props) {
         gameObjectRef.current = new GO(scene, handle, gl, props.active, parent);
         gameObjectRef.current.addComponent(new NameComponent(gameObjectRef.current, props.name));
     }
+
+    useEffect(() => {
+        gameObjectRef.current.active = typeof props.active == 'undefined' ? true : props.active;
+    }, [props.active]);
 
     return (
         <GameObjectContext.Provider value={gameObjectRef.current}>

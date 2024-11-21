@@ -149,8 +149,9 @@ export class TransformComponent extends BaseComponent {
 
     #lastMovedTimestamp
 
-    constructor(gameObject, position, rotation, scale) {
+    constructor(gameObject) {
         super(gameObject);
+
         this.#positionMat = Matrix4.zero;
         this.#rotationXMat = Matrix4.zero;
         this.#rotationYMat = Matrix4.zero;
@@ -163,25 +164,38 @@ export class TransformComponent extends BaseComponent {
 
         this.#transform = new Matrix4();
 
-        
-        if (position) {
-            const pos = this._processParameterVector3(position);
-            this.moveTo(pos.x, pos.y, pos.z);
-        }
-        if (rotation) {
-            const rot = this._processParameterVector3(rotation);
-            this.rotateTo(rot.x, rot.y, rot.z);
-        }
-        if (scale) {
-            const sc = this._processParameterVector3(scale);
-            this.scaleTo(sc.x, sc.y, sc.z);
-        }
-
         this.#lastMovedTimestamp = 0;
     }
 
     get type() {
         return ComponentType.Transform;
+    }
+
+    get position() {
+        return this.#position;
+    }
+
+    get rotation() {
+        return this.#rotation;
+    }
+
+    get scale() {
+        return this.#scale;
+    }
+
+    set position(newPosition) {
+        const pos = this._processParameterVector3(newPosition);
+        this.moveTo(pos.x, pos.y, pos.z);
+    }
+
+    set rotation(newRotation) {
+        const rot = this._processParameterVector3(newRotation);
+        this.rotateTo(rot.x, rot.y, rot.z);
+    }
+
+    set scale(newScale) {
+        const sc = this._processParameterVector3(newScale);
+        this.scaleTo(sc.x, sc.y, sc.z);
     }
 
     get transformMatrix() {
@@ -203,18 +217,6 @@ export class TransformComponent extends BaseComponent {
         }
 
         return this.#transform;
-    }
-
-    get position() {
-        return this.#position;
-    }
-
-    get rotation() {
-        return this.#rotation;
-    }
-
-    get scale() {
-        return this.#scale;
     }
 
     get lastMovedTimestamp() {
@@ -351,14 +353,9 @@ export class SpriteComponent extends BaseComponent {
      */
     #texCoords;
 
-    constructor(gameObject, color, textureSrc, flipX, flipY) {
+    constructor(gameObject, textureSrc) {
         super(gameObject);
         this.#color = Vector4.one;
-
-        if (color) {
-            const c = this._processParameterVector4(color);
-            this.setColor(c.r, c.g, c.b, c.a);
-        }
 
         if (textureSrc) {
             this.#texture = new Texture(this.gameObject.gl, textureSrc);
@@ -371,20 +368,6 @@ export class SpriteComponent extends BaseComponent {
             Vector2.up,
             Vector2.one,
         ];
-
-        if (flipX) {
-            this.flipX = flipX;
-        }
-        else {
-            this.flipX = false;
-        }
-
-        if (flipY) {
-            this.flipY = flipY;
-        }
-        else {
-            this.flipY = false;
-        }
     }
 
     get type() {
@@ -425,14 +408,9 @@ export class SpriteComponent extends BaseComponent {
         return this.#color;
     }
 
-    setColor(r, g, b, a) {
-
-        if (r instanceof Vector4) {
-            this.#color.set(r);
-            return;
-        }
-
-        this.#color.set(r, g, b, a);
+    set color(newColor) {
+        const c = this._processParameterVector4(newColor);
+        this.#color.set(c.r, c.g, c.b, c.a);  
     }
 
     get texture() {
@@ -485,27 +463,18 @@ export class CameraComponent extends BaseComponent {
      */
     #AABB;
 
-    constructor(gameObject, isOrtho, clearColor, size, near, far) {
+    constructor(gameObject, isOrtho, near, far) {
         super(gameObject);
 
         this.#projectionMatrix = Matrix4.zero;
 
         this.#clearColor = new Vector4(0.345, 0.588, 0.809, 1);
-        if (clearColor) {
-            const cc = this._processParameterVector4(clearColor);
-            this.setClearColor(cc.r, cc.g, cc.b, cc.a);
-        }
 
         this.#canvas = document.getElementById('banana-canvas');
         this.#aspectRatio = this.#canvas.clientWidth / this.#canvas.clientHeight;
 
-        this.#size = isOrtho ? 10 : 45;
         this.#near = isOrtho ? -100 : 0.1;
         this.#far =  isOrtho ? 100 : 1000;
-
-        if (size) {
-            this.#size = size;
-        }
 
         if (near) {
             this.#near = near;
@@ -517,12 +486,6 @@ export class CameraComponent extends BaseComponent {
 
         this.#isOrtho = isOrtho;
         this.#AABB = new AABB();
-
-        if (isOrtho) {
-            this.setOrthographic();
-        } else {
-            this.setPerspective();
-        }
     }
 
     get type() {
@@ -568,8 +531,9 @@ export class CameraComponent extends BaseComponent {
         this.#projectionMatrix.setPerspective(this.#size, this.#aspectRatio, this.#near, this.#far);
     }
 
-    setClearColor(r, g, b, a) {
-        this.#clearColor.set(r, g, b, a);
+    set clearColor(newClearColor) {
+        const cc = this._processParameterVector4(newClearColor);
+        this.#clearColor.set(cc.r, cc.g, cc.b, cc.a);
     }
 
     /**
@@ -1284,8 +1248,8 @@ export class UITextComponent extends UIComponent {
 export class LightComponent extends BaseComponent {
 
     #color;
-    #intensity
     #on;
+    intensity
 
     /**
      * 
@@ -1296,8 +1260,8 @@ export class LightComponent extends BaseComponent {
     constructor(gameObject, color, intensity) {
         super(gameObject);
         this.#color = Vector3.one;
-        this.#intensity = intensity ? intensity : 1.0;
         this.#on = true;
+        this.intensity = intensity ? intensity : 1.0;
 
         if (color) {
             const c = this._processParameterVector3(color);
@@ -1317,8 +1281,9 @@ export class LightComponent extends BaseComponent {
         return this.#color;
     }
 
-    get intensity() {
-        return this.#intensity;
+    set color(newColor) {
+        const c = this._processParameterVector4(newColor);
+        this.#color.set(c.r, c.g, c.b, c.a);
     }
 
     get on() {
@@ -1782,3 +1747,4 @@ ComponentMap[ComponentType.Particle] = ParticleComponent;
 ComponentMap[ComponentType.Dialogue] = DialogueComponent;
 ComponentMap[ComponentType.Tilemap] = TilemapComponent;
 ComponentMap[ComponentType.Timer] = TimerComponent;
+ComponentMap[ComponentType.UIButton] = UIButtonComponent;
