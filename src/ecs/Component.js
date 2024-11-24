@@ -802,13 +802,13 @@ export class Body2DComponent extends BaseComponent {
     #linearVelocity;
     #angularVelocity;
     #force;
-    #gravityScale;
+    gravityScale;
 
     #density;
     #mass;
     #inertia;
-    #restitution;
-    #isStatic;
+    restitution;
+    isStatic;
 
     #area;
     #radius;
@@ -839,14 +839,14 @@ export class Body2DComponent extends BaseComponent {
         this.#linearVelocity = Vector2.zero;
         this.#angularVelocity = 0;
         this.#force = Vector2.zero;
-        this.#gravityScale = gravityScale;
-        this.#restitution = restitution;
+        this.gravityScale = gravityScale;
+        this.restitution = restitution;
 
         this.#density = density
         this.#mass = mass;
         this.#inertia = inertia;
         this.#area = area;
-        this.#isStatic = isStatic;
+        this.isStatic = isStatic;
         this.#radius = radius;
         this.#width = width;
         this.#height = height;
@@ -917,14 +917,6 @@ export class Body2DComponent extends BaseComponent {
         return this.#linearVelocity;
     }
 
-    get restitution() {
-        return this.#restitution;
-    }
-
-    get isStatic() {
-        return this.#isStatic;
-    }
-
     get radius() {
         const x = this.transform.scale.x;
         const y = this.transform.scale.y;
@@ -937,7 +929,7 @@ export class Body2DComponent extends BaseComponent {
     }
 
     get inverseMass() {
-        if (!this.#isStatic) {
+        if (!this.isStatic) {
             return 1 / this.#mass;
         }
 
@@ -963,13 +955,13 @@ export class Body2DComponent extends BaseComponent {
     }
 
     update(dt, gravity) {
-        if (this.#isStatic) {
+        if (this.isStatic) {
             return;
         }
 
         this.#toAdd.set(0, 0);
         this.#toAdd.add(gravity);
-        this.#toAdd.mul(this.#gravityScale * dt);
+        this.#toAdd.mul(this.gravityScale * dt);
 
         this.#linearVelocity.add(this.#toAdd);
         this.#linearVelocity.add(this.#force);

@@ -1,6 +1,7 @@
 import { useGameObject } from "./GameObject";
 import { Body2DComponent } from "../ecs/Component";
 import { ComponentType } from "../core/Types";
+import { useEffect } from "react";
 
 /**
  * 
@@ -20,4 +21,12 @@ export function CircleBody2D(props) {
             props.gravityScale
         ));
     }
+
+    useEffect(() => {
+        const circleBody2D = gameObject.getComponent(ComponentType.Body2D);
+
+        circleBody2D.gravityScale = props.gravityScale ? props.gravityScale : 1;
+        circleBody2D.restitution = props.restitution ? props.restitution : 0.5;
+        circleBody2D.isStatic = typeof props.isStatic == 'undefined' ? false : props.isStatic;
+    });
 }

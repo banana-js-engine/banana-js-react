@@ -79,6 +79,7 @@ export default function GameApp() {
                     <Sprite/>
                     <Audio src="Track01.wav" playOnStart loop volume={0.1}/>
                     <Timer/>
+                    <BoxBody2D isStatic/>
 
                     <Animator startAnim="Idle">
                         <Animation src="dungeon.png" name="Idle" firstFrame={27} frames={0} cellWidth={13} cellHeight={13}/>
