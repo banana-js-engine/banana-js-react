@@ -23,12 +23,4 @@ export function BoxBody2D(props) {
             props.gravityScale
         ));
     }
-
-    useEffect(() => {
-        const boxBody2D = gameObject.getComponent(ComponentType.Body2D);
-
-        boxBody2D.gravityScale = props.gravityScale ? props.gravityScale : 1;
-        boxBody2D.restitution = props.restitution ? props.restitution : 0.5;
-        boxBody2D.isStatic = typeof props.isStatic == 'undefined' ? false : props.isStatic;
-    });
 }

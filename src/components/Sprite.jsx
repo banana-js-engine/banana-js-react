@@ -13,16 +13,13 @@ export function Sprite(props) {
 
     const gameObject = useGameObject();
 
-    if (!gameObject.hasComponent(ComponentType.Sprite))
+    if (!gameObject.hasComponent(ComponentType.Sprite)) {
         gameObject.addComponent(new SpriteComponent(
             gameObject,
-            props.src
-    ));
-
-    useEffect(() => {
-        const sprite = gameObject.getComponent(ComponentType.Sprite);
-        sprite.color = props.color ? props.color : [1, 1, 1, 1];
-        sprite.flipX = typeof props.flipX == 'undefined' ? false : props.flipX;
-        sprite.flipY = typeof props.flipY == 'undefined' ? false : props.flipY;
-    }, []);
+            props.src,
+            props.color,
+            props.flipX,
+            props.flipY
+        ));
+    }
 }

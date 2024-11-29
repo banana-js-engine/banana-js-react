@@ -19,16 +19,11 @@ export function PerspectiveCamera(props) {
     if (!gameObject.hasComponent(ComponentType.Camera)) {
         gameObject.addComponent(new CameraComponent(
             gameObject,
+            props.bgColor,
             false, 
+            props.fovy,
             props.near, 
             props.far
         ));
     }
-
-    useEffect(() => {
-        const camera = gameObject.getComponent(ComponentType.Camera);
-        camera.size = props.size ? props.size : 45;
-        camera.clearColor = props.bgColor ? props.bgColor : [0.345, 0.588, 0.809, 1];
-        camera.setPerspective();
-    }, [props.size, props.bgColor]);
 }

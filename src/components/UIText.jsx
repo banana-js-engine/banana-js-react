@@ -16,6 +16,14 @@ export function UIText(props) {
 
     const gameObject = useGameObject();
 
+    useEffect(() => {
+        if (!gameObject) {
+            return;
+        }
+
+        gameObject.getComponent(ComponentType.UIText).text = props.children;
+    }, [props.children]);
+
     if (!gameObject.hasComponent(ComponentType.UIText)) {
         const textComponent = new UITextComponent(
             gameObject,
@@ -29,10 +37,4 @@ export function UIText(props) {
     
         gameObject.addComponent(textComponent);
     } 
-
-    useEffect(() => {
-        gameObject.getComponent(ComponentType.UIText).text = props.children;
-    }, [props.children]);
-
-
 }

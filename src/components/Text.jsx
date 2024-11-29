@@ -27,6 +27,10 @@ export function Text(props) {
     } 
 
     useEffect(() => {
+        if (!gameObject) {
+            return;
+        }
+
         gameObject.getComponent(ComponentType.Text).text = props.children;
     }, [props.children]);
 

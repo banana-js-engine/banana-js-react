@@ -149,7 +149,7 @@ export class TransformComponent extends BaseComponent {
 
     #lastMovedTimestamp
 
-    constructor(gameObject) {
+    constructor(gameObject, position, rotation, scale) {
         super(gameObject);
 
         this.#positionMat = Matrix4.zero;
@@ -161,6 +161,18 @@ export class TransformComponent extends BaseComponent {
         this.#position = Vector3.zero;
         this.#rotation = Vector3.zero;
         this.#scale = Vector3.one;
+
+        if (position) {
+            this.position = position;
+        }
+
+        if (rotation) {
+            this.rotation = rotation;
+        }
+
+        if (scale) {
+            this.scale = scale;
+        }
 
         this.#transform = new Matrix4();
 
@@ -353,7 +365,7 @@ export class SpriteComponent extends BaseComponent {
      */
     #texCoords;
 
-    constructor(gameObject, textureSrc) {
+    constructor(gameObject, textureSrc, color, flipX, flipY) {
         super(gameObject);
         this.#color = Vector4.one;
 
@@ -368,6 +380,18 @@ export class SpriteComponent extends BaseComponent {
             Vector2.up,
             Vector2.one,
         ];
+
+        if (color) {
+            this.color = color;
+        }
+
+        if (typeof flipX != 'undefined') {
+            this.flipX = flipX;
+        }
+
+        if (typeof flipY != 'undefined') {
+            this.flipY = flipY;
+        }
     }
 
     get type() {
@@ -463,7 +487,7 @@ export class CameraComponent extends BaseComponent {
      */
     #AABB;
 
-    constructor(gameObject, isOrtho, near, far) {
+    constructor(gameObject, clearColor, isOrtho, size, near, far) {
         super(gameObject);
 
         this.#projectionMatrix = Matrix4.zero;
@@ -473,6 +497,11 @@ export class CameraComponent extends BaseComponent {
         this.#canvas = document.getElementById('banana-canvas');
         this.#aspectRatio = this.#canvas.clientWidth / this.#canvas.clientHeight;
 
+        if (clearColor) {
+            this.clearColor = clearColor;
+        }
+
+        this.#size = isOrtho ? 10 : 45;
         this.#near = isOrtho ? -100 : 0.1;
         this.#far =  isOrtho ? 100 : 1000;
 
@@ -486,6 +515,12 @@ export class CameraComponent extends BaseComponent {
 
         this.#isOrtho = isOrtho;
         this.#AABB = new AABB();
+
+        if (isOrtho) {
+            this.setOrthographic();
+        } else {
+            this.setPerspective();
+        }
     }
 
     get type() {
@@ -938,9 +973,10 @@ export class Body2DComponent extends BaseComponent {
 
     get vertices() {
         const transformedVertices = [];
+        const transform = this.transform.transformMatrix;
 
         for (let i = 0; i < 4; i++) {
-            transformedVertices.push(this.transform.transformMatrix.multiplyVector4(this.#vertices[i]));
+            transformedVertices.push(transform.multiplyVector4(this.#vertices[i]));
         }
 
         return transformedVertices;

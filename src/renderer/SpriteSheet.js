@@ -19,11 +19,11 @@ export class SpriteSheet {
     }
 
     get maxRow() {
-        return this.#texture.height / this.#cellHeight;
+        return Math.floor(this.#texture.height / this.#cellHeight);
     }
 
     get maxColumn() {
-        return this.#texture.width / this.#cellWidth;
+        return Math.floor(this.#texture.width / this.#cellWidth);
     }
 
     get texture() {

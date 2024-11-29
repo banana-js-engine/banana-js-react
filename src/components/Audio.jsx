@@ -27,15 +27,4 @@ export function Audio(props) {
             props.loop
         ));
     }
-
-    useEffect(() => {
-        const audio = gameObject.getComponent(ComponentType.Audio);
-
-        if (!audio.gainNode) {
-            return;
-        }
-
-        const volume = props.volume ? props.volume : 0.5;
-        audio.setVolume(volume);
-    }, [props.volume]);
 }

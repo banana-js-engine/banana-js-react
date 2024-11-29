@@ -36,7 +36,7 @@ export default function GameApp() {
     
     return (
         <Game name="Development" width={800} height={400} platform={PlatformType.Web}>
-            <DebugSettings showFps/>
+            <DebugSettings showFps showCollisionShapes/>
             <Scene>
                 <GameObject name="Camera">
                     <Transform position={[0, 0, 0]}/>
@@ -69,6 +69,8 @@ export default function GameApp() {
                 <GameObject>
                     <Transform position={[-1, 1, 1]}/>
                     <Sprite/>
+                    <BoxBody2D isStatic/>
+
                     <Animator startAnim="Idle">
                         <Animation src="Dino.png" name="Idle" firstFrame={0} frames={4} cellHeight={24} cellWidth={24} length={0.6}/>
                     </Animator>
@@ -123,6 +125,10 @@ export default function GameApp() {
                     <Dialogue color={[1, 1, 1, 1]} fontSize={20} playOnStart>
                         <div>Got the dialogue system working</div>
                     </Dialogue>
+                </GameObject>
+
+                <GameObject>
+                    <UIText x={100} y={100}>{count}</UIText>
                 </GameObject>
             </Scene>
         </Game>

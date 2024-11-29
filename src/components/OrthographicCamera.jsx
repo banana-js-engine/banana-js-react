@@ -20,16 +20,11 @@ export function OrthographicCamera(props) {
     if (!gameObject.hasComponent(ComponentType.Camera)) {
         gameObject.addComponent(new CameraComponent(
             gameObject,
+            props.bgColor,
             true, 
+            props.size,
             props.near, 
             props.far
         ));
     }
-
-    useEffect(() => {
-        const camera = gameObject.getComponent(ComponentType.Camera);
-        camera.size = props.size ? props.size : 10;
-        camera.clearColor = props.bgColor ? props.bgColor : [0.345, 0.588, 0.809, 1];
-        camera.setOrthographic();
-    }, [props.size, props.bgColor]);
 }

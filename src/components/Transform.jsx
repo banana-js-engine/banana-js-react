@@ -1,7 +1,6 @@
 import { useGameObject } from "./GameObject";
 import { TransformComponent } from "../ecs/Component";
 import { ComponentType } from "../core/Types";
-import { useEffect } from "react";
 
 /**
  * 
@@ -16,14 +15,10 @@ export function Transform(props) {
 
     if (!gameObject.hasComponent(ComponentType.Transform)) {
         gameObject.addComponent(new TransformComponent(
-            gameObject
+            gameObject,
+            props.position,
+            props.rotation,
+            props.scale
         ));
     }
-
-    useEffect(() => {
-        const transform = gameObject.getComponent(ComponentType.Transform);
-        transform.position = props.position ? props.position : [0, 0, 0];
-        transform.rotation = props.rotation ? props.rotation : [0, 0, 0];
-        transform.scale = props.scale ? props.scale : [1, 1, 1];
-    }, [props.position, props.rotation, props.scale]);
 }

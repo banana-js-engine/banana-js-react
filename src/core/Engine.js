@@ -299,15 +299,14 @@ export class Engine {
         }
 
         if (Debug.showCollisionShapes) {
-            const goBodies = activeScene.getAll(ComponentType.Body2D);
+            const goBodies = activeScene.getComponents(ComponentType.Body2D);
 
             for (let i = 0; i < goBodies.length; i++) {
                 
                 if (goBodies[i].shapeType == ShapeType.Box) {
                     const vertices = goBodies[i].vertices;
-
                     for (let j = 0; j < vertices.length; j++) {
-                        this.#renderer.drawLine(vertices[j], vertices[(j + 1) % vertices.length], Color.green);
+                        this.#renderer.drawLine(vertices[j], vertices[(j + 1) % vertices.length], Color.green);                        
                     }
                 }
             }
@@ -321,7 +320,7 @@ export class Engine {
             }
         }
         
-        this.#renderer.endScene(dt);
+        this.#renderer.endScene();
 
         Input.mouseDelta.set(0, 0);
 

@@ -48,6 +48,10 @@ export class VertexBuffer {
         return Math.floor(this.#data.length / (this.#stride / 4));
     }
 
+    get data() {
+        return this.#data;
+    }
+
     /**
      * Binds the vertex buffer
      */

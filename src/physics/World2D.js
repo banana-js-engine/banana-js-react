@@ -1,7 +1,7 @@
 import { ShapeType } from "../core/Types";
 import { Body2DComponent } from "../ecs/Component";
 import { Vector2 } from "../math/Vector";
-import { CollisionInfo, Collisions } from "./Collisions";
+import { Collisions } from "./Collisions";
 
 export class World2D {
     
@@ -39,10 +39,6 @@ export class World2D {
             
             for (let j = i + 1; j < this.#bodies.length; j++) {
                 const bodyB = this.#bodies[j];
-
-                if (bodyA.transform.position.z != bodyB.transform.position.z) {
-                    continue;
-                }
 
                 if (!Collisions.checkAABBCollision(bodyA.AABB, bodyB.AABB)) {
                     if (bodyA.script && bodyA.collided) {
@@ -94,8 +90,7 @@ export class World2D {
                     }
                     continue;
                 }
-
-                
+              
                 if (bodyA.script && !bodyA.collided) {
                     bodyA.collided = true;
                     bodyA.script.onCollisionEnter2D(bodyB);

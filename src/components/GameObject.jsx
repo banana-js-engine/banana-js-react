@@ -38,10 +38,6 @@ export function GameObject(props) {
         gameObjectRef.current.addComponent(new NameComponent(gameObjectRef.current, props.name));
     }
 
-    useEffect(() => {
-        gameObjectRef.current.active = typeof props.active == 'undefined' ? true : props.active;
-    }, [props.active]);
-
     return (
         <GameObjectContext.Provider value={gameObjectRef.current}>
             { props.children }

@@ -513,12 +513,14 @@ export class Renderer {
      */
     drawLine(p0, p1, color) {
         this.#lineVertex.position.set(p0);
+        this.#lineVertex.position.z = 99;
         this.#lineVertex.color.set(color);
-
+        
         this.#renderData.lineVB.addVertex(this.#renderData.lineVertexCount, this.#lineVertex.flat);
         this.#renderData.lineVertexCount++;
-
+        
         this.#lineVertex.position.set(p1);
+        this.#lineVertex.position.z = 99;
 
         this.#renderData.lineVB.addVertex(this.#renderData.lineVertexCount, this.#lineVertex.flat);
         this.#renderData.lineVertexCount++;
@@ -864,7 +866,6 @@ export class Renderer {
             this.#renderData.meshShader.bind();
             this.#renderData.meshShader.setUniformMatrix4fv('u_ViewProjectionMatrix', this.#sceneData.projection.flat);
             this.#renderData.meshShader.setUniform3fv('u_CameraPosition', this.#sceneData.cameraPos.data);
-
 
             this.#renderData.meshShader.setUniform1i('u_LightCount', this.#sceneData.lights.length);
             for (let i = 0; i < this.#sceneData.lights.length; i++) {

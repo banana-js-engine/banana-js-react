@@ -172,7 +172,7 @@ export class Matrix4 {
      * @returns 
      */
     multiplyVector3(vec3) {
-        const result = {};
+        const result = Vector3.zero;
 
         result.x = this.#data[0] * vec3.x + this.#data[1] * vec3.y + this.#data[2] * vec3.z + this.#data[3];
         result.y = this.#data[4] * vec3.x + this.#data[5] * vec3.y + this.#data[6] * vec3.z + this.#data[7];
@@ -187,7 +187,7 @@ export class Matrix4 {
      * @returns 
      */
     multiplyVector4(vec4) {
-        const result = {};
+        const result = Vector4.zero;
 
         result.x = this.#data[0] * vec4.x + this.#data[1] * vec4.y + this.#data[2] * vec4.z + this.#data[3] * vec4.w;
         result.y = this.#data[4] * vec4.x + this.#data[5] * vec4.y + this.#data[6] * vec4.z + this.#data[7] * vec4.w;
